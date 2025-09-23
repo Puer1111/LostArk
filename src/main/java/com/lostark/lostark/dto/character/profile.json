@@ -1,0 +1,132 @@
+{
+  "ArmoryProfile": {
+    "CharacterImage": "https://img.lostark.co.kr/armory/7/7646537847257B15E278ED65F87C005F34372C3ABFC50F149D86E0C8D716700E.jpg?v=20250920015445",
+    "ExpeditionLevel": 348,
+    "PvpGradeName": "17급",
+    "TownLevel": 70,
+    "TownName": "Paradise",
+    "Title": "죽음에서 피어난 자",
+    "GuildMemberGrade": "일반 길드원",
+    "GuildName": "혈석과참깨라면",
+    "UsingSkillPoint": 480,
+    "TotalSkillPoint": 483,
+    "Stats": [
+      {
+        "Type": "치명",
+        "Value": "637",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 치명타 적중률이 <font color='#99ff99'>22.79%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>32</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "특화",
+        "Value": "1812",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 루인 스킬 피해량이 <font color='#99ff99'>90.72%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 게이지 획득량이 <font color='#99ff99'>64.80%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 각성 스킬의 피해량이 <font color='#99ff99'>39.60%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>32</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "제압",
+        "Value": "75",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 피격이상 및 상태이상 대상에게 주는 피해량이 <font color='#99ff99'>4.60%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 무력화 대상에게 주는 피해량이 <font color='#99ff99'>5.35%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>32</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "신속",
+        "Value": "77",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 공격 속도가 <font color='#99ff99'>1.32%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 이동 속도가 <font color='#99ff99'>1.32%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 스킬 재사용 대기시간이 <font color='#99ff99'>1.65%</font> 감소합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>32</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "인내",
+        "Value": "69",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물리 방어력이 <font color='#99ff99'>5.64%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 마법 방어력이 <font color='#99ff99'>5.64%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 보호막 효과가 <font color='#99ff99'>1.76%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 생명력 회복 효과가 <font color='#99ff99'>2.46%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>28</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "숙련",
+        "Value": "71",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 상태이상 공격 지속시간이 <font color='#99ff99'>3.04%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 상태이상 피해 지속시간이 <font color='#99ff99'>2.54%</font> 감소합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 무력화 피해량이 <font color='#99ff99'>2.03%</font> 증가합니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 물약 및 원정대 레벨 보상 효과로 <font color='#99ff99'>28</font>만큼 영구적으로 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 카드 도감 누적 효과가 반영된 값으로 전투정보실에서는 별도 수치를 표기하지 않습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "최대 생명력",
+        "Value": "310856",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 캐릭터의 최대 생명력을 나타냅니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><textformat indent='-21' leftMargin='10'><font> </font> 체력으로 최대 생명력이 <font color='#99ff99'>180858</font> 증가되었습니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 생명 활성력으로 최대 생명력이 <font color='#99ff99'>45.74%</font> 증가되었습니다.</textformat>"
+        ]
+      },
+      {
+        "Type": "공격력",
+        "Value": "171467",
+        "Tooltip": [
+          "<textformat indent='-21' leftMargin='10'><font> </font> 적에게 주는 피해를 계산할 때 기준이 되는 값입니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 힘, 민첩, 지능과 무기 공격력을 기반으로 증가한 기본 공격력은 <font color='#99ff99'>147412</font> 입니다.</textformat>",
+          "<textformat indent='-21' leftMargin='10'><font> </font> 공격력 증감 효과로 공격력이 <font color='#99ff99'>24055</font> 증가되었습니다.</textformat>"
+        ]
+      }
+    ],
+    "Tendencies": [
+      {
+        "Type": "지성",
+        "Point": 555,
+        "MaxPoint": 1000
+      },
+      {
+        "Type": "담력",
+        "Point": 572,
+        "MaxPoint": 1000
+      },
+      {
+        "Type": "매력",
+        "Point": 492,
+        "MaxPoint": 1000
+      },
+      {
+        "Type": "친절",
+        "Point": 490,
+        "MaxPoint": 1000
+      }
+    ],
+    "CombatPower": "3,309.47",
+    "Decorations": {
+      "Symbol": null,
+      "Emblems": null
+    },
+    "HonorPoint": 40,
+    "ServerName": "카마인",
+    "CharacterName": "한개리",
+    "CharacterLevel": 70,
+    "CharacterClassName": "아르카나",
+    "ItemAvgLevel": "1,740.83"
+  }
+}

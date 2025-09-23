@@ -11,6 +11,7 @@ async function getExpedition() {
             alert("캐릭터 이름을 입력해 주세요!");
             return;
         }
+        // window.location.href = `/character/allExpedition/${characterName}`;
         window.location.href = `/character/${characterName}`;
     });
 

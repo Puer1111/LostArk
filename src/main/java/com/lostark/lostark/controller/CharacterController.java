@@ -1,6 +1,7 @@
 package com.lostark.lostark.controller;
 
 
+import com.lostark.lostark.dto.search.SearchCharacterDTO;
 import com.lostark.lostark.dto.search.SearchExpeditionDTO;
 import com.lostark.lostark.service.ApiService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class CharacterController {
 
     @GetMapping("/character")
     public String test() {
-        return "character";
+        return "allExpedition";
     }
 
     @GetMapping("/")
@@ -30,14 +31,15 @@ public class CharacterController {
     @GetMapping("/character/{characterName}")
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
-
-        return "character";
+        SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
+        model.addAttribute("characterData", searchCharacterDTO);
+        return "searchCharacter";
     }
     @GetMapping("/character/allExpedition/{characterName}")
     public String getExpedition(@PathVariable String characterName, Model model) {
         log.info("Controller.getExpedition.characterName = {}", characterName);
         SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);
-        model.addAttribute("characters", characterProfiles);
-        return "character";
+        model.addAttribute("Expeditions", characterProfiles);
+        return "allExpedition";
     }
 }

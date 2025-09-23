@@ -1,6 +1,7 @@
 package com.lostark.lostark.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lostark.lostark.dto.search.SearchCharacterDTO;
 import com.lostark.lostark.dto.search.SearchExpeditionDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,17 +29,21 @@ public class ApiServiceImpl implements ApiService {
         this.objectMapper = objectMapper;
     }
 
-    @Override
-    public SearchExpeditionDTO[] getExpedition(String characterName) {
-        log.info("Service.characterName = {}", characterName);
-        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
-                .path("{characterName}/siblings").encode().buildAndExpand(characterName).toUri();
+    // New private method to create HttpHeaders
+    private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
-
         headers.set("Accept", "application/json");
         headers.set("Authorization", "bearer " + apiKey);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        return headers;
+    }
 
+    @Override
+    public SearchExpeditionDTO[] getExpedition(String characterName) {
+        log.info("Service.getExpedition.characterName = {}", characterName);
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
+                .path("{characterName}/siblings").encode().buildAndExpand(characterName).toUri();
+        HttpHeaders headers = createHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
         ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
 
         String jsonResponse = response.getBody();
@@ -54,5 +59,29 @@ public class ApiServiceImpl implements ApiService {
         }
 
         return new SearchExpeditionDTO[0]; // 실패 시 빈 배열 반환
+    }
+
+    @Override
+    public SearchCharacterDTO getCharacter(String characterName) {
+        log.info("Service.getCharacter.characterName = {}", characterName);
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
+                .path("{characterName}").encode().buildAndExpand(characterName).toUri();
+        HttpHeaders headers = createHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+
+        String jsonResponse = response.getBody();
+        System.out.println("Raw JSON Response: " + jsonResponse);
+
+        try {
+            SearchCharacterDTO dto = objectMapper.readValue(jsonResponse, SearchCharacterDTO.class);
+            if (dto != null) {
+                return dto;
+            }
+        } catch (Exception e) {
+            log.error("Error parsing JSON response", e);
+        }
+        return new SearchCharacterDTO();
     }
 }
