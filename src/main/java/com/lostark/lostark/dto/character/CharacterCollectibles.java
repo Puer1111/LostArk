@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
 @Data
-public class Charactercollectibles {
+public class CharacterCollectibles {
 //    @JsonProperty("Collectibles")
 //    private List<Collectible> collectibles;
 //    @Data

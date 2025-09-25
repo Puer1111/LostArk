@@ -13,11 +13,11 @@ public class SearchCharacterDTO {
     @JsonProperty("ArmoryProfile")
     private CharacterProfiles characterProfiles;
     @JsonProperty("ArmoryEquipment")
-    private List<CharacterEquipment> armoryEquipment;
+    private List<CharacterEquipment> characterEquipment;
     @JsonProperty("ArmoryAvatars")
-    private List<CharacterAvatar.AvatarItem> armoryAvatars;
+    private List<CharacterAvatar> characterAvatars;
     @JsonProperty("ArmorySkills")
-    private List<CharacterCombatSkill> armorySkills;
+    private List<CharacterCombatSkill> characterCombatSkill;
     @JsonProperty("ArmoryEngraving")
     private CharacterEngravings characterEngravings;
     @JsonProperty("ArmoryCard")
@@ -27,7 +27,7 @@ public class SearchCharacterDTO {
     @JsonProperty("ColosseumInfo")
     private CharacterColosseum characterColosseum;
     @JsonProperty("Collectibles")
-    private List<Charactercollectibles> collectibles;
+    private List<CharacterCollectibles> characterCollectibles;
     @JsonProperty("ArkPassive")
     private CharacterArkPassive characterArkPassive;
     @JsonProperty("ArkGrid")

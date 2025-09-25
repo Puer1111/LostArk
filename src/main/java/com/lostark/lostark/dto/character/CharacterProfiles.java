@@ -4,6 +4,7 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
+
 @Data
 public class CharacterProfiles {
     @JsonProperty("CharacterImage")
@@ -68,6 +69,7 @@ public class CharacterProfiles {
         @JsonProperty("MaxPoint")
         private int maxPoint;
     }
+
     @Data
     public static class Decorations {
         @JsonProperty("Symbol")

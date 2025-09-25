@@ -4,17 +4,15 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
+
 @Data
 public class CharacterGems {
-//    @JsonProperty("ArmoryGem")
-//    private ArmoryGem armoryGem;
 
-//    public static class ArmoryGem {
-        @JsonProperty("Gems")
-        private List<Gem> gems;
-        @JsonProperty("Effects")
-        private GemEffects effects;
-//    }
+    @JsonProperty("Gems")
+    private List<Gem> gems;
+    @JsonProperty("Effects")
+    private GemEffects effects;
+
     @Data
     public static class Gem {
         @JsonProperty("Slot")
@@ -30,6 +28,7 @@ public class CharacterGems {
         @JsonProperty("Tooltip")
         private String tooltip; // Storing as String due to complex nested JSON structure
     }
+
     @Data
     public static class GemEffects {
         @JsonProperty("Description")
@@ -37,6 +36,7 @@ public class CharacterGems {
         @JsonProperty("Skills")
         private List<Skill> skills;
     }
+
     @Data
     public static class Skill {
         @JsonProperty("GemSlot")

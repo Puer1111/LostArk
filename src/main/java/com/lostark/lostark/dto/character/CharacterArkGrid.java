@@ -6,15 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 import java.util.List;
 @Data
 public class CharacterArkGrid {
-//    @JsonProperty("ArkGrid")
-//    private ArkGrid arkGrid;
-//    @Data
-//    public static class ArkGrid {
+
         @JsonProperty("Slots")
         private List<Slot> slots;
         @JsonProperty("Effects")
         private List<Effect> effects;
-//    }
+
     @Data
     public static class Slot {
         @JsonProperty("Index")

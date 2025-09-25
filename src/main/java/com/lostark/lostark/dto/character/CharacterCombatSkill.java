@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 import java.util.List;
 @Data
 public class CharacterCombatSkill {
-//    @JsonProperty("ArmorySkills")
-//    private List<Skill> armorySkills;
-//    @Data
-//    public static class Skill {
+
         @JsonProperty("Name")
         private String name;
         @JsonProperty("Icon")
@@ -26,7 +23,7 @@ public class CharacterCombatSkill {
         private Rune rune; // Can be null
         @JsonProperty("Tooltip")
         private String tooltip; // Storing as String due to complex nested JSON structure
-//    }
+
     @Data
     public static class Tripod {
         @JsonProperty("Tier")

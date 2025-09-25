@@ -4,21 +4,19 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
+
 @Data
 public class CharacterArkPassive {
-//    @JsonProperty("ArkPassive")
-//    private ArkPassive arkPassive;
-//    @Data
-//    public static class ArkPassive {
-        @JsonProperty("Title")
-        private String title;
-        @JsonProperty("IsArkPassive")
-        private boolean isArkPassive;
-        @JsonProperty("Points")
-        private List<Point> points;
-        @JsonProperty("Effects")
-        private List<Effect> effects;
-//    }
+
+    @JsonProperty("Title")
+    private String title;
+    @JsonProperty("IsArkPassive")
+    private boolean isArkPassive;
+    @JsonProperty("Points")
+    private List<Point> points;
+    @JsonProperty("Effects")
+    private List<Effect> effects;
+
     @Data
     public static class Point {
         @JsonProperty("Name")
@@ -30,6 +28,7 @@ public class CharacterArkPassive {
         @JsonProperty("Description")
         private String description;
     }
+
     @Data
     public static class Effect {
         @JsonProperty("Name")

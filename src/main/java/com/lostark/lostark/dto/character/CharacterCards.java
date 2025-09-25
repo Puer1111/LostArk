@@ -6,15 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 import java.util.List;
 @Data
 public class CharacterCards {
-//    @JsonProperty("ArmoryCard")
-//    private ArmoryCard armoryCard;
-//    @Data
-//    public static class ArmoryCard {
+
         @JsonProperty("Cards")
         private List<Card> cards;
         @JsonProperty("Effects")
         private List<Effect> effects;
-//    }
+
     @Data
     public static class Card {
         @JsonProperty("Slot")
