@@ -1,5 +1,8 @@
 package com.lostark.lostark.dto.character;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.lostark.lostark.dto.character.tooltip.Tooltip;
+import com.lostark.lostark.dto.character.tooltip.TooltipDeserializer;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
@@ -27,7 +30,8 @@ public class CharacterCards {
         @JsonProperty("Grade")
         private String grade;
         @JsonProperty("Tooltip")
-        private String tooltip; // Storing as String due to complex nested JSON structure
+        @JsonDeserialize(using = TooltipDeserializer.class)
+        private Tooltip tooltip; // Storing as String due to complex nested JSON structure
     }
     @Data
     public static class Effect {

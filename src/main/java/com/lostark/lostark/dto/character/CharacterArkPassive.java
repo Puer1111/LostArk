@@ -1,5 +1,8 @@
 package com.lostark.lostark.dto.character;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.lostark.lostark.dto.character.tooltip.Tooltip;
+import com.lostark.lostark.dto.character.tooltip.TooltipDeserializer;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
@@ -24,7 +27,8 @@ public class CharacterArkPassive {
         @JsonProperty("Value")
         private int value;
         @JsonProperty("Tooltip")
-        private String tooltip;
+        @JsonDeserialize(using = TooltipDeserializer.class)
+        private Tooltip tooltip;
         @JsonProperty("Description")
         private String description;
     }
@@ -38,6 +42,7 @@ public class CharacterArkPassive {
         @JsonProperty("Icon")
         private String icon;
         @JsonProperty("ToolTip") // Note: "ToolTip" with capital 'T' in JSON
-        private String toolTip;
+        @JsonDeserialize(using = TooltipDeserializer.class)
+        private Tooltip toolTip;
     }
 }

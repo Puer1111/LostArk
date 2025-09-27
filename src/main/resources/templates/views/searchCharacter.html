@@ -86,14 +86,21 @@
     </div>
 
     <!-- Character Equipment -->
-    <div class="section" th:if="${characterData.characterEquipment != null and !characterData.characterEquipment.empty}">
+    <div class="section"
+         th:if="${characterData.characterEquipment != null and !characterData.characterEquipment.empty}">
         <h2>장비 정보</h2>
         <ul>
             <li th:each="item : ${characterData.characterEquipment}">
                 <img th:src="${item.icon}" alt="아이템 아이콘"/>
                 <strong><span th:text="${item.name}"></span></strong> (<span th:text="${item.grade}"></span>)
                 <div class="tooltip-content" th:if="${item.tooltip != null}">
-                    <p th:utext="${item.tooltip}"></p>
+                        <!-- 장비 상급 재련 -->
+                    <div th:utext="${item.tooltip.getElementHtml('Element_005')}" style="font-size:14px;"></div>
+                        <!--  장비 제외 - 기본 , 연마 효과  -->
+                    <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_000')}"></div>
+                    <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_001')}"></div>
+                    <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_000')}"></div>
+                    <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
                 </div>
             </li>
         </ul>
@@ -106,10 +113,10 @@
             <li th:each="avatar : ${characterData.characterAvatars}">
                 <img th:src="${avatar.icon}" alt="아바타 아이콘"/>
                 <strong><span th:text="${avatar.name}"></span></strong> (<span th:text="${avatar.grade}"></span>)
-                <p>타입: <span th:text="${avatar.type}"></span></p>
-                <div class="tooltip-content" th:if="${avatar.tooltip != null}">
-                    <p th:utext="${avatar.tooltip}"></p>
-                </div>
+<!--                <p>타입: <span th:text="${avatar.type}"></span></p>-->
+<!--                <div class="tooltip-content" th:if="${avatar.tooltip != null}">-->
+<!--                    <div th:utext="${avatar.tooltip.getElementHtml('Element_005')}"></div>-->
+<!--                </div>-->
             </li>
         </ul>
     </div>
@@ -139,7 +146,7 @@
                     <p>각성: <span th:text="${card.awakeCount}"></span> / <span th:text="${card.awakeTotal}"></span></p>
                     <p>등급: <span th:text="${card.grade}"></span></p>
                     <div class="tooltip-content" th:if="${card.tooltip != null}">
-                        <p th:utext="${card.tooltip}"></p>
+                        <div th:utext="${card.tooltip.getElementHtml('Element_005')}"></div>
                     </div>
                 </li>
             </ul>
@@ -173,7 +180,7 @@
                     <p>등급: <span th:text="${gem.grade}"></span></p>
                     <p>슬롯: <span th:text="${gem.slot}"></span></p>
                     <div class="tooltip-content" th:if="${gem.tooltip != null}">
-                        <p th:utext="${gem.tooltip}"></p>
+                        <div th:utext="${gem.tooltip.getElementHtml('Element_005')}"></div>
                     </div>
                 </li>
             </ul>
@@ -181,7 +188,8 @@
     </div>
 
     <!-- Character Combat Skills -->
-    <div class="section" th:if="${characterData.characterCombatSkill != null and !characterData.characterCombatSkill.empty}">
+    <div class="section"
+         th:if="${characterData.characterCombatSkill != null and !characterData.characterCombatSkill.empty}">
         <h2>전투 스킬 정보</h2>
         <ul>
             <li th:each="skill : ${characterData.characterCombatSkill}">
@@ -189,14 +197,15 @@
                 <strong><span th:text="${skill.name}"></span></strong> (Lv.<span th:text="${skill.level}"></span>)
                 <p>타입: <span th:text="${skill.type}"></span></p>
                 <div class="tooltip-content" th:if="${skill.tooltip != null}">
-                    <p th:utext="${skill.tooltip}"></p>
+                    <div th:utext="${skill.tooltip.getElementHtml('Element_005')}"></div>
                 </div>
             </li>
         </ul>
     </div>
 
     <!-- Character Collectibles -->
-    <div class="section" th:if="${characterData.characterCollectibles != null and !characterData.characterCollectibles.empty}">
+    <div class="section"
+         th:if="${characterData.characterCollectibles != null and !characterData.characterCollectibles.empty}">
         <h2>수집품 정보</h2>
         <ul>
             <li th:each="collectible : ${characterData.characterCollectibles}">
@@ -228,7 +237,7 @@
                     <strong><span th:text="${point.name}"></span>:</strong> <span th:text="${point.value}"></span>
                     <p>설명: <span th:text="${point.description}"></span></p>
                     <div class="tooltip-content" th:if="${point.tooltip != null}">
-                        <p th:utext="${point.tooltip}"></p>
+                        <div th:utext="${point.tooltip.getElementHtml('Element_005')}"></div>
                     </div>
                 </li>
             </ul>
@@ -241,7 +250,7 @@
                     <strong><span th:text="${effect.name}"></span>:</strong>
                     <p>설명: <span th:utext="${effect.description}"></span></p>
                     <div class="tooltip-content" th:if="${effect.toolTip != null}">
-                        <p th:utext="${effect.toolTip}"></p>
+                        <div th:utext="${effect.toolTip.getElementHtml('Element_005')}"></div>
                     </div>
                 </li>
             </ul>
@@ -259,7 +268,7 @@
                     <strong><span th:text="${slot.name}"></span></strong> (포인트: <span th:text="${slot.point}"></span>)
                     <p>등급: <span th:text="${slot.grade}"></span></p>
                     <div class="tooltip-content" th:if="${slot.tooltip != null}">
-                        <p th:utext="${slot.tooltip}"></p>
+                        <div th:utext="${slot.tooltip.getElementHtml('Element_005')}"></div>
                     </div>
                 </li>
             </ul>
@@ -269,8 +278,8 @@
             <ul>
                 <li th:each="effect : ${characterData.characterArkGrid.effects}">
                     <strong><span th:text="${effect.name}"></span></strong> (레벨: <span th:text="${effect.level}"></span>)
-                    <div class="tooltip-content" th:if="${effect.tooltip != null}">
-                        <p th:utext="${effect.tooltip}"></p>
+                    <div class="tooltip-content" th:if="${effect.tooltip != null}"
+                         th:utext="${effect.tooltip.getElementHtml('Element_005')}">
                     </div>
                 </li>
             </ul>
