@@ -78,11 +78,15 @@
         <h2>캐릭터 프로필</h2>
         <img class="profile-img" th:if="${characterData.characterProfiles.characterImage != null}"
              th:src="${characterData.characterProfiles.characterImage}" alt="캐릭터 이미지"/>
-        <p><strong>이름:</strong> <span th:text="${characterData.characterProfiles.characterName}"></span></p>
+        <p><strong>이름:</strong> <span th:text="${characterData.characterProfiles.characterName}"
+                                      class="character-name"></span></p>
         <p><strong>서버:</strong> <span th:text="${characterData.characterProfiles.serverName}"></span></p>
         <p><strong>클래스:</strong> <span th:text="${characterData.characterProfiles.characterClassName}"></span></p>
         <p><strong>레벨:</strong> <span th:text="${characterData.characterProfiles.characterLevel}"></span></p>
         <p><strong>아이템 레벨:</strong> <span th:text="${characterData.characterProfiles.itemAvgLevel}"></span></p>
+    </div>
+    <div class="gotoExpedition">
+        <button onClick="goExpedition();">원정대</button>
     </div>
 
     <!-- Character Equipment -->
@@ -92,11 +96,20 @@
         <ul>
             <li th:each="item : ${characterData.characterEquipment}">
                 <img th:src="${item.icon}" alt="아이템 아이콘"/>
-                <strong><span th:text="${item.name}"></span></strong> (<span th:text="${item.grade}"></span>)
+                <span th:switch="${item.grade}">
+                    <span th:case="'고대'" th:text="${item.grade}" style="color: #E3C7A1;"></span>
+                    <span th:case="'유물'" th:text="${item.grade}" style="color: #FA5D00;"></span>
+                    <span th:case="'전설'" th:text="${item.grade}" style="color: #F99200;"></span>
+                    <span th:case="'영웅'" th:text="${item.grade}" style="color: #8500b2;"></span>
+                    <span th:case="'희귀'" th:text="${item.grade}" style="color: #0091cc;"></span>
+                    <span th:case="'고급'" th:text="${item.grade}" style="color: #91FE02;"></span>
+                    <span th:case="*'" th:text="${item.grade}" style="color: #cccccc;"></span>
+                </span>
+                <strong><span th:text="${item.name}"></span></strong>
                 <div class="tooltip-content" th:if="${item.tooltip != null}">
-                        <!-- 장비 상급 재련 -->
+                    <!-- 장비 상급 재련 -->
                     <div th:utext="${item.tooltip.getElementHtml('Element_005')}" style="font-size:14px;"></div>
-                        <!--  장비 제외 - 기본 , 연마 효과  -->
+                    <!--  장비 제외 - 기본 , 연마 효과  -->
                     <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_000')}"></div>
                     <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_001')}"></div>
                     <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_000')}"></div>
@@ -113,10 +126,10 @@
             <li th:each="avatar : ${characterData.characterAvatars}">
                 <img th:src="${avatar.icon}" alt="아바타 아이콘"/>
                 <strong><span th:text="${avatar.name}"></span></strong> (<span th:text="${avatar.grade}"></span>)
-<!--                <p>타입: <span th:text="${avatar.type}"></span></p>-->
-<!--                <div class="tooltip-content" th:if="${avatar.tooltip != null}">-->
-<!--                    <div th:utext="${avatar.tooltip.getElementHtml('Element_005')}"></div>-->
-<!--                </div>-->
+                <!--                <p>타입: <span th:text="${avatar.type}"></span></p>-->
+                <!--                <div class="tooltip-content" th:if="${avatar.tooltip != null}">-->
+                <!--                    <div th:utext="${avatar.tooltip.getElementHtml('Element_005')}"></div>-->
+                <!--                </div>-->
             </li>
         </ul>
     </div>
@@ -189,15 +202,26 @@
 
     <!-- Character Combat Skills -->
     <div class="section"
-         th:if="${characterData.characterCombatSkill != null and !characterData.characterCombatSkill.empty}">
+         th:if="${characterData.characterCombatSkill != null}">
         <h2>전투 스킬 정보</h2>
         <ul>
-            <li th:each="skill : ${characterData.characterCombatSkill}">
+            <li th:each="skill : ${characterData.characterCombatSkill}"
+                th:if="${!skill.tripods.?[isSelected].isEmpty()}">
                 <img th:src="${skill.icon}" alt="스킬 아이콘"/>
                 <strong><span th:text="${skill.name}"></span></strong> (Lv.<span th:text="${skill.level}"></span>)
-                <p>타입: <span th:text="${skill.type}"></span></p>
                 <div class="tooltip-content" th:if="${skill.tooltip != null}">
-                    <div th:utext="${skill.tooltip.getElementHtml('Element_005')}"></div>
+                    <!--                    <div th:utext="${skill.tooltip.getElementHtml('Element_005')}"></div>-->
+                    <div class="tripods">
+                        <th:block th:each="tripod : ${skill.tripods}">
+                            <div th:if="${tripod.isSelected}" class="tripod"
+                                 style="display: flex; align-items: center; margin-bottom: 5px;">
+                                <img th:src="${tripod.icon}" alt="트라이포드 아이콘"
+                                     style="width: 24px; height: 24px; vertical-align: middle; margin-right: 8px; border-radius: 4px;">
+                                <span th:utext="${tripod.name}" style="font-size: 14px;"></span>
+                            </div>
+                        </th:block>
+                    </div>
+
                 </div>
             </li>
         </ul>
@@ -213,15 +237,15 @@
                 <strong><span th:text="${collectible.type}"></span>:</strong> <span
                     th:text="${collectible.point}"></span> / <span
                     th:text="${collectible.maxPoint}"></span>
-                <div th:if="${collectible.collectiblePoints != null and !collectible.collectiblePoints.empty}">
-                    <h4>세부 수집 포인트</h4>
-                    <ul>
-                        <li th:each="cp : ${collectible.collectiblePoints}">
-                            <strong><span th:text="${cp.pointName}"></span>:</strong> <span
-                                th:text="${cp.point}"></span> / <span th:text="${cp.maxPoint}"></span>
-                        </li>
-                    </ul>
-                </div>
+                <!--                <div th:if="${collectible.collectiblePoints != null and !collectible.collectiblePoints.empty}">-->
+                <!--                    <h4>세부 수집 포인트</h4>-->
+                <!--                    <ul>-->
+                <!--                        <li th:each="cp : ${collectible.collectiblePoints}">-->
+                <!--                            <strong><span th:text="${cp.pointName}"></span>:</strong> <span-->
+                <!--                                th:text="${cp.point}"></span> / <span th:text="${cp.maxPoint}"></span>-->
+                <!--                        </li>-->
+                <!--                    </ul>-->
+                <!--                </div>-->
             </li>
         </ul>
     </div>
@@ -235,7 +259,7 @@
             <ul>
                 <li th:each="point : ${characterData.characterArkPassive.points}">
                     <strong><span th:text="${point.name}"></span>:</strong> <span th:text="${point.value}"></span>
-                    <p>설명: <span th:text="${point.description}"></span></p>
+                    <p><span th:text="${point.description}"></span></p>
                     <div class="tooltip-content" th:if="${point.tooltip != null}">
                         <div th:utext="${point.tooltip.getElementHtml('Element_005')}"></div>
                     </div>
@@ -248,7 +272,7 @@
                 <li th:each="effect : ${characterData.characterArkPassive.effects}">
                     <img th:src="${effect.icon}" alt="효과 아이콘"/>
                     <strong><span th:text="${effect.name}"></span>:</strong>
-                    <p>설명: <span th:utext="${effect.description}"></span></p>
+                    <p><span th:utext="${effect.description}"></span></p>
                     <div class="tooltip-content" th:if="${effect.toolTip != null}">
                         <div th:utext="${effect.toolTip.getElementHtml('Element_005')}"></div>
                     </div>
@@ -286,22 +310,29 @@
         </div>
     </div>
 
-    <!-- Character Colosseum -->
-    <div class="section" th:if="${characterData.characterColosseum != null}">
-        <h2>증명의 전장 정보</h2>
-        <p><strong>랭크:</strong> <span th:text="${characterData.characterColosseum.rank}"></span></p>
-        <p><strong>이전 랭크:</strong> <span th:text="${characterData.characterColosseum.preRank}"></span></p>
-        <p><strong>경험치:</strong> <span th:text="${characterData.characterColosseum.exp}"></span></p>
-        <div th:if="${characterData.characterColosseum.colosseums != null and !characterData.characterColosseum.colosseums.empty}">
-            <h3>시즌별 전적</h3>
-            <ul>
-                <li th:each="season : ${characterData.characterColosseum.colosseums}">
-                    <strong><span th:text="${season.seasonName}"></span></strong>
-                </li>
-            </ul>
-        </div>
-    </div>
+    <!--    &lt;!&ndash; Character Colosseum &ndash;&gt;-->
+    <!--    <div class="section" th:if="${characterData.characterColosseum != null}">-->
+    <!--        <h2>증명의 전장 정보</h2>-->
+    <!--        <p><strong>랭크:</strong> <span th:text="${characterData.characterColosseum.rank}"></span></p>-->
+    <!--        <p><strong>이전 랭크:</strong> <span th:text="${characterData.characterColosseum.preRank}"></span></p>-->
+    <!--        <p><strong>경험치:</strong> <span th:text="${characterData.characterColosseum.exp}"></span></p>-->
+    <!--        <div th:if="${characterData.characterColosseum.colosseums != null and !characterData.characterColosseum.colosseums.empty}">-->
+    <!--            <h3>시즌별 전적</h3>-->
+    <!--            <ul>-->
+    <!--                <li th:each="season : ${characterData.characterColosseum.colosseums}">-->
+    <!--                    <strong><span th:text="${season.seasonName}"></span></strong>-->
+    <!--                </li>-->
+    <!--            </ul>-->
+    <!--        </div>-->
+    <!--    </div>-->
 
 </div>
+<script>
+
+    function goExpedition() {
+        const characterName = document.querySelector('.character-name').textContent;
+        window.location.href = `/character/allExpedition/${characterName}`;
+    }
+</script>
 </body>
 </html>

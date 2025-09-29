@@ -24,6 +24,7 @@ public class CharacterCombatSkill {
         private List<Tripod> tripods;
         @JsonProperty("Rune")
         private Rune rune; // Can be null
+
         @JsonProperty("Tooltip")
         @JsonDeserialize(using = TooltipDeserializer.class)
         private Tooltip tooltip; // Storing as String due to complex nested JSON structure
