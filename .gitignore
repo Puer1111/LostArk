@@ -43,4 +43,5 @@ gradlew.bat
 gradlew
 settings.gradle
 .gitattributes
+idea.md
 gradle/wrapper/**

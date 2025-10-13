@@ -14,5 +14,8 @@ async function getExpedition() {
         // window.location.href = `/character/allExpedition/${characterName}`;
         window.location.href = `/character/${characterName}`;
     });
+}
+
+async function goCharacterProfile(){
 
 }

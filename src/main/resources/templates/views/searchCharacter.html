@@ -2,72 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Lost Ark Character Details</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        h1, h2, h3 {
-            color: #0056b3;
-        }
-
-        .section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .section p {
-            margin: 5px 0;
-        }
-
-        .section ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .section li {
-            background: #eee;
-            margin-bottom: 5px;
-            padding: 10px;
-            border-radius: 3px;
-        }
-
-        .section img {
-            max-width: 50px;
-            height: auto;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-
-        .profile-img {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .tooltip-content {
-            font-size: 0.9em;
-            color: #555;
-            margin-top: 5px;
-            border-top: 1px dashed #ccc;
-            padding-top: 5px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/character/searchCharacter.css">
 </head>
 <body>
 <div class="container">
@@ -125,7 +60,8 @@
         <ul>
             <li th:each="avatar : ${characterData.characterAvatars}">
                 <img th:src="${avatar.icon}" alt="아바타 아이콘"/>
-                <strong><span th:text="${avatar.name}"></span></strong> (<span th:text="${avatar.grade}"></span>)
+                <strong><span th:text="${avatar.name}"></span></strong>
+                <!--                (<span th:text="${avatar.grade}"></span>)-->
                 <!--                <p>타입: <span th:text="${avatar.type}"></span></p>-->
                 <!--                <div class="tooltip-content" th:if="${avatar.tooltip != null}">-->
                 <!--                    <div th:utext="${avatar.tooltip.getElementHtml('Element_005')}"></div>-->
@@ -137,10 +73,10 @@
     <!-- Character Engravings -->
     <div class="section" th:if="${characterData.characterEngravings != null}">
         <h2>각인 정보</h2>
-        <div th:if="${characterData.characterEngravings.effects != null and !characterData.characterEngravings.effects.empty}">
+        <div>
             <h3>활성 각인 효과</h3>
             <ul>
-                <li th:each="effect : ${characterData.characterEngravings.effects}">
+                <li th:each="effect : ${characterData.characterEngravings.arkPassiveEffects}">
                     <span th:utext="${effect.name}"></span>
                 </li>
             </ul>
@@ -152,10 +88,10 @@
         <h2>카드 정보</h2>
         <div th:if="${characterData.characterCards.cards != null and !characterData.characterCards.cards.empty}">
             <h3>장착 카드</h3>
-            <ul>
+            <ul style="display: flex; flex-wrap: wrap;">
                 <li th:each="card : ${characterData.characterCards.cards}">
                     <img th:src="${card.icon}" alt="카드 아이콘"/>
-                    <strong><span th:text="${card.name}"></span></strong> (슬롯: <span th:text="${card.slot}"></span>)
+                    <strong><span th:text="${card.name}"></span></strong>
                     <p>각성: <span th:text="${card.awakeCount}"></span> / <span th:text="${card.awakeTotal}"></span></p>
                     <p>등급: <span th:text="${card.grade}"></span></p>
                     <div class="tooltip-content" th:if="${card.tooltip != null}">
@@ -185,16 +121,22 @@
     <div class="section" th:if="${characterData.characterGems != null}">
         <h2>보석 정보</h2>
         <div th:if="${characterData.characterGems.gems != null and !characterData.characterGems.gems.empty}">
-            <h3>장착 보석</h3>
+            <h3>장착 보석 및 효과</h3>
             <ul>
                 <li th:each="gem : ${characterData.characterGems.gems}">
-                    <img th:src="${gem.icon}" alt="보석 아이콘"/>
+                    <!-- 1. 보석 정보 우선 표시 -->
+                    <img th:src="${gem.icon}" alt="보석 아이콘" style="width: 40px; height: 40px; vertical-align: middle;"/>
                     <strong><span th:utext="${gem.name}"></span></strong> (Lv.<span th:text="${gem.level}"></span>)
-                    <p>등급: <span th:text="${gem.grade}"></span></p>
-                    <p>슬롯: <span th:text="${gem.slot}"></span></p>
-                    <div class="tooltip-content" th:if="${gem.tooltip != null}">
-                        <div th:utext="${gem.tooltip.getElementHtml('Element_005')}"></div>
-                    </div>
+
+                    <!-- 2. 스킬 리스트를 전부 반복하면서 -->
+                    <th:block th:each="effect : ${characterData.characterGems.effects.skills}">
+                        <!-- 3. 보석의 slot과 스킬의 gemSlot이 일치하는 경우에만 div를 표시 -->
+                        <div th:if="${effect.gemSlot == gem.slot}" style="padding-left: 50px; margin-top: 5px;">
+                            <img th:src="${effect.icon}" alt="스킬 아이콘" style="width: 24px; height: 24px; vertical-align: middle;"/>
+                            <strong><span th:utext="${effect.name}"></span></strong>
+                            <p style="margin: 2px 0 0 28px;" th:utext="${effect.description[0]}"></p>
+                        </div>
+                    </th:block>
                 </li>
             </ul>
         </div>
@@ -328,7 +270,6 @@
 
 </div>
 <script>
-
     function goExpedition() {
         const characterName = document.querySelector('.character-name').textContent;
         window.location.href = `/character/allExpedition/${characterName}`;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>캐릭터 검색 결과</title>
-    <link rel="stylesheet" href="/css/character/character.css">
+    <link rel="stylesheet" href="/css/character/allExpedition.css">
 </head>
 <body>
 
@@ -12,7 +12,7 @@
     <div th:each="char : ${Expeditions}" class="character-card">
         <div class="card-header">
             <div class="server-name" th:text="${char.serverName}"></div>
-            <h1 class="character-name" th:text="${char.characterName}"></h1>
+            <a th:href="|/character/${char.characterName}|"><h1 class="character-name" th:text="${char.characterName}"></h1></a>
         </div>
         <div class="card-body">
             <div class="info-grid">
