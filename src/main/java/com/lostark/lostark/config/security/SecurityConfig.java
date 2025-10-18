@@ -26,7 +26,13 @@ public class SecurityConfig {
                  */
                 .authorizeHttpRequests(authz -> authz
                         // 홈페이지, 회원가입, CSS/JS 등 정적 리소스는 누구나 접근 가능
-                        .requestMatchers("/", "/users/signup", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/",
+                                "/css/**",
+                                "/js/**",
+                                "/users/signup", // 유저 회원가입
+                                "/users/check-id/{userId}" // 유저 아이디 중복확인
+
+                        ).permitAll()
 
                         // "/admin/**" 경로는 ADMIN 권한을 가진 사용자만 접근 가능
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -39,6 +45,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         // 커스텀 로그인 페이지 경로 (나중에 만들어야 함)
                         .loginPage("/users/login")
+
                         // 로그인 성공 시 이동할 기본 URL
                         .defaultSuccessUrl("/", true)
                         // 로그인 페이지는 누구나 접근 가능
