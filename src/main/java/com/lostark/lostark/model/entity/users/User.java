@@ -53,8 +53,6 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
-    
-
     public void update(UserRole userRole, UserStatus status) {
         if (userRole != null) {
             this.userRole = userRole;

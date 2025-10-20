@@ -2,13 +2,12 @@ package com.lostark.lostark.controller.users;
 
 import com.lostark.lostark.model.dto.users.SignupUser;
 import com.lostark.lostark.service.users.UserService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @Controller
@@ -24,14 +23,13 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@RequestBody SignupUser user) {
+    public ResponseEntity<?> signup(@RequestBody SignupUser user, HttpSession session) {
         try {
-            System.out.println("user = " + user);
-            userService.signup(user);
+            userService.signup(user, session);
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/check-id/{userId}")

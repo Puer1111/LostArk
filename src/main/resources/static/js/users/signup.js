@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const userPasswordInput = document.getElementById('userPassword');
     const userPasswordCheckInput = document.getElementById('passwordConfirm');
     const signupButton = document.getElementById('btn-signup');
+    const emailInput = document.getElementById('userEmail');
+    const emailVerificationButton = document.getElementById('email-verification-button');
+    const verificationCodeInput = document.getElementById('verificationCode');
+    const codeVerificationButton = document.getElementById('code-verification-button');
+    const verificationCodeGroup = document.getElementById('verification-code-group');
 
     // --- Dynamic DIV Creation for Status Messages ---
     let idStatusDiv;
@@ -77,6 +82,69 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('ID Check Error:', error);
                 idStatusDiv.innerHTML = '네트워크 오류로 아이디를 확인할 수 없습니다.';
                 idStatusDiv.style.color = 'red';
+            }
+        });
+    }
+
+    // --- Email Verification Logic ---
+    if (emailVerificationButton) {
+        emailVerificationButton.addEventListener('click', async function () {
+            const email = emailInput.value.trim();
+            if (!email) {
+                alert('이메일을 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/email/send-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const message = await response.text();
+                alert(message);
+
+                if (response.ok) {
+                    verificationCodeGroup.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Email Verification Error:', error);
+                alert('이메일 인증 코드 발송 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    if (codeVerificationButton) {
+        codeVerificationButton.addEventListener('click', async function () {
+            const email = emailInput.value.trim();
+            const code = verificationCodeInput.value.trim();
+
+            if (!email || !code) {
+                alert('이메일과 인증코드를 모두 입력해주세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/email/verify-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email, code: code })
+                });
+
+                const message = await response.text();
+                alert(message);
+
+                if (response.ok) {
+                    signupButton.disabled = false;
+                }
+            } catch (error) {
+                console.error('Code Verification Error:', error);
+                alert('인증코드 확인 중 오류가 발생했습니다.');
             }
         });
     }

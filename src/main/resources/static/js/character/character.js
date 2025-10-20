@@ -1,4 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const signUpBtn = document.getElementById('btn-signUp');
+    signUpBtn.addEventListener("click", function () {
+        window.location.href = "/users/signup";
+    })
     getExpedition();
 })
 
@@ -16,6 +20,3 @@ async function getExpedition() {
     });
 }
 
-async function goCharacterProfile(){
-
-}

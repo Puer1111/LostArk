@@ -35,10 +35,20 @@
                 </div>
                 <div class="mb-3">
                     <label for="userEmail" class="form-label">이메일</label>
-                    <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="이메일 주소를 입력하세요" required maxlength="50">
+                    <div class="input-group">
+                        <input type="email" class="form-control" id="userEmail" name="userEmail" placeholder="이메일 주소를 입력하세요" required maxlength="50">
+                        <button class="btn btn-outline-secondary" type="button" id="email-verification-button">인증코드 발송</button>
+                    </div>
+                </div>
+                <div class="mb-3" id="verification-code-group" style="display: none;">
+                    <label for="verificationCode" class="form-label">인증코드</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="verificationCode" name="verificationCode" placeholder="인증코드를 입력하세요" required maxlength="6">
+                        <button class="btn btn-outline-secondary" type="button" id="code-verification-button">인증코드 확인</button>
+                    </div>
                 </div>
                 <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-block" id="btn-signup">가입하기</button>
+                    <button type="submit" class="btn btn-primary btn-block" id="btn-signup" disabled>가입하기</button>
                 </div>
 <!--            </form>-->
         </div>
