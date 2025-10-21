@@ -33,6 +33,7 @@ public class SecurityConfig {
                                 "/users/check-id/{userId}", // 유저 아이디 중복확인
                                 "/email/send-verification", // 이메일 인증 코드 발송
                                 "/email/verify-code", // 이메일 인증 코드 확인
+                                "/users/login", // 로그인
                                 "/character/{characterName}", // 유저 검색
                                 "/character/allExpedition/{characterName}" // 원정대 검색
 

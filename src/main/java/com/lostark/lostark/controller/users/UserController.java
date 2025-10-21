@@ -1,5 +1,6 @@
 package com.lostark.lostark.controller.users;
 
+import com.lostark.lostark.model.dto.users.LoginCheckUser;
 import com.lostark.lostark.model.dto.users.SignupUser;
 import com.lostark.lostark.service.users.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -22,6 +23,7 @@ public class UserController {
         return "users/signup"; // 'views/' prefix 제외
     }
 
+    // 회원가입 페이지
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupUser user, HttpSession session) {
         try {
@@ -32,6 +34,7 @@ public class UserController {
         }
     }
 
+    // 아이디 중복 확인
     @GetMapping("/check-id/{userId}")
     public ResponseEntity<?> checkUserId(@PathVariable String userId) {
         boolean isExists = userService.checkUserIdExists(userId); // 원래 메소드명 사용
@@ -43,4 +46,11 @@ public class UserController {
             return ResponseEntity.ok("사용 가능한 아이디입니다.");
         }
     }
+
+    // 로그인 페이지
+    @GetMapping("/login")
+    public String loginPage() {
+        return "users/login";
+    }
+    
 }
