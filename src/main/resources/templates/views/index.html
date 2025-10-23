@@ -1,15 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>Main</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoaHub</title>
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inria+Sans:wght@700&display=swap" rel="stylesheet">
 </head>
 <body>
-<label for="search-Character">
-    <input type="text" id="search-Character"><button style="width:150px; height:150px;" id="search-Character-btn">검색</button>
-</label>
-<button id="btn-signUp">회원가입</button>
-<script src="/js/character/character.js"></script>
+
+    <header class="header">
+        <div class="logo">
+            <a href="/">LoaHub</a>
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="검색할 캐릭터를 입력하세요">
+            <button type="submit" class="search-button">검색</button>
+        </div>
+        <div class="login">
+            <a href="/users/login">로그인</a>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <ul>
+            <li><a href="#">파티 시뮬레이터</a></li>
+            <li><a href="#">조합 게시판</a></li>
+            <li><a href="#">순위</a></li>
+            <li><a href="#">클래스 정보</a></li>
+        </ul>
+    </nav>
+
+<!--    <main class="main-content">-->
+<!--        &lt;!&ndash; 기존 요소들은 여기에 유지 &ndash;&gt;-->
+<!--        <label for="search-Character">-->
+<!--            <input type="text" id="search-Character"><button id="search-Character-btn">검색</button>-->
+<!--        </label>-->
+<!--        <button id="btn-signUp">회원가입</button>-->
+<!--        <script src="/js/character/character.js"></script>-->
+<!--    </main>-->
 
 </body>
 </html>

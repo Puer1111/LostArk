@@ -1,0 +1,127 @@
+/* General Body Styles */
+body {
+    font-family: "Helvetica Neue", sans-serif;
+    margin: 0;
+    background-color: #2c2c2c; /* Dark background */
+    color: #f0f0f0; /* Light text */
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #1e1e1e; /* Slightly lighter dark shade */
+    border-bottom: 1px solid #444;
+}
+
+.logo a {
+    text-decoration: none;
+    color: #f0f0f0;
+    font-size: 28px;
+    font-weight: bold;
+    font-family: "Inria Sans", sans-serif;
+}
+
+/* Search Container - Now acts as the visual search bar */
+.search-container {
+    flex-grow: 1;
+    display: flex;
+    align-items: center; /* Vertically align input and button */
+    max-width: 600px;
+    margin: 0 20px; /* Add some space from logo and login */
+
+    /* Visual styles of the search bar */
+    border: 1px solid #555;
+    border-radius: 20px;
+    background-color: #3a3a3a;
+    padding: 0 5px 0 20px; /* Padding inside the container */
+}
+
+.search-container input {
+    flex-grow: 1; /* Input field takes up all available space */
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #f0f0f0;
+    font-size: 16px;
+    height: 40px; /* Give a consistent height */
+}
+
+.search-container input::placeholder {
+    color: #aaa;
+}
+
+.search-button {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 15px;
+    transition: color 0.3s;
+}
+
+.search-button:hover {
+    color: #f0f0f0;
+}
+
+
+.login a {
+    text-decoration: none;
+    color: #f0f0f0;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.login a:hover {
+    background-color: #f0f0f0;
+    color: #1e1e1e;
+}
+
+/* Navigation Bar Styles */
+.nav-bar {
+    display: flex;
+    justify-content: center;
+    background-color: #252525;
+    border-bottom: 1px solid #444;
+}
+
+.nav-bar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.nav-bar li a {
+    text-decoration: none;
+    color: #f0f0f0;
+    padding: 15px 25px;
+    display: block;
+    font-size: 18px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.nav-bar li a:hover {
+    background-color: #4a4a4a;
+}
+
+/* Main Content Area */
+.main-content {
+    padding: 20px;
+    text-align: center; /* Center the old elements */
+}
+
+/* Keep styles for old elements for now */
+#search-Character-btn {
+    width: 150px;
+    height: 150px;
+}

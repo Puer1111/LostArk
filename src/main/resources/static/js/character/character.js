@@ -19,4 +19,3 @@ async function getExpedition() {
         window.location.href = `/character/${characterName}`;
     });
 }
-
