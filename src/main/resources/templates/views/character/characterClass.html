@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>클래스 정보</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/searchCharacter.css">
+</head>
+<body>
+    <div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+        <th:block th:fragment="mainContent">
+            <div class="content">
+<!--            <div class="container">-->
+                <h1>클래스 정보</h1>
+                <!-- Content for character class information will go here -->
+<!--            </div>-->
+            </div>
+        </th:block>
+        <th:block th:fragment="pageScript"></th:block>
+    </div>
+</body>
+</html>

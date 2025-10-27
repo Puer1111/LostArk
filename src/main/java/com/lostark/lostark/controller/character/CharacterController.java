@@ -20,7 +20,7 @@ public class CharacterController {
 
     @GetMapping("/character")
     public String test() {
-        return "allExpedition";
+        return "character/allExpedition";
     }
 
     @GetMapping("/")
@@ -33,13 +33,13 @@ public class CharacterController {
         log.info("Controller.getCharacter.characterName {}", characterName);
         SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
         model.addAttribute("characterData", searchCharacterDTO);
-        return "searchCharacter";
+        return "character/searchCharacter";
     }
     @GetMapping("/character/allExpedition/{characterName}")
     public String getExpedition(@PathVariable String characterName, Model model) {
         log.info("Controller.getExpedition.characterName = {}", characterName);
         SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);
         model.addAttribute("Expeditions", characterProfiles);
-        return "allExpedition";
+        return "character/allExpedition";
     }
 }

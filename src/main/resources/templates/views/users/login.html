@@ -1,25 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="/css/users/login.css">
+    <title>로그인</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/users/login.css">
 </head>
 <body>
-<div class="login-container">
-<!--    <form th:action="@{/users/login}" method="post">-->
-        <h2>Login</h2>
-        <div class="form-group">
-            <label for="userId">Username</label>
-            <input type="text" id="userId" name="userId" required>
-        </div>
-        <div class="form-group">
-            <label for="userPassword">Password</label>
-            <input type="password" id="userPassword" name="userPassword" required>
-        </div>
-        <button type="submit" id="btn-login">Login</button>
-<!--    </form>-->
-</div>
-<script src="/js/users/login.js"></script>
+    <div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::loginBody},
+        script = ~{::pageScript}
+    )}">
+        <!-- login.html의 실제 내용물은 이 th:block 프래그먼트 안에 정의됩니다. -->
+        <th:block th:fragment="loginBody">
+            <div class="content">
+                <div class="login-container">
+                    <h2>Login</h2>
+                    <form>
+                        <div class="form-group">
+                            <label for="userId">Username</label>
+                            <input type="text" id="userId" name="userId" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPassword">Password</label>
+                            <input type="password" id="userPassword" name="userPassword" required>
+                        </div>
+                        <button type="submit" id="btn-login">Login</button>
+                        <button type="submit" id="btn-signUp">signUp</button>
+                    </form>
+                </div>
+            </div>
+        </th:block>
+        <script th:fragment="pageScript" src="/js/users/login.js"></script>
+    </div>
 </body>
 </html>

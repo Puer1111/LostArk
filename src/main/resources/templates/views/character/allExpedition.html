@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>캐릭터 검색 결과</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/allExpedition.css">
+</head>
+<body>
+    <div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+        <th:block th:fragment="mainContent">
+            <div class="content">
+                <div class="container">
+                    <!-- 검색 결과가 있을 경우, 목록을 순회하며 카드 표시 -->
+                    <div th:if="${Expeditions != null and not #lists.isEmpty(Expeditions)}" style="display:flex; flex-wrap: wrap">
+                        <div th:each="char : ${Expeditions}" class="character-card">
+                            <div class="card-header">
+                                <div class="server-name" th:text="${char.serverName}"></div>
+                                <a th:href="|/character/${char.characterName}|"><h1 class="character-name" th:text="${char.characterName}"></h1></a>
+                            </div>
+                            <div class="card-body">                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="label">클래스</span>
+                                    <span class="value" th:text="${char.characterClassName}"></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">전투 레벨</span>
+                                    <span class="value" th:text="${char.characterLevel}"></span>
+                                </div>
+                                <div class="info-item" style="grid-column: 1 / -1;">
+                                    <span class="label">아이템 레벨</span>
+                                    <span class="value" th:text="${char.itemAvgLevel}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 검색 결과가 없을 경우 메시지 표시 -->
+                    <div th:if="${Expeditions == null}" class="character-card">
+                        <div class="card-body">
+                            <h2 class="no-result">검색 결과가 없습니다.</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </th:block>
+        <th:block th:fragment="pageScript"></th:block>
+    </div>
+</body>
+</html>

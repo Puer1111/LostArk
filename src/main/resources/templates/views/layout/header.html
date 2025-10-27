@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="/css/layout/header.css">
+</head>
+<body>
+    <header class="header" th:fragment="header">
+        <div class="logo">
+            <a href="/">LoaHub</a>
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="검색할 캐릭터를 입력하세요" id="search-Character">
+            <button type="submit" class="search-button" id="search-Character-btn">검색</button>
+        </div>
+        <div class="login">
+            <a href="/users/login">로그인</a>
+        </div>
+    </header>
+
+    <nav class="nav-bar" th:fragment="nav">
+        <ul>
+            <li><a href="#">파티 시뮬레이터</a></li>
+            <li><a href="#">조합 게시판</a></li>
+            <li><a href="/rank">순위</a></li>
+            <li><a href="/character/classInfo">클래스 정보</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(css, content, script)">
+<head>
+    <meta charset="UTF-8">
+    <title>LoaHub</title>
+    <link rel="stylesheet" href="/css/layout/layout.css">
+    <link rel="stylesheet" href="/css/layout/header.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inria+Sans:wght@700&display=swap" rel="stylesheet">
+    <th:block th:replace="${css}"/>
+</head>
+<body>
+<div th:replace="~{layout/header :: header}"></div>
+<div th:replace="~{layout/header :: nav}"></div>
+
+<th:block th:replace="${content}"></th:block>
+<script defer src="/js/character/searchCharacter.js" ></script>
+<th:block th:replace="${script}"></th:block>
+</body>
+</html>

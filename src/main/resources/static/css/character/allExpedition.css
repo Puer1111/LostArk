@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
 
-body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /*height: 100vh;*/
-    margin: 0;
-}
+/*body {*/
+/*    font-family: 'Noto Sans KR', sans-serif;*/
+/*    background-color: #f0f2f5;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    !*height: 100vh;*!*/
+/*    margin: 0;*/
+/*}*/
 a{
     text-decoration: none;
 }

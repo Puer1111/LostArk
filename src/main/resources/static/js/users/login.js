@@ -5,6 +5,10 @@ const loginBtn = document.getElementById('btn-login');
 loginBtn.addEventListener("click", function () {
     checkLogin();
 });
+const signUpBtn = document.getElementById('btn-signUp');
+signUpBtn.addEventListener("click", function () {
+    window.location.href = "/users/signup";
+})
 
 async function checkLogin() {
     const userData = {
