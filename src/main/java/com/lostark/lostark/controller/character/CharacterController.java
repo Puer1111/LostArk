@@ -3,7 +3,7 @@ package com.lostark.lostark.controller.character;
 
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
-import com.lostark.lostark.service.api.ApiService;
+import com.lostark.lostark.service.api.LostArkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequiredArgsConstructor
 public class CharacterController {
 
-    private final ApiService apiService;
+    private final LostArkService apiService;
 
     @GetMapping("/character")
     public String test() {

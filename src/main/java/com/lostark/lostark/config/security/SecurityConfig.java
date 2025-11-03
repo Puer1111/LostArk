@@ -35,7 +35,10 @@ public class SecurityConfig {
                                 "/email/verify-code", // 이메일 인증 코드 확인
                                 "/users/login", // 로그인
                                 "/character/{characterName}", // 유저 검색
-                                "/character/allExpedition/{characterName}" // 원정대 검색
+                                "/character/allExpedition/{characterName}", // 원정대 검색
+                                "/users/kakao/callback", // 카카오 로그인 콜백
+                                "/users/kakao/login", // 카카오 인가코드 페이지
+                                "/users/logout"// 로그아웃
 
                         ).permitAll()
 
@@ -55,15 +58,15 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", true)
                         // 로그인 페이지는 누구나 접근 가능
                         .permitAll()
-                )
+                );
 
                 // 로그아웃 설정
-                .logout(logout -> logout
-                        // 로그아웃 처리 URL
-                        .logoutUrl("/users/logout")
-                        // 로그아웃 성공 시 이동할 URL
-                        .logoutSuccessUrl("/")
-                );
+//                .logout(logout -> logout
+//                        // 로그아웃 처리 URL
+//                        .logoutUrl("/users/logout")
+//                        // 로그아웃 성공 시 이동할 URL
+//                        .logoutSuccessUrl("/")
+//                );
 
         return http.build();
     }

@@ -2,13 +2,20 @@ package com.lostark.lostark.controller.users;
 
 import com.lostark.lostark.model.dto.users.LoginCheckUser;
 import com.lostark.lostark.model.dto.users.SignupUser;
+import com.lostark.lostark.service.api.KakaoApi;
 import com.lostark.lostark.service.users.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 @Controller
@@ -16,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final KakaoApi kakaoApi;
 
     @GetMapping("/signup")
     public String signupPage() {
@@ -52,5 +61,29 @@ public class UserController {
     public String loginPage() {
         return "users/login";
     }
-    
+
+    @GetMapping("/kakao/login")
+    public void kakaoLogin(HttpServletResponse response) throws IOException {
+        response.sendRedirect(kakaoApi.getAuthorizationCode());
+    }
+
+    // 카카오 로그인 콜백
+    @GetMapping("/kakao/callback")
+    public String kakaoCallback(@RequestParam("code") String code, HttpSession session) {
+        String accessToken = kakaoApi.getAccessToken(code);
+        HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
+
+        // 사용자 정보 처리 (로그인 또는 회원가입)
+        userService.processKakaoUser(userInfo, session);
+
+        return "redirect:/"; // 메인 페이지로 리다이렉트
+    }
+
+    @GetMapping("/logout")
+    public void logout(HttpSession session, HttpServletResponse response) throws IOException {
+        String kakaoLogoutUrl = kakaoApi.getLogoutUrl();
+        log.info("Redirecting to Kakao Logout URL: {}", kakaoLogoutUrl);
+        session.invalidate();
+        response.sendRedirect(kakaoLogoutUrl);
+    }
 }

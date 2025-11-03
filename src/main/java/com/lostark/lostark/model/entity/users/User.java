@@ -53,6 +53,9 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
+    @Column(name = "kakaoId", unique = true)
+    private Long kakaoId;
+
     public void update(UserRole userRole, UserStatus status) {
         if (userRole != null) {
             this.userRole = userRole;

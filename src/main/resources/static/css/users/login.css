@@ -38,18 +38,31 @@ label {
     color: #f0f0f0;
     border: 1px solid #555;
     border-radius: 3px;
+    box-sizing: border-box;
 }
 
-button {
+button:hover {
+    background-color: #777;
+}
+
+#btn-login {
+    display: block;
     padding: 10px;
     background-color: #555;
+    width: 100%;
     color: #f0f0f0;
     border: 1px solid #777;
     border-radius: 3px;
     cursor: pointer;
     transition: background-color 0.3s;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 10px;
+    box-sizing: border-box;
+
 }
 
-button:hover {
+
+#btn-signUp:hover {
     background-color: #777;
 }

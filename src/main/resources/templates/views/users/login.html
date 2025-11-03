@@ -16,7 +16,6 @@
             <div class="content">
                 <div class="login-container">
                     <h2>Login</h2>
-                    <form>
                         <div class="form-group">
                             <label for="userId">Username</label>
                             <input type="text" id="userId" name="userId" required>
@@ -25,9 +24,9 @@
                             <label for="userPassword">Password</label>
                             <input type="password" id="userPassword" name="userPassword" required>
                         </div>
-                        <button type="submit" id="btn-login">Login</button>
-                        <button type="submit" id="btn-signUp">signUp</button>
-                    </form>
+                        <button type="button" id="btn-login">Login</button>
+                        <a href="/users/signup" id="btn-signUp">signUp</a>
+                    <a href="/users/kakao/login">카카오로 로그인</a>
                 </div>
             </div>
         </th:block>

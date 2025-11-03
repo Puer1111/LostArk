@@ -4,6 +4,8 @@ import com.lostark.lostark.model.dto.users.SignupUser;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.util.HashMap;
+
 public interface UserService extends UserDetailsService {
     /**
      * 유저 회원가입
@@ -34,4 +36,10 @@ public interface UserService extends UserDetailsService {
      */
     boolean verifyEmail(String email, String code, HttpSession session);
 
+    /**
+     * 카카오 간편 로그인
+     * @param userInfo
+     * @param session
+     */
+    void processKakaoUser(HashMap<String, Object> userInfo, HttpSession session);
 }

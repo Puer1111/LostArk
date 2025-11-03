@@ -19,7 +19,7 @@ import java.net.URI;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ApiServiceImpl implements ApiService {
+public class LostArkServiceImpl implements LostArkService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
