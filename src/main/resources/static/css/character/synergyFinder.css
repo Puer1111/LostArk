@@ -1,0 +1,32 @@
+.synergy-finder-container {
+    color: #fff;
+}
+
+.selection-container {
+    margin-bottom: 20px;
+}
+
+#class-selector {
+    padding: 10px;
+    font-size: 16px;
+}
+
+#synergy-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.result-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+}
+
+.result-card h3 {
+    margin-top: 0;
+}
+
+.result-card ul {
+    padding-left: 20px;
+}

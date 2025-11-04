@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>시너지 퀵 파인더</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/synergyFinder.css">
+</head>
+<body>
+    <div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+        <th:block th:fragment="mainContent">
+            <div class="content synergy-finder-container">
+                <h1>시너지 퀵 파인더</h1>
+                <p>내 직업을 선택하고 최고의 시너지 파트너를 찾아보세요.</p>
+                <div class="selection-container">
+                    <select id="class-selector"></select>
+                </div>
+                <div id="synergy-results"></div>
+            </div>
+        </th:block>
+        <th:block th:fragment="pageScript">
+            <script src="/js/character/synergyData.js"></script>
+            <script src="/js/character/synergyFinder.js"></script>
+        </th:block>
+    </div>
+</body>
+</html>

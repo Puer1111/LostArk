@@ -3,23 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>클래스 정보</title>
-    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/searchCharacter.css">
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/characterClass.css">
 </head>
 <body>
-    <div th:replace="~{layout/layout :: layout(
+<div th:replace="~{layout/layout :: layout(
         css = ~{::pageCss},
         content = ~{::mainContent},
         script = ~{::pageScript}
     )}">
-        <th:block th:fragment="mainContent">
-            <div class="content">
-<!--            <div class="container">-->
-                <h1>클래스 정보</h1>
-                <!-- Content for character class information will go here -->
-<!--            </div>-->
+    <th:block th:fragment="mainContent">
+        <div class="content character-class-container">
+            <div class="class-sidebar">
+                <ul>
+                    <li class="active" data-class-type="warrior"><a href="#">전사</a></li>
+                    <li data-class-type="martial-artist"><a href="#">무도가</a></li>
+                    <li data-class-type="hunter"><a href="#">헌터</a></li>
+                    <li data-class-type="magician"><a href="#">마법사</a></li>
+                    <li data-class-type="assassin"><a href="#">암살자</a></li>
+                    <li data-class-type="specialist"><a href="#">스페셜리스트</a></li>
+                </ul>
             </div>
-        </th:block>
-        <th:block th:fragment="pageScript"></th:block>
-    </div>
+            <div class="class-details">
+                <div class="class-group active" data-class-type="warrior">
+                    <div class="class-name"><span>버서커</span></div>
+                    <div class="class-name"><span>디스트로이어</span></div>
+                    <div class="class-name"><span>워로드</span></div>
+                    <div class="class-name"><span>홀리나이트</span></div>
+                    <div class="class-name"><span>슬레이어</span></div>
+                </div>
+                <div class="class-group" data-class-type="martial-artist">
+                    <div class="class-name"><span>브레이커</span></div>
+                    <div class="class-name"><span>스트라이커</span></div>
+                    <div class="class-name"><span>창술사</span></div>
+                    <div class="class-name"><span>인파이터</span></div>
+                    <div class="class-name"><span>기공사</span></div>
+                </div>
+                <div class="class-group" data-class-type="hunter">
+                    <div class="class-name"><span>블래스터</span></div>
+                    <div class="class-name"><span>데빌헌터</span></div>
+                    <div class="class-name"><span>호크아이</span></div>
+                    <div class="class-name"><span>스카우터</span></div>
+                    <div class="class-name"><span>건슬링어</span></div>
+                </div>
+                <div class="class-group" data-class-type="magician">
+                    <div class="class-name"><span>아르카나</span></div>
+                    <div class="class-name"><span>바드</span></div>
+                    <div class="class-name"><span>소서리스</span></div>
+                    <div class="class-name"><span>서머너</span></div>
+                </div>
+                <div class="class-group" data-class-type="assassin">
+                    <div class="class-name"><span>블레이드</span></div>
+                    <div class="class-name"><span>데모닉</span></div>
+                    <div class="class-name"><span>리퍼</span></div>
+                    <div class="class-name"><span>소울이터</span></div>
+                </div>
+                <div class="class-group" data-class-type="specialist">
+                    <div class="class-name"><span>기상술사</span></div>
+                    <div class="class-name"><span>도화가</span></div>
+                </div>
+            </div>
+        </div>
+        <div id="synergy-details-container" class="synergy-details-container">
+            <!-- 시너지 정보가 여기에 표시됩니다. -->
+        </div>
+    </th:block>
+    <th:block th:fragment="pageScript">
+        <script type="module" src="/js/character/characterClass.js"></script>
+        <script type="module" src="/js/character/synergyData.js"></script>
+    </th:block>
+</div>
 </body>
 </html>

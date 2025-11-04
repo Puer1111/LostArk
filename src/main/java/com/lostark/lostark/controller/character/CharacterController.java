@@ -18,16 +18,12 @@ public class CharacterController {
 
     private final LostArkService apiService;
 
-    @GetMapping("/character")
-    public String test() {
-        return "character/allExpedition";
-    }
-
     @GetMapping("/")
     public String index() {
         return "index";
     }
 
+    // 캐릭터 검색
     @GetMapping("/character/{characterName}")
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
@@ -35,11 +31,18 @@ public class CharacterController {
         model.addAttribute("characterData", searchCharacterDTO);
         return "character/searchCharacter";
     }
+
+    // 캐릭터 검색 - 원정대
     @GetMapping("/character/allExpedition/{characterName}")
     public String getExpedition(@PathVariable String characterName, Model model) {
         log.info("Controller.getExpedition.characterName = {}", characterName);
         SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);
         model.addAttribute("Expeditions", characterProfiles);
         return "character/allExpedition";
+    }
+
+    @GetMapping("/character/class")
+    public String getClassInfo() {
+        return "character/characterClass";
     }
 }

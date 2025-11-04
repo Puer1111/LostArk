@@ -75,6 +75,6 @@ public class CharacterProfiles {
         @JsonProperty("Symbol")
         private String symbol;
         @JsonProperty("Emblems")
-        private String emblems;
+        private List<String> emblems;
     }
 }
