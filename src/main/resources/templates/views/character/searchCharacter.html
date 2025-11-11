@@ -50,7 +50,7 @@
                     <span th:case="'영웅'" th:text="${item.grade}" style="color: #8500b2;"></span>
                     <span th:case="'희귀'" th:text="${item.grade}" style="color: #0091cc;"></span>
                     <span th:case="'고급'" th:text="${item.grade}" style="color: #91FE02;"></span>
-                    <span th:case="*'" th:text="${item.grade}" style="color: #cccccc;"></span>
+<!--                    <span th:case="*'" th:text="${item.grade}" style="color: #cccccc;"></span>-->
                 </span>
                         <strong><span th:text="${item.name}"></span></strong>
                         <div class="tooltip-content" th:if="${item.tooltip != null}">

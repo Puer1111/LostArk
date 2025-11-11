@@ -9,6 +9,7 @@ public class LoginCheckUser {
     private String userId;
     private String userPassword;
 
+
     public User toEntity(String encodedPassword) {
         return User.builder()
                 .userId(userId)
