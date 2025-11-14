@@ -31,22 +31,43 @@ export const synergyData = {
                     {
                         skillName: '풍랑주의보',
                         skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/wa_skill/wa_skill_01_20.png',
-                        baseRate: '',
+                        baseRate: '10%',
                         tripodName: '',
                         tripodImg: '',
-                        tripodRate: '10%'
+                        tripodRate: ''
                     },
                 ]
             },
             {
-                name: '공격속도, 이동속도 증가',
+                name: '공격속도 증가',
                 sources: [
                     {
                         skillName: '센바람',
                         skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/WA_Skill/WA_Skill_01_14.png',
                         baseRate: '',
-                        tripodName: '약점 공략',
-                        tripodImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/tripod_tier/tripod_tier_1_158.png',
+                        tripodName: '기분 좋은 바람',
+                        tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_1_65.png',
+                        tripodRate: '12.5%'
+                    },
+                    {
+                        skillName: '여우비',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/WA_Skill/WA_Skill_01_22.png',
+                        baseRate: '12%',
+                        tripodName: '',
+                        tripodImg: '',
+                        tripodRate: ''
+                    },
+                ]
+            },
+            {
+                name: '이동속도 증가',
+                sources: [
+                    {
+                        skillName: '센바람',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/WA_Skill/WA_Skill_01_14.png',
+                        baseRate: '',
+                        tripodName: '기분 좋은 바람',
+                        tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_1_65.png',
                         tripodRate: '12.5%'
                     },
                     {
@@ -252,7 +273,7 @@ export const synergyData = {
                     {
                         skillName: '바람의 속삭임',
                         skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/BM_Skill/BM_Skill_01_7.png',
-                        baseRate: '16%/8%',
+                        baseRate: '8%',
                         tripodName: '',
                         tripodImg: '',
                         tripodRate: ''
@@ -265,7 +286,7 @@ export const synergyData = {
                     {
                         skillName: '바람의 속삭임',
                         skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/BM_Skill/BM_Skill_01_7.png',
-                        baseRate: '8%',
+                        baseRate: '16%',
                         tripodName: '',
                         tripodImg: '',
                         tripodRate: ''
@@ -303,6 +324,14 @@ export const synergyData = {
                     {
                         skillName: '격호각',
                         skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/BM_Skill/BM_Skill_01_32.png',
+                        baseRate: '',
+                        tripodName: '급소 노출',
+                        tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_1_99.png',
+                        tripodRate: '10%'
+                    },
+                    {
+                        skillName: '번개의 속삭임',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/BM_Skill/BM_Skill_01_28.png',
                         baseRate: '',
                         tripodName: '급소 노출',
                         tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_1_99.png',
@@ -389,7 +418,7 @@ export const synergyData = {
                     },
                     {
                         skillName: '신성한 정의',
-                        skillImg: '/img/character/warrior/male/holyknightskill.png',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/HK_Skill/HK_Skill_01_25.png',
                         baseRate: '10%',
                         tripodName: '',
                         tripodImg: '',
@@ -404,7 +433,7 @@ export const synergyData = {
                         tripodRate: '10%'
                     },
                     {
-                        skillName: '신성의 오라',
+                        skillName: '신성의 오라',      // 아덴
                         skillImg: '',
                         baseRate: '10%+@',
                         tripodName: '',
@@ -427,7 +456,7 @@ export const synergyData = {
                     {
                         skillName: '신성한 보호',
                         skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/HK_Skill/HK_Skill_01_11.png',
-                        baseRate: '',
+                        baseRate: '20%',
                         tripodName: '보호 강화',
                         tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_2_75.png',
                         tripodRate: '51.6%'
@@ -435,15 +464,15 @@ export const synergyData = {
                     {
                         skillName: '알리사노스의 심판',
                         skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/hk_skill/hk_skill_01_18.png',
-                        baseRate: '',
+                        baseRate: '80%',
                         tripodName: '',
                         tripodImg: '',
-                        tripodRate: '80%'
+                        tripodRate: ''
                     },
                 ]
             },
             {
-                name: '각성기 피해 증가',
+                name: '초각성기 피해 증가',
                 sources: [
                     {
                         skillName: '신성한 정의',
@@ -524,11 +553,11 @@ export const synergyData = {
                 ]
             },
             {
-                name: '공격력 증가',
+                name: '치명타 피해량 증가',
                 sources: [
                     {
                         skillName: '신의 기사',
-                        skillImg: '',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/ark_passive_hk/ark_passive_hk_5.png',
                         baseRate:'8%',
                         tripodName: '',
                         tripodImg: '',
@@ -614,7 +643,7 @@ export const synergyData = {
                     },
                     {
                         skillName: '용맹의 세레나데',
-                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/LM_Skill/LM_Skill_01_18.png',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/bd_skill/bd_skill_01_19.png?4',
                         baseRate: '5%/10%/15%',
                         tripodName: '',
                         tripodImg: '',
@@ -660,11 +689,11 @@ export const synergyData = {
                 ]
             },
             {
-                name: '각성기 피해 증가',
+                name: '초각성기 피해 증가',
                 sources: [
                     {
                         skillName: '아리아',
-                        skillImg: '/img/character/magician/bardSkill.png', //spread
+                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/BD_Skill/BD_Skill_01_29.png',
                         baseRate: '20%',
                         tripodName: '',
                         tripodImg: '',
@@ -744,7 +773,7 @@ export const synergyData = {
                         baseRate: '',
                         tripodName: '격렬한 연주',
                         tripodImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/Tripod_Tier/Tripod_Tier_3_1.png',
-                        tripodRate: '공격력 15%+6%'
+                        tripodRate: '공격력 15% + 6%'
                     },
                 ]
             },
@@ -807,7 +836,8 @@ export const synergyData = {
                     },
                     {
                         skillName: '저무는 달',
-                        skillImg: 'https://cdn-lostark.game.onstove.com/EFUI_IconAtlas/LM_Skill/LM_Skill_01_18.png',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/yy_skill/yy_skill_01_3.png?4',
+
                         baseRate: '10%',
                         tripodName: '',
                         tripodImg: '',
@@ -815,7 +845,7 @@ export const synergyData = {
                     },
                     {
                         skillName: '미르 새김',
-                        skillImg: '/img/character/specialist/artistSkill.png',
+                        skillImg: 'https://cdn-lostark.game.onstove.com/efui_iconatlas/yy_skill/yy_skill_01_24.png?4',
                         baseRate: '10%',
                         tripodName: '',
                         tripodImg: '',
@@ -901,7 +931,7 @@ export const synergyData = {
                 ]
             },
             {
-                name: '각성기 피해 증가',
+                name: '초각성기 피해 증가',
                 sources: [
                     {
                         skillName: '미르 새김',
