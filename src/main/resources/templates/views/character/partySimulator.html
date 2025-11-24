@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>파티 시뮬레이터</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/partySimulator.css">
+</head>
+<body>
+<div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+    <th:block th:fragment="mainContent">
+        <div class="simulator-container">
+            <div id="class-selection">
+                <h2>클래스/직업</h2>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('warrior')" style="cursor: pointer;">전사</h3>
+                    <div id="jobs-warrior" class="job-list" style="display: none;">
+                        <div class="job-item">디스트로이어</div>
+                        <div class="job-item">워로드</div>
+                        <div class="job-item">버서커</div>
+                        <div class="job-item">홀리나이트</div>
+                        <div class="job-item">슬레이어</div>
+                    </div>
+                </div>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('martial-artist')" style="cursor: pointer;">무도가</h3>
+                    <div id="jobs-martial-artist" class="job-list" style="display: none;">
+                        <div class="job-item">배틀마스터</div>
+                        <div class="job-item">인파이터</div>
+                        <div class="job-item">기공사</div>
+                        <div class="job-item">창술사</div>
+                        <div class="job-item">스트라이커</div>
+                        <div class="job-item">브레이커</div>
+                    </div>
+                </div>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('hunter')" style="cursor: pointer;">헌터</h3>
+                    <div id="jobs-hunter" class="job-list" style="display: none;">
+                        <div class="job-item">데빌헌터</div>
+                        <div class="job-item">블래스터</div>
+                        <div class="job-item">호크아이</div>
+                        <div class="job-item">스카우터</div>
+                        <div class="job-item">건슬링어</div>
+                    </div>
+                </div>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('magician')" style="cursor: pointer;">마법사</h3>
+                    <div id="jobs-magician" class="job-list" style="display: none;">
+                        <div class="job-item">바드</div>
+                        <div class="job-item">소서리스</div>
+                        <div class="job-item">아르카나</div>
+                        <div class="job-item">서머너</div>
+                    </div>
+                </div>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('assassin')" style="cursor: pointer;">암살자</h3>
+                    <div id="jobs-assassin" class="job-list" style="display: none;">
+                        <div class="job-item">블레이드</div>
+                        <div class="job-item">데모닉</div>
+                        <div class="job-item">리퍼</div>
+                        <div class="job-item">소울이터</div>
+                    </div>
+                </div>
+
+                <div class="class-group">
+                    <h3 onclick="toggleJobs('specialist')" style="cursor: pointer;">스페셜리스트</h3>
+                    <div id="jobs-specialist" class="job-list" style="display: none;">
+                        <div class="job-item">도화가</div>
+                        <div class="job-item">기상술사</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="simulator-area">
+                <h2>파티 구성 공간</h2>
+                <p>이곳에 좌측의 직업들을 드래그 앤 드롭하여 파티를 구성합니다.</p>
+            </div>
+        </div>
+    </th:block>
+    <th:block th:fragment="pageScript">
+        <script>
+            function toggleJobs(className) {
+                const jobList = document.getElementById('jobs-' + className);
+                if (!jobList) return;
+
+                const isAlreadyOpen = jobList.style.display === 'block';
+
+                // 이전에 열려있던 리스트를 닫습니다.
+                const allJobLists = document.querySelectorAll('.job-list');
+                allJobLists.forEach(el => {
+                    if (el.id !== 'jobs-' + className) {
+                        el.style.display = 'none';
+                    }
+                });
+
+                // 현재 클릭한 리스트의 상태를 토글합니다.
+                jobList.style.display = isAlreadyOpen ? 'none' : 'block';
+            }
+        </script>
+    </th:block>
+</div>
+</body>
+</html>

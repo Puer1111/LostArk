@@ -45,4 +45,9 @@ public class CharacterController {
     public String getClassInfo() {
         return "character/characterClass";
     }
+
+    @GetMapping("/character/party-simulator")
+    public String getPartySimulator() {
+        return "character/partySimulator";
+    }
 }

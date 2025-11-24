@@ -38,8 +38,8 @@ public class SecurityConfig {
                                 "/character/allExpedition/{characterName}", // 원정대 검색
                                 "/users/kakao/callback", // 카카오 로그인 콜백
                                 "/users/kakao/login", // 카카오 인가코드 페이지
-                                "/users/logout"// 로그아웃
-
+                                "/users/logout",// 로그아웃
+                                "/character/party-simulator" // 파티 시뮬레이터 페이지
                         ).permitAll()
 
                         // "/admin/**" 경로는 ADMIN 권한을 가진 사용자만 접근 가능

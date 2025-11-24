@@ -78,29 +78,78 @@
     padding-bottom: 10px;
 }
 
-.synergy-section h4 {
+.synergy-group {
+    margin-bottom: 25px;
+}
+
+.synergy-group .synergy-name {
     color: #c0b6a7;
     font-size: 1.4em;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #555;
+}
+
+.synergy-sources {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .synergy-item {
-    background-color: #333;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 10px;
+    display: block; /* 하위 상세정보 div를 위해 block으로 변경 */
+    background-color: #3c3c3c;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
     border-left: 4px solid #d4a373;
+    transition: background-color 0.2s;
 }
 
-.synergy-item .synergy-name {
+.synergy-item:hover {
+    background-color: #4a4a4a;
+}
+
+/* 아이템이 활성화(클릭)되었을 때의 스타일 */
+.synergy-item.active {
+    background-color: #454545;
+}
+
+.synergy-item-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer; /* 클릭 가능함을 알려줌 */
+}
+
+.synergy-item-details {
+    padding: 15px 10px 5px 10px;
+    margin-top: 15px;
+    background-color: #2b2b2b;
+    border-top: 1px solid #444;
+}
+
+.skill-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 12px;
+    border-radius: 4px;
+    border: 1px solid #555;
+}
+
+.skill-name {
     font-weight: bold;
     color: #e0e0e0;
-    font-size: 1.1em;
+    font-size: 1.05em;
 }
 
-.synergy-item .synergy-effect {
+.rate-info {
+    margin-left: auto;
     color: #b0b0b0;
-    font-size: 1em;
-    margin-top: 5px;
+    font-size: 0.9em;
+    text-align: right;
+    white-space: pre-wrap;
+}
+
+.hidden {
+    display: none;
 }

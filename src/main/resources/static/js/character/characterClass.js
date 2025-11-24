@@ -1,4 +1,4 @@
-import { synergyData } from './synergyData.js';
+import {synergyData} from './synergyData.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const sidebarItems = document.querySelectorAll('.class-sidebar ul li');
@@ -37,23 +37,70 @@ document.addEventListener('DOMContentLoaded', () => {
             if (synergyInfo && synergyInfo.synergies) {
                 let html = `<h3>${className} 시너지 정보</h3>`;
 
-                html += '<div class="synergy-section"><h4>파티 시너지</h4>';
-                synergyInfo.synergies.forEach(item => {
+                // 각 시너지 그룹(예: 피해 증가, 방어력 감소)별로 처리
+                synergyInfo.synergies.forEach(synergyGroup => {
                     html += `
-                        <div class="synergy-item">
-                            <div class="synergy-name">${item.name}</div>
-                            <div class="synergy-effect">${item.rate}</div>
+                        <div class="synergy-group">
+                            <h4 class="synergy-name">${synergyGroup.name}</h4>
+                            <ul class="synergy-sources">
+                    `;
+
+                    // 각 시너지 그룹에 속한 출처(스킬)들을 목록으로 표시
+                    synergyGroup.sources.forEach(source => {
+                        let rateInfo = source.baseRate ? `[${source.baseRate}]` : '';
+                        if (source.tripodName) {
+                            rateInfo += ` ${source.tripodName} [${source.tripodRate}]`;
+                        }
+
+                        // [수정] 각 아이템이 헤더와 상세정보 div를 갖도록 구조 변경
+                        html += `
+                            <li class="synergy-item" style="list-style-type: none;">
+                                <div class="synergy-item-header">
+                                    <img src="${source.skillImg}" alt="${source.skillName}" class="skill-icon">
+                                    <span class="skill-name">${source.skillName}</span>
+                                    <span class="rate-info">${rateInfo.trim()}</span>
+                                </div>
+                                <div class="synergy-item-details hidden">
+<!--                                    <h4>트라이포드</h4>  이자리에 스킬 설명 들어오자. -->     
+                                    <p>${source.tripodName}</p>
+                                    <img src="${source.tripodImg}" alt="" class="skill-icon"></p>
+                                    <p>${source.tripodDescription}</p> 
+                                    <p>${source.tripodRate}</p>
+                                </div>
+                            </li>
+                        `;
+                    });
+
+                    html += `
+                            </ul>
                         </div>
                     `;
                 });
-                html += '</div>';
 
                 synergyDetailsContainer.innerHTML = html;
-                synergyDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                synergyDetailsContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
             } else {
                 synergyDetailsContainer.innerHTML = `<h3>${className}</h3><p>해당 직업에 대한 시너지 정보가 없습니다.</p>`;
-                synergyDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                synergyDetailsContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
             }
         });
+    });
+
+    // [수정] 이벤트 리스너 로직 변경: 하위 div를 토글하는 방식으로 변경
+    synergyDetailsContainer.addEventListener('click', (event) => {
+        // 클릭된 요소가 헤더 부분이 맞는지 확인
+        const clickedHeader = event.target.closest('.synergy-item-header');
+        if (!clickedHeader) return;
+
+        // 부모 li(.synergy-item)와 하위 상세정보 div(.synergy-item-details)를 찾음
+        const clickedItem = clickedHeader.parentElement;
+        const detailsDiv = clickedItem.querySelector('.synergy-item-details');
+
+        if (detailsDiv) {
+            // active 클래스를 토글하여 CSS로 확장/축소 효과를 줄 수 있음
+            clickedItem.classList.toggle('active');
+            // hidden 클래스를 토글하여 상세 정보 div를 보여주거나 숨김
+            detailsDiv.classList.toggle('hidden');
+        }
     });
 });
