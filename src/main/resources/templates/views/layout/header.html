@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="/css/layout/header.css">
 </head>
 <body>
+    <div th:fragment="unified-header-fragment" class="unified-header-area">
     <header class="header" th:fragment="header">
         <div class="logo">
             <a href="/">LoaHub</a>
@@ -18,13 +19,27 @@
         </div>
     </header>
 
+    <!-- Main Navigation -->
     <nav class="nav-bar" th:fragment="nav">
         <ul>
-            <li><a href="/character/party-simulator">파티 시뮬레이터</a></li>
-            <li><a href="#">조합 게시판</a></li>
-            <li><a href="/rank">순위</a></li>
-            <li><a href="/character/class">클래스 정보</a></li>
+            <li data-nav-section="simulator">
+                <a href="/character/party-simulator">시뮬레이터</a>
+            </li>
+            <li data-nav-section="info">
+                <a href="/character/class">정보</a>
+            </li>
         </ul>
     </nav>
+
+    <!-- Secondary Navigation Container -->
+    <div class="secondary-nav-container" th:fragment="secondary-nav">
+        <div class="secondary-nav" data-nav-section="simulator">
+            <a href="/character/party-simulator">파티 시뮬레이터</a>
+        </div>
+        <div class="secondary-nav" data-nav-section="info">
+            <a href="/character/class">클래스 정보</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

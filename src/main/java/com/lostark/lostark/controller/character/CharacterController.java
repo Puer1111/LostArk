@@ -10,10 +10,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/character")
 public class CharacterController {
 
     private final LostArkService apiService;
@@ -24,7 +26,7 @@ public class CharacterController {
     }
 
     // 캐릭터 검색
-    @GetMapping("/character/{characterName}")
+    @GetMapping("/{characterName}")
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
         SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
@@ -33,7 +35,7 @@ public class CharacterController {
     }
 
     // 캐릭터 검색 - 원정대
-    @GetMapping("/character/allExpedition/{characterName}")
+    @GetMapping("/allExpedition/{characterName}")
     public String getExpedition(@PathVariable String characterName, Model model) {
         log.info("Controller.getExpedition.characterName = {}", characterName);
         SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);
@@ -41,13 +43,18 @@ public class CharacterController {
         return "character/allExpedition";
     }
 
-    @GetMapping("/character/class")
+    @GetMapping("/class")
     public String getClassInfo() {
         return "character/characterClass";
     }
 
-    @GetMapping("/character/party-simulator")
+    @GetMapping("/party-simulator")
     public String getPartySimulator() {
         return "character/partySimulator";
+    }
+
+    @GetMapping("/rank")
+    public String getRank() {
+        return "character/ranking";
     }
 }

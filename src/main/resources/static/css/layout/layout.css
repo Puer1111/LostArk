@@ -4,7 +4,7 @@ body {
     width: 100%;
     height: 100%;
     min-height: 600px;
-    background-color: #2c2c2c;
+    background-color:  #363738;
     box-sizing: border-box;
 }
 
@@ -12,8 +12,6 @@ body {
 .nav-bar {
     display: flex;
     justify-content: center;
-    background-color: #252525;
-    border-bottom: 1px solid #444;
 }
 
 .nav-bar ul {
@@ -31,10 +29,6 @@ body {
     font-size: 18px;
     font-weight: 500;
     transition: background-color 0.3s;
-}
-
-.nav-bar li a:hover {
-    background-color: #4a4a4a;
 }
 
 .content {

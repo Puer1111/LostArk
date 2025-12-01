@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>랭킹</title>
+    <link th:fragment="pageCss" rel="stylesheet" href="/css/character/ranking.css">
+</head>
+<body>
+<div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+    <th:block th:fragment="mainContent">
+        <h1>랭킹 페이지</h1>
+
+    </th:block>
+    <th:block th:fragment="pageScript">
+        <script type="module" src="/js/character/ranking.js"></script>
+    </th:block>
+</div>
+</body>
+</html>
