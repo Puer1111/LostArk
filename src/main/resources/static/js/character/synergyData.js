@@ -1532,7 +1532,7 @@ export const synergyData = {
                     },
                     {
                         skillName: '투지발산',
-                        skillImg: 'https://ibb.co/gbgzSyWx',
+                        skillImg: '/img/character/martialArtist/female/infighterIdentity.png',
                         skillDescription: '',
                         baseRate: '6%',
                         tripodName: '',
@@ -1616,7 +1616,7 @@ export const synergyData = {
                 sources: [
                     {
                         skillName: '실버호크 소환',
-                        skillImg: 'https://ibb.co/Psc3ttkP',
+                        skillImg: '/img/character/hunter/male/hawkEyeIdentity.png',
                         skillDescription: '실버호크 소환 시 파티원의 이동 속도 4% 증가한다. "두번쨰 동료" 착용 시 추가 4% 증가',
                         baseRate: '8%',
                         tripodName: '',
@@ -2089,7 +2089,7 @@ export const synergyData = {
                     },
                     {
                         skillName: '하이퍼 싱크',
-                        skillImg: 'https://ibb.co/4nBGVs44',
+                        skillImg: '/img/character/hunter/male/scouterIdentity.png',
                         skillDescription: '하이퍼 싱크 상태로 변신 시, 자신 및 24m 범위 안에 있는 파티원은 공격력이 6.0% 증가합니다.',
                         baseRate: '6%',
                         tripodName: '',
