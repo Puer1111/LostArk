@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/",
                                 "/css/**",
                                 "/js/**",
+                                "/img/**",
                                 "/users/signup", // 유저 회원가입
                                 "/users/check-id/{userId}", // 유저 아이디 중복확인
                                 "/email/send-verification", // 이메일 인증 코드 발송

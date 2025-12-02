@@ -65,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <p>${source.tripodName}</p>
                                     <img src="${source.tripodImg}" alt="" class="skill-icon"></p>
                                     <p>${source.tripodDescription}</p> 
-                                    <p>${source.tripodRate}</p>
                                 </div>
                             </li>
                         `;

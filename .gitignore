@@ -45,3 +45,5 @@ settings.gradle
 .gitattributes
 *.md
 gradle/wrapper/**
+
+/img/**

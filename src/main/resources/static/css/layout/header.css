@@ -103,10 +103,6 @@
     transition: background-color 0.3s;
 }
 
-.nav-bar li a:hover {
-    background-color: #555;
-}
-
 /* Active style for main navigation */
 .nav-bar li.active-nav > a {
     border-bottom: 3px solid #4a90e2;
@@ -115,10 +111,6 @@
 }
 
 /* Secondary Navigation Styles */
-.secondary-nav-container {
-    /* background-color: #1e1e1e; -- Removed */
-    /* border-bottom: 1px solid #555; -- Removed */
-}
 
 .secondary-nav {
     display: none; /* Hidden by default, shown by JS */
