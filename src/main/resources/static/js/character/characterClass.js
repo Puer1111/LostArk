@@ -61,10 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="rate-info">${rateInfo.trim()}</span>
                                 </div>
                                 <div class="synergy-item-details hidden">
-<!--                                    <h4>트라이포드</h4>  이자리에 스킬 설명 들어오자. -->     
+                                    <p>${source.skillDescription}</p>
+                                    ${source.tripodName ? `
                                     <p>${source.tripodName}</p>
-                                    <img src="${source.tripodImg}" alt="" class="skill-icon"></p>
-                                    <p>${source.tripodDescription}</p> 
+                                    <img src="${source.tripodImg}" alt="${source.tripodName}" class="skill-icon">
+                                    <p>${source.tripodDescription}</p>
+                                    ` : ''}
                                 </div>
                             </li>
                         `;

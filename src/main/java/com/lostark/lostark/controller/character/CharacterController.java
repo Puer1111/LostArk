@@ -45,16 +45,11 @@ public class CharacterController {
 
     @GetMapping("/class")
     public String getClassInfo() {
-        return "character/characterClass";
+        return "character/synergyInformation";
     }
 
     @GetMapping("/party-simulator")
     public String getPartySimulator() {
         return "character/partySimulator";
-    }
-
-    @GetMapping("/rank")
-    public String getRank() {
-        return "character/ranking";
     }
 }
