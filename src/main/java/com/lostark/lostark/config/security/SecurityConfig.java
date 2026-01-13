@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 "/email/verify-code", // 이메일 인증 코드 확인
                                 "/users/login", // 로그인
                                 "/character/{characterName}", // 유저 검색
-                                "/character/allExpedition/{characterName}", // 원정대 검색
+                                "/character/expedition/{characterName}", // 원정대 검색
                                 "/users/kakao/callback", // 카카오 로그인 콜백
                                 "/users/kakao/login", // 카카오 인가코드 페이지
                                 "/users/logout",// 로그아웃

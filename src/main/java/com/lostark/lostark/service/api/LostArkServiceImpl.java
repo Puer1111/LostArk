@@ -1,6 +1,7 @@
 package com.lostark.lostark.service.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lostark.lostark.model.dto.character.CharacterEquipment;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -58,7 +61,34 @@ public class LostArkServiceImpl implements LostArkService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
             SearchCharacterDTO dto = objectMapper.readValue(response.getBody(), SearchCharacterDTO.class);
-            if (dto != null) {
+            if (dto != null && dto.getCharacterEquipment() != null) {
+                // 1. 필터링 로직: 보여주고 싶은 장비 타입 정의
+                Set<String> desiredTypes = new HashSet<>(Arrays.asList(
+                        "투구", "어깨", "상의", "하의", "장갑", "무기",
+                        "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
+                ));
+
+                List<CharacterEquipment> filteredEquipment = dto.getCharacterEquipment().stream()
+                        .filter(equip -> desiredTypes.contains(equip.getType()))
+                        .collect(Collectors.toList());
+
+                // 2. 정렬 로직: 필터링된 리스트를 정렬
+                List<String> equipmentOrder = Arrays.asList(
+                        "무기", "투구", "어깨", "상의", "하의", "장갑",
+                        "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
+                );
+                Map<String, Integer> orderMap = new HashMap<>();
+                for (int i = 0; i < equipmentOrder.size(); i++) {
+                    orderMap.put(equipmentOrder.get(i), i);
+                }
+
+                filteredEquipment.sort(Comparator.comparingInt(equip ->
+                        orderMap.getOrDefault(equip.getType(), Integer.MAX_VALUE)
+                ));
+
+                // 3. DTO에 최종 리스트 설정
+                dto.setCharacterEquipment(filteredEquipment);
+
                 return dto;
             }
         } catch (Exception e) {

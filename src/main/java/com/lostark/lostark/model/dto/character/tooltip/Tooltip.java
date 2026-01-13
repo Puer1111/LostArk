@@ -5,10 +5,11 @@ import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 
 @Data
 public class Tooltip {
@@ -125,4 +126,100 @@ public class Tooltip {
         elementHtml.append("</div>");
         return elementHtml.toString();
     }
+
+    // 상급 재련 값 json 에서 출력해서 프론트로 보내는 메서드.
+    public String getAdvancedHoningLevel() {
+        if (elements == null || !elements.containsKey("Element_005")) {
+            return "";
+        }
+        TooltipElement element = elements.get("Element_005");
+        if (element == null || !(element.getValue() instanceof String)) {
+            return "";
+        }
+        String value = (String) element.getValue();
+
+        // 정규식을 사용하여 상급 재련 단계(숫자) 추출
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<FONT COLOR='#FFD200'>(\\d+)</FONT>단계");
+        java.util.regex.Matcher matcher = pattern.matcher(value);
+
+        if (matcher.find()) {
+            return matcher.group(1); // "40"과 같은 숫자 문자열 반환
+        }
+
+        return ""; // 값을 찾지 못한 경우
+    }
+
+    // 장비  품질 계산
+    public String getQualityValue() {
+        TooltipElement element = elements.get("Element_001");
+        if (element == null || !(element.getValue() instanceof Map)) {
+            return "";
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> valueMap = (Map<String, Object>) element.getValue();
+
+        Object quality = valueMap.get("qualityValue");
+        if (quality instanceof Number) {
+            return String.valueOf(((Number) quality).intValue());
+        }
+
+        return "";
+    }
+
+    public String extractEngravings() {
+        // Element_007에 무작위 각인 효과가 있습니다.
+        TooltipElement element = elements.get("Element_007");
+        if (element == null || element.getValue() == null) {
+            return "";
+        }
+
+        try {
+            // 중첩된 Map 구조를 탐색합니다.
+            @SuppressWarnings("unchecked")
+            Map<String, Object> valueMap = (Map<String, Object>) element.getValue();
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> indentGroup = (Map<String, Object>) valueMap.get("Element_000");
+            if (indentGroup == null || !indentGroup.containsKey("contentStr")) return "";
+
+            @SuppressWarnings("unchecked")
+            Map<String, Map<String, Object>> contentStrMap = (Map<String, Map<String, Object>>) indentGroup.get("contentStr");
+            if (contentStrMap == null) return "";
+
+            Map<String, String> engravings = new LinkedHashMap<>();
+
+            // 키를 정렬하여 순서를 보장합니다 (Element_000, Element_001, ...).
+            List<String> sortedKeys = new ArrayList<>(contentStrMap.keySet());
+            Collections.sort(sortedKeys);
+
+            for (String key : sortedKeys) {
+                Map<String, Object> engravingInfo = contentStrMap.get(key);
+                if (engravingInfo != null && engravingInfo.containsKey("contentStr")) {
+                    String html = (String) engravingInfo.get("contentStr");
+
+                    // 긍정 각인과 레벨을 추출하는 정규식
+                    String regex = "\\[<FONT COLOR='#FFFFAC'>(.+?)</FONT>\\].*?Lv\\.(\\d+)";
+                    Pattern pattern = Pattern.compile(regex);
+                    Matcher matcher = pattern.matcher(html);
+
+                    if (matcher.find()) {
+                        String name = matcher.group(1);
+                        String level = "Lv" + matcher.group(2); // 예: "Lv" + "3" -> "Lv3"
+                        engravings.put(name, level);
+                    }
+                }
+            }
+
+            // 맵을 "각인1 Lv1, 각인2 Lv2" 형태의 문자열로 변환합니다.
+            return engravings.entrySet().stream()
+                    .map(entry -> entry.getKey() + " " + entry.getValue())
+                    .collect(Collectors.joining(", "));
+
+        } catch (ClassCastException e) {
+            // 예상치 못한 구조일 경우 예외 처리
+            return "";
+        }
+    }
 }
+

@@ -35,7 +35,7 @@ public class CharacterController {
     }
 
     // 캐릭터 검색 - 원정대
-    @GetMapping("/allExpedition/{characterName}")
+    @GetMapping("/expedition/{characterName}")
     public String getExpedition(@PathVariable String characterName, Model model) {
         log.info("Controller.getExpedition.characterName = {}", characterName);
         SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);

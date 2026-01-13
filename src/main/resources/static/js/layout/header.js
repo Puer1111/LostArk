@@ -41,4 +41,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // --- 헤더 검색 기능 로직 ---
+    const searchInput = document.getElementById('search-Character');
+    const searchButton = document.getElementById('search-Character-btn');
+
+    // 공통 검색 실행 함수
+    function performHeaderSearch() {
+        if (!searchInput || !searchInput.value) {
+            alert("검색할 캐릭터 이름을 입력해 주세요!");
+            return;
+        }
+        const characterName = searchInput.value;
+        // window.location.href = `/character/expedition/${characterName}`;
+        window.location.href = `/character/${characterName}`;
+    }
+
+    // 1. 검색 버튼 클릭 이벤트
+    if (searchButton) {
+        searchButton.addEventListener('click', performHeaderSearch);
+    }
+
+    // 2. Enter 키 입력 이벤트 (기존 로직을 공통 함수 사용으로 변경)
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performHeaderSearch(); // 공통 함수 호출
+            }
+        });
+    }
 });
