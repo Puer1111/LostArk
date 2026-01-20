@@ -1,5 +1,3 @@
-lehis87792@hudisk.com
-
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -43,19 +41,58 @@ lehis87792@hudisk.com
                     </div>
                     <!-- Character Ark Passive -->
                     <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}">
-                        <div th:if="${characterData.characterArkPassive.points != null and !characterData.characterArkPassive.points.empty}">
-                            <ul>
-                                <li th:each="point : ${characterData.characterArkPassive.points}">
-                                    <strong><span th:text="${point.name}"></span>:</strong> <span
-                                        th:text="${point.value}"></span>
-                                    <p><span th:text="${point.description}"></span></p>
-                                    <div class="tooltip-content" th:if="${point.tooltip != null}">
-                                        <div th:utext="${point.tooltip.getElementHtml('Element_005')}"></div>
-                                    </div>
-                                </li>
-                            </ul>
+                        <div th:if="${characterData.characterArkPassive.points != null and !characterData.characterArkPassive.points.empty}"
+                             style="display: flex;">
+                            <div th:each="point : ${characterData.characterArkPassive.points}"
+                                 class="ark-passive-container">
+                                <div class="ark-passive-header">
+                                    <h3><span th:text="${point.name}"></span>: <span th:text="${point.value}"></span>
+                                    </h3>
+                                </div>
+                                <ul class="ark-passive-content">
+                                    <th:block th:each="effect : ${characterData.characterArkPassive.effects}">
+                                        <li th:if="${effect.name == point.name}">
+                                            <img th:src="${effect.icon}" alt="Effect Icon"
+                                                 style="width: 20px; height: 20px; margin-right: 5px;">
+                                            <span th:utext="${#strings.trim(#strings.substringAfter(effect.description, '</FONT>'))}"></span>
+                                        </li>
+                                    </th:block>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+                    <!-- Character Ark Grid -->
+                    <div class="section arkGrid" th:if="${characterData.characterArkGrid != null}">
+                        <h3>아크 그리드</h3>
+                        <div th:if="${characterData.characterArkGrid.slots != null and !characterData.characterArkGrid.slots.empty}">
+                            <div class="arkGrid-list">
+                                <div class="arkGrid-item-container" th:each="slot : ${characterData.characterArkGrid.slots}">
+                                    <img th:src="${slot.icon}" alt="슬롯 아이콘" class="arkGrid-img"/>
+                                    <div class="arkGrid-description">
+                                        <strong><span th:text="${slot.name}"></span></strong>
+<!--                                        (포인트: <span th:text="${slot.point}"></span>)-->
+                                        <p>등급: <span th:text="${slot.grade}"></span></p>
+                                        <div class="tooltip-content" th:if="${slot.tooltip != null}">
+                                            <div th:utext="${slot.tooltip.getElementHtml('Element_005')}"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!--                        <div th:if="${characterData.characterArkGrid.effects != null and !characterData.characterArkGrid.effects.empty}">-->
+                        <!--                            <h3>효과</h3>-->
+                        <!--                            <ul>-->
+                        <!--                                <li th:each="effect : ${characterData.characterArkGrid.effects}">-->
+                        <!--                                    <strong><span th:text="${effect.name}"></span></strong> (레벨: <span-->
+                        <!--                                        th:text="${effect.level}"></span>)-->
+                        <!--                                    <div class="tooltip-content" th:if="${effect.tooltip != null}"-->
+                        <!--                                         th:utext="${effect.tooltip.getElementHtml('Element_005')}">-->
+                        <!--                                    </div>-->
+                        <!--                                </li>-->
+                        <!--                            </ul>-->
+                        <!--                        </div>-->
+                    </div>
+
                 </div>
                 <div class="right-column">
                     <!-- Character Equipment -->

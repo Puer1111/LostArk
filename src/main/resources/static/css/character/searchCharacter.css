@@ -31,7 +31,7 @@ h1, h2, h3 {
 .section li {
     /*background: #eee;*/
     /*margin-bottom: 5px;*/
-    padding: 10px;
+    padding: 3px;
     border-radius: 3px;
 }
 
@@ -40,6 +40,10 @@ h1, h2, h3 {
     height: auto;
     vertical-align: middle;
     margin-right: 10px;
+}
+
+.section .arkPassive {
+    display: flex;
 }
 
 .profile-img {
@@ -57,7 +61,7 @@ h1, h2, h3 {
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 10;
-    width:330px;
+    max-width: 330px;
     min-height: 80px;
     align-items: center;
 }
@@ -138,9 +142,57 @@ h1, h2, h3 {
     flex: 2;
 }
 
-.arkPassive ul {
+.ark-passive-container {
+    position: relative; /* 자식 요소의 절대 위치 지정을 위한 기준점 */
+}
+
+.ark-passive-content {
+    justify-content: space-between;
+    display: none; /* 평소에는 숨김 */
+    flex-direction: column;
+    position: absolute; /* 부모 요소를 기준으로 절대 위치 지정 */
+    top: -350%; /* 헤더 바로 아래에 위치 */
+    left: -100%; /* 헤더의 왼쪽과 정렬 */
+    max-width: 500px; /* 오버레이의 최대 너비 */
+    width: 250px;
+    max-height: 80vh; /* 오버레이의 최대 높이 (뷰포트 높이의 80%) */
+    overflow-y: auto; /* 내용이 많으면 스크롤 가능 */
+    background-color: #333; /* 오버레이 배경색 (예시) */
+    border: 1px solid #555; /* 오버레이 테두리 (예시) */
+    border-radius: 8px; /* 모서리 둥글게 */
+    z-index: 1000; /* 다른 모든 요소 위에 표시 */
+    padding: 20px; /* 내부 여백 */
+    box-sizing: border-box; /* 패딩이 너비에 포함되도록 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+}
+
+.ark-passive-container:hover .ark-passive-content {
+    display: flex; /* 마우스를 올리면 flex로 표시 */
+}
+
+.ark-passive-header {
+    width: 95px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    margin-right: 15px;
+}
+
+/* HTML에서 옮겨온 인라인 스타일 (이전과 동일하게 유지) */
+.ark-passive-header h3 {
+    margin-top: 10px;
+    display: flex; /* 이 부분을 추가하여 <span> 태그들을 가로로 정렬합니다. */
+    align-items: center; /* (선택 사항) <span> 태그들의 세로 중앙을 맞춥니다. */
+    /* justify-content: space-between; (선택 사항) <span> 태그들 사이에 공간을 균등하게 분배하려면 이 속성을 추가합니다. */
+}
+
+.ark-passive-content li {
+    display: flex;
+    margin-bottom: 3px;
+}
+
+.ark-passive-content li span {
+    font-size: 0.8em;
+    display: block;
 }
 
 .equipment-columns {
@@ -178,6 +230,43 @@ h1, h2, h3 {
     margin-right: 10px;
 }
 
+/* arkGrid region */
+.arkGrid-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.arkGrid-item-container {
+    position: relative;
+}
+
+.arkGrid-description {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-left: 10px;
+    width: 250px;
+    background-color: #333;
+    border: 1px solid #555;
+    border-radius: 8px;
+    padding: 15px;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    color: white;
+}
+
+.arkGrid-item-container:hover .arkGrid-description {
+    display: block;
+}
+
+.arkGrid-img {
+    width: 40px;
+    height: 40px;
+    display: block;
+}
+
 /* Styles moved from inline */
 .item-img {
     display: flex;
@@ -188,7 +277,7 @@ h1, h2, h3 {
 
 .info-margin {
     margin-left: 20px;
-    color:white;
+    color: white;
 }
 
 .equipment-item, .accessory-item {
