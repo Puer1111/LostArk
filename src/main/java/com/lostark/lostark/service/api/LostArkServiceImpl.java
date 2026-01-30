@@ -74,7 +74,7 @@ public class LostArkServiceImpl implements LostArkService {
 
                 // 2. 정렬 로직: 필터링된 리스트를 정렬
                 List<String> equipmentOrder = Arrays.asList(
-                        "무기", "투구", "어깨", "상의", "하의", "장갑",
+                        "투구", "어깨", "상의", "하의", "장갑", "무기",
                         "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
                 );
                 Map<String, Integer> orderMap = new HashMap<>();

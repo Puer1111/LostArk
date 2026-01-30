@@ -66,14 +66,30 @@
                         <h3>아크 그리드</h3>
                         <div th:if="${characterData.characterArkGrid.slots != null and !characterData.characterArkGrid.slots.empty}">
                             <div class="arkGrid-list">
-                                <div class="arkGrid-item-container" th:each="slot : ${characterData.characterArkGrid.slots}">
+                                <div class="arkGrid-item-container"
+                                     th:each="slot : ${characterData.characterArkGrid.slots}"
+                                     th:with="currentTotalPoints=${slot.point}">
                                     <img th:src="${slot.icon}" alt="슬롯 아이콘" class="arkGrid-img"/>
                                     <div class="arkGrid-description">
                                         <strong><span th:text="${slot.name}"></span></strong>
-<!--                                        (포인트: <span th:text="${slot.point}"></span>)-->
                                         <p>등급: <span th:text="${slot.grade}"></span></p>
                                         <div class="tooltip-content" th:if="${slot.tooltip != null}">
-                                            <div th:utext="${slot.tooltip.getElementHtml('Element_005')}"></div>
+                                            <!-- slot.name에 '혼돈의'가 포함되어 있으면 Element_005를 출력 -->
+                                            <div th:if="${#strings.contains(slot.name, '혼돈의')}"
+                                                 class="ark-grid-tooltip"
+                                                 th:attr="data-total-points=${currentTotalPoints}"
+                                                 th:utext="${slot.tooltip.getElementHtml('Element_005')}"></div>
+                                            <!-- slot.name에 '질서의'가 포함되어 있으면 Element_006을 출력 -->
+                                            <div th:if="${#strings.contains(slot.name, '질서의')}"
+                                                 class="ark-grid-tooltip"
+                                                 th:attr="data-total-points=${currentTotalPoints}"
+                                                 th:utext="${slot.tooltip.getElementHtml('Element_006')}"></div>
+                                        </div>
+                                        <!-- Hidden gem effects for JavaScript processing -->
+                                        <div class="gem-effects-data" th:if="${slot.gems != null and !slot.gems.empty}">
+                                            <span th:each="gem : ${slot.gems}"
+                                                  th:data-gem-effects="${gem.getEffectsJson()}"
+                                                  style="display: none;"></span>
                                         </div>
                                     </div>
                                 </div>

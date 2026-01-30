@@ -244,7 +244,7 @@ h1, h2, h3 {
 .arkGrid-description {
     display: none;
     position: absolute;
-    top: 0;
+    top: -100px;
     left: 100%;
     margin-left: 10px;
     width: 250px;

@@ -7,6 +7,7 @@ import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper; // Added import
 @Data
 public class CharacterArkGrid {
 
@@ -14,6 +15,10 @@ public class CharacterArkGrid {
         private List<Slot> slots;
         @JsonProperty("Effects")
         private List<Effect> effects;
+
+        private static final ObjectMapper objectMapper = new ObjectMapper(); // Added ObjectMapper instance
+
+        
 
     @Data
     public static class Slot {
@@ -46,6 +51,20 @@ public class CharacterArkGrid {
         @JsonProperty("Tooltip")
         @JsonDeserialize(using = TooltipDeserializer.class)
         private Tooltip tooltip; // Storing as String due to complex nested JSON structure
+
+        public String getEffectsJson() {
+            if (tooltip == null) {
+                return "{}";
+            }
+            try {
+                String jsonString = objectMapper.writeValueAsString(tooltip.extractGemEffects());
+                System.out.println("Generated Gem Effects JSON: " + jsonString); // Debug log
+                return jsonString;
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                System.err.println("Error serializing gem effects to JSON: " + e.getMessage()); // Log error
+                return "{}";
+            }
+        }
     }
     @Data
     public static class Effect {

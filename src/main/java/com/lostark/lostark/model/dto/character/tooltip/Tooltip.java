@@ -221,5 +221,73 @@ public class Tooltip {
             return "";
         }
     }
+
+    public int getGemPoint() {
+        TooltipElement element = elements.get("Element_005");
+        if (element == null || !(element.getValue() instanceof Map)) {
+            return 0;
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> valueMap = (Map<String, Object>) element.getValue();
+        Object element001 = valueMap.get("Element_001");
+
+        if (!(element001 instanceof String)) {
+            return 0;
+        }
+
+        String text = (String) element001;
+        Pattern pattern = Pattern.compile("<FONT COLOR = '#B7FB00'>(\\d+)</FONT>");
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.find()) {
+            try {
+                return Integer.parseInt(matcher.group(1));
+            } catch (NumberFormatException e) {
+                // Should not happen if regex matches
+            }
+        }
+        return 0;
+    }
+
+    public Map<String, Integer> extractGemEffects() {
+        Map<String, Integer> effects = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
+
+        // Access Element_005
+        TooltipElement element005 = elements.get("Element_005");
+        if (element005 == null || !(element005.getValue() instanceof Map)) {
+            return effects;
+        }
+
+        // Access value map within Element_005
+        @SuppressWarnings("unchecked")
+        Map<String, Object> valueMap = (Map<String, Object>) element005.getValue();
+
+        // Access Element_001 within the value map
+        Object element001Value = valueMap.get("Element_001");
+        if (!(element001Value instanceof String)) {
+            return effects;
+        }
+
+        String html = (String) element001Value;
+        System.out.println("Extracting Gem Effects from HTML: " + html); // Debug log
+
+        // Regex to find patterns like "[Name]" and "Lv.X"
+        // Example: [낙인력] <FONT color='#FFD200'>Lv.4</FONT>
+        Pattern combinedPattern = Pattern.compile("\\[([^\\]]+)\\]\\s*<FONT[^>]*>\\s*Lv\\.(\\d+)\\s*</FONT>");
+        Matcher matcher = combinedPattern.matcher(html);
+
+        while (matcher.find()) {
+            String name = matcher.group(1); // e.g., "낙인력"
+            Integer level = Integer.parseInt(matcher.group(2)); // e.g., 4
+            effects.put(name, level);
+        }
+
+        return effects;
+    }
+
+    
+
+
 }
 
