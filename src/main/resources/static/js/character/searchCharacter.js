@@ -1,3 +1,30 @@
+document.addEventListener("DOMContentLoaded", function () {
+    // 캐릭터 조회 페이지 내의 '원정대' 버튼 기능
+    const pageExpeditionBtn = document.getElementById('btn-expedition');
+    if (pageExpeditionBtn) {
+        pageExpeditionBtn.addEventListener("click", function () {
+            // 페이지에 표시된 캐릭터 이름을 가져옵니다.
+            const characterNameSpan = document.querySelector('.character-name');
+            if (!characterNameSpan || !characterNameSpan.textContent) {
+                alert("페이지의 캐릭터 이름을 찾을 수 없습니다.");
+                return;
+            }
+            const characterName = characterNameSpan.textContent;
+            window.location.href = `/character/expedition/${characterName}`;
+        });
+    }
+
+    // 아크 그리드 툴팁 처리 함수 호출
+    processArkGridTooltips();
+
+    // 젬 효과 집계 처리 함수 호출
+    processGemEffectsAggregation();
+
+    // 각인 아이콘 위치 적용 함수 호출
+    applyEngravingIcons();
+});
+
+
 function processArkGridTooltips() {
     const tooltips = document.querySelectorAll('.ark-grid-tooltip');
 
@@ -59,7 +86,7 @@ function processGemEffectsAggregation() {
 
     arkGridContainers.forEach(container => {
         const gemEffectSpans = container.querySelectorAll('.gem-effects-data span[data-gem-effects]');
-        
+
         gemEffectSpans.forEach(span => {
             try {
                 const gemEffects = JSON.parse(span.dataset.gemEffects); // This will be a Map<String, Integer>
@@ -87,7 +114,7 @@ function processGemEffectsAggregation() {
 
             const globalAggregatedEffectsDiv = document.createElement('div');
             globalAggregatedEffectsDiv.classList.add('global-aggregated-gem-effects');
-            
+
             let effectsHtml = "<strong>전체 젬 효과 집계:</strong><br>";
             for (const effectName in globalAggregatedEffects) {
                 if (globalAggregatedEffects.hasOwnProperty(effectName)) {
@@ -95,10 +122,10 @@ function processGemEffectsAggregation() {
                 }
             }
             globalAggregatedEffectsDiv.innerHTML = effectsHtml;
-            // Insert at the beginning of the arkGridSection, after the h3
-            const h3Element = arkGridSection.querySelector('h3');
-            if (h3Element) {
-                h3Element.after(globalAggregatedEffectsDiv);
+            // Insert at the beginning of the arkGridSection, after the arkGridList.
+            const arkGridList = arkGridSection.querySelector('.arkGrid-list');
+            if (arkGridList) {
+                arkGridList.after(globalAggregatedEffectsDiv);
             } else {
                 arkGridSection.prepend(globalAggregatedEffectsDiv);
             }
@@ -108,45 +135,35 @@ function processGemEffectsAggregation() {
     }
 }
 
+// 각인 등급에 따른 cdn 위치 조정.
+function applyEngravingIcons() {
+    const engravingIconMap = {
+        // 여기에 다른 등급과 background-position 매핑을 추가하세요.
+        '전설': '-84px 0',
+        '유물': '-112px 0',
 
-document.addEventListener("DOMContentLoaded", function () {
-    // 캐릭터 조회 페이지 내의 '원정대' 버튼 기능
-    const pageExpeditionBtn = document.getElementById('btn-expedition');
-    if (pageExpeditionBtn) {
-        pageExpeditionBtn.addEventListener("click", function () {
-            // 페이지에 표시된 캐릭터 이름을 가져옵니다.
-            const characterNameSpan = document.querySelector('.character-name');
-            if (!characterNameSpan || !characterNameSpan.textContent) {
-                alert("페이지의 캐릭터 이름을 찾을 수 없습니다.");
-                return;
+    };
+
+    document.querySelectorAll('em.engraving-icon').forEach(emElement => {
+        const parentDiv = emElement.closest('.engraving-item-content'); // Find the closest parent with this class
+        if (parentDiv) {
+            const grade = parentDiv.dataset.grade;
+            if (grade && engravingIconMap[grade]) {
+                emElement.style.backgroundPosition = engravingIconMap[grade];
             }
-            const characterName = characterNameSpan.textContent;
-            window.location.href = `/character/expedition/${characterName}`;
-        });
-    }
 
-    // 장비 툴팁 호버 기능
-    const equipmentAreas = document.querySelectorAll('.equipment-area');
+            const level = parentDiv.dataset.level;
+            const engravingInfoGroup = emElement.closest('.engraving-info-group'); // Find the new wrapper div
 
-    equipmentAreas.forEach(area => {
-        // 각 area 바로 앞에 있는 tooltip-content 요소를 찾습니다.
-        const tooltip = area.previousElementSibling;
-
-        // 해당 요소가 실제로 tooltip-content 클래스를 가지고 있는지 확인합니다.
-        if (tooltip && tooltip.classList.contains('tooltip-content')) {
-            area.addEventListener('mouseover', () => {
-                tooltip.style.display = 'block';
-            });
-
-            area.addEventListener('mouseout', () => {
-                tooltip.style.display = 'none';
-            });
+            if (level && engravingInfoGroup) {
+                // Prevent duplicate level spans
+                if (!engravingInfoGroup.querySelector('.engraving-level')) {
+                    const levelSpan = document.createElement('span');
+                    levelSpan.textContent = level;
+                    levelSpan.classList.add('engraving-level'); // Add a class for potential styling
+                    engravingInfoGroup.appendChild(levelSpan); // Append to the new wrapper div
+                }
+            }
         }
     });
-
-    // 아크 그리드 툴팁 처리 함수 호출
-    processArkGridTooltips();
-
-    // 젬 효과 집계 처리 함수 호출
-    processGemEffectsAggregation();
-});
+}

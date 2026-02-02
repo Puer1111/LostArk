@@ -166,7 +166,7 @@ public class Tooltip {
 
         return "";
     }
-
+    // 어빌리티 스톤 에서 각인 이름 추출.
     public String extractEngravings() {
         // Element_007에 무작위 각인 효과가 있습니다.
         TooltipElement element = elements.get("Element_007");

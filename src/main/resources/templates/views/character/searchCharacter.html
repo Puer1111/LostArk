@@ -95,18 +95,26 @@
                                 </div>
                             </div>
                         </div>
-                        <!--                        <div th:if="${characterData.characterArkGrid.effects != null and !characterData.characterArkGrid.effects.empty}">-->
-                        <!--                            <h3>효과</h3>-->
-                        <!--                            <ul>-->
-                        <!--                                <li th:each="effect : ${characterData.characterArkGrid.effects}">-->
-                        <!--                                    <strong><span th:text="${effect.name}"></span></strong> (레벨: <span-->
-                        <!--                                        th:text="${effect.level}"></span>)-->
-                        <!--                                    <div class="tooltip-content" th:if="${effect.tooltip != null}"-->
-                        <!--                                         th:utext="${effect.tooltip.getElementHtml('Element_005')}">-->
-                        <!--                                    </div>-->
-                        <!--                                </li>-->
-                        <!--                            </ul>-->
-                        <!--                        </div>-->
+                    </div>
+                    <!-- Engravings -->
+                    <div class="section Engravings">
+                        <h2>각인 효과</h2>
+                        <div class="engraving-container">
+                            <div class="engraving-item"
+                                 th:each="effect : ${characterData.characterEngravings.arkPassiveEffects}">
+                                <div class="engraving-details" th:if="${effect.grade != null}">
+                                    <div>
+                                        <div class="engraving-item-content"
+                                             th:data-grade="${effect.grade}" th:data-level="${effect.level}">
+                                            <span class="engraving-name" th:text="${effect.name}"></span>
+                                            <div class="engraving-info-group">
+                                                <em class="engraving-icon" th:data-engraving-name="${effect.name}"></em>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -174,13 +182,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <!--                                        <div class="tooltip-content" th:if="${item.tooltip != null}">-->
-                                        <!--                                            <div th:utext="${item.tooltip.getElementHtml('Element_005')}"></div>-->
-                                        <!--                                            <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_000')}"></div>-->
-                                        <!--                                            <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_001')}"></div>-->
-                                        <!--                                            <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_000')}"></div>-->
-                                        <!--                                            <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>-->
-                                        <!--                                        </div>-->
                                     </li>
                                 </ul>
                             </div>
@@ -202,23 +203,6 @@
                                                 </th:block>
                                                 <div th:utext="${item.tooltip.extractEngravings()}"></div>
                                             </div>
-                                            <!--                                            <div class="item-description">-->
-                                            <!--                                                <span th:switch="${item.grade}">-->
-                                            <!--                                                    <span th:case="'고대'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #E3C7A1;"></span>-->
-                                            <!--                                                    <span th:case="'유물'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #FA5D00;"></span>-->
-                                            <!--                                                    <span th:case="'전설'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #F99200;"></span>-->
-                                            <!--                                                    <span th:case="'영웅'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #8500b2;"></span>-->
-                                            <!--                                                    <span th:case="'희귀'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #0091cc;"></span>-->
-                                            <!--                                                    <span th:case="'고급'" th:text="${item.grade}"-->
-                                            <!--                                                          style="color: #91FE02;"></span>-->
-                                            <!--                                                </span>-->
-                                            <!--                                                <strong><span th:text="${item.name}"></span></strong>-->
-                                            <!--                                            </div>-->
                                         </div>
                                     </li>
                                 </ul>

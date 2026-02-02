@@ -286,3 +286,48 @@ h1, h2, h3 {
     flex-direction: column;
     justify-content: center;
 }
+
+/* =================================== */
+/* 각인 아이콘 (Engraving Icons) */
+/* =================================== */
+
+/* 각인 아이콘 기본 스타일 */
+.engraving-icon {
+    display: inline-block;
+    width: 28px; /* 아이콘 너비 */
+    height: 28px; /* 아이콘 높이 */
+    background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/pc/profile/img_engrave_icon.png?3e9f6d074e03983e7d45');
+    background-repeat: no-repeat;
+    vertical-align: middle; /* 텍스트 옆에 올 때 중앙 정렬 */
+    border-radius: 4px;
+}
+
+.engraving-level {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #FFD700;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* 여기에 다른 각인 아이콘 클래스를 추가할 수 있습니다. */
+/* 예: .engrave-icon.super-charge { background-position: ...; } */
+
+.engraving-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.engraving-info-group {
+    display: flex;
+    align-items: center;
+}
+
+.engraving-item-content[data-grade="전설"] .engraving-name {
+    color: #fff; /* 전설 등급 각인 이름 색상 */
+}
+
+.engraving-item-content[data-grade="유물"] .engraving-name {
+    color: #000; /* 유물 등급 각인 이름 색상 */
+}
