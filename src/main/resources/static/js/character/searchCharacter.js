@@ -159,7 +159,7 @@ function applyEngravingIcons() {
                 // Prevent duplicate level spans
                 if (!engravingInfoGroup.querySelector('.engraving-level')) {
                     const levelSpan = document.createElement('span');
-                    levelSpan.textContent = level;
+                    levelSpan.textContent = "x "+level;
                     levelSpan.classList.add('engraving-level'); // Add a class for potential styling
                     engravingInfoGroup.appendChild(levelSpan); // Append to the new wrapper div
                 }

@@ -286,8 +286,48 @@ public class Tooltip {
         return effects;
     }
 
-    
+    @Data
+    public static class GemsTooltipData {
+        private List<String> gemsTooltip;
+    }
 
+    public GemsTooltipData getGemsTooltip() {
+        TooltipElement element006 = elements.get("Element_006");
+        if (element006 == null || !"ItemPartBox".equals(element006.getType())) {
+            return null;
+        }
 
+        Object value = element006.getValue();
+        if (!(value instanceof Map)) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        Map<String, String> itemPartBox = (Map<String, String>) value;
+
+        String descriptionHtml = itemPartBox.get("Element_001");
+
+        if (descriptionHtml == null) {
+            return null;
+        }
+
+        GemsTooltipData data = new GemsTooltipData();
+
+        // Extract descriptions from Element_001
+        String cleanedDescription = descriptionHtml.replaceAll("\\[[^\\]]+]\s*", "") // Remove [ClassName]
+                .replaceAll("<FONT[^>]*>", "") // Remove <FONT> tags
+                .replaceAll("</FONT>", "");
+
+        String[] parts = cleanedDescription.split("<BR>");
+        List<String> tooltips = new ArrayList<>();
+        for (String part : parts) {
+            String trimmedPart = part.trim();
+            if (!trimmedPart.isEmpty()) {
+                tooltips.add(trimmedPart);
+            }
+        }
+        data.setGemsTooltip(tooltips);
+
+        return data;
+    }
 }
 
