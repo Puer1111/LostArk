@@ -29,6 +29,7 @@ public class CharacterController {
     @GetMapping("/{characterName}")
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
+        log.debug("Received characterName for getCharacter: {}", characterName); // 디버그 로그 추가
         SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
         model.addAttribute("characterData", searchCharacterDTO);
         return "character/searchCharacter";
@@ -52,4 +53,5 @@ public class CharacterController {
     public String getPartySimulator() {
         return "character/partySimulator";
     }
+
 }

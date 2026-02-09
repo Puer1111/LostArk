@@ -34,7 +34,7 @@ public class CharacterProfiles {
     @JsonProperty("CombatPower")
     private String combatPower;
     @JsonProperty("Decorations")
-    private Decorations decorations; // Corrected: should be Decorations object, not List<Decorations>
+    private Decorations decorations;
     @JsonProperty("HonorPoint")
     private int honorPoint;
     @JsonProperty("ServerName")

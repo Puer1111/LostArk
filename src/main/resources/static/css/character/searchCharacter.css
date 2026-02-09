@@ -253,7 +253,7 @@ h1, h2, h3 {
     border-radius: 8px;
     padding: 15px;
     z-index: 1000;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     color: white;
 }
 
@@ -272,7 +272,12 @@ h1, h2, h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex-wrap: wrap;
     text-align: center;
+}
+
+.item-img > img {
+    margin: 0;
 }
 
 .info-margin {
@@ -285,6 +290,30 @@ h1, h2, h3 {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* Gem Tooltip Hover Effect */
+.gem-wrapper {
+    position: relative; /* Make gem-wrapper a positioning context */
+    display: inline-block; /* Or block, depending on desired layout */
+}
+
+.gem-tooltip-details {
+    display: none; /* Hidden by default */
+    position: absolute; /* Position relative to .gem-wrapper */
+    left: 100%; /* Adjust as needed, e.g., 100% to the right of the gem */
+    top: 0; /* Align with the top of the gem */
+    background-color: #333; /* Example background */
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 100; /* Ensure it's on top */
+    min-width: 200px; /* Adjust width as needed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.gem-wrapper:hover .gem-tooltip-details {
+    display: block; /* Show on hover */
 }
 
 /* =================================== */

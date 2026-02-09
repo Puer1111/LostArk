@@ -166,6 +166,7 @@ public class Tooltip {
 
         return "";
     }
+
     // 어빌리티 스톤 에서 각인 이름 추출.
     public String extractEngravings() {
         // Element_007에 무작위 각인 효과가 있습니다.
@@ -292,42 +293,120 @@ public class Tooltip {
     }
 
     public GemsTooltipData getGemsTooltip() {
+
         TooltipElement element006 = elements.get("Element_006");
+
         if (element006 == null || !"ItemPartBox".equals(element006.getType())) {
+
             return null;
+
         }
 
+
         Object value = element006.getValue();
+
         if (!(value instanceof Map)) {
+
             return null;
         }
         @SuppressWarnings("unchecked")
         Map<String, String> itemPartBox = (Map<String, String>) value;
-
         String descriptionHtml = itemPartBox.get("Element_001");
-
         if (descriptionHtml == null) {
+
             return null;
+
         }
-
         GemsTooltipData data = new GemsTooltipData();
-
         // Extract descriptions from Element_001
         String cleanedDescription = descriptionHtml.replaceAll("\\[[^\\]]+]\s*", "") // Remove [ClassName]
-                .replaceAll("<FONT[^>]*>", "") // Remove <FONT> tags
-                .replaceAll("</FONT>", "");
 
+                .replaceAll("<FONT[^>]*>", "") // Remove <FONT> tags
+
+                .replaceAll("</FONT>", "");
         String[] parts = cleanedDescription.split("<BR>");
         List<String> tooltips = new ArrayList<>();
         for (String part : parts) {
+
             String trimmedPart = part.trim();
+
             if (!trimmedPart.isEmpty()) {
+
                 tooltips.add(trimmedPart);
+
             }
+
         }
+
         data.setGemsTooltip(tooltips);
 
+
         return data;
+
     }
+
+
+    /**
+     * Tooltip의 Element_000에 있는 HTML 문자열에서 보석 이름을 추출하여 반환합니다.
+     *
+     * <p>
+     * <p>
+     * 예: "<P ALIGN='CENTER'><FONT COLOR='#F99200'>6레벨 광휘의 보석 (귀속)</FONT></P>" -> "6레벨 광휘의 보석 (귀속)"
+     *
+     * @return 추출된 보석 이름. HTML이 유효하지 않거나 텍스트를 찾을 수 없는 경우 빈 문자열 반환.
+     */
+
+    public String getCleanedGemName() {
+
+        TooltipElement element = elements.get("Element_000");
+
+        if (element == null || !(element.getValue() instanceof String)) {
+
+            return "";
+
+        }
+
+        String htmlString = (String) element.getValue();
+
+
+        if (htmlString.isEmpty()) {
+
+            return "";
+
+        }
+
+        // Regex to extract content within <FONT> tags, ignoring any outer HTML
+
+        Pattern pattern = Pattern.compile(".*?<FONT[^>]*>(.*?)</FONT>.*", Pattern.DOTALL);
+
+        Matcher matcher = pattern.matcher(htmlString);
+
+
+        if (matcher.find()) {
+
+            return matcher.group(1);
+
+        }
+
+
+        // If <FONT> tags are not found, try to extract from <P> tags as a fallback
+
+        pattern = Pattern.compile(".*?<P[^>]*>(.*?)</P>.*", Pattern.DOTALL);
+
+        matcher = pattern.matcher(htmlString);
+
+        if (matcher.find()) {
+
+            return matcher.group(1);
+
+        }
+
+
+        return htmlString; // If no tags found, return original string as a last resort
+
+    }
+
 }
+
+    
 

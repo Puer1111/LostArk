@@ -37,6 +37,9 @@
                             <p><strong>아이템 레벨:</strong> <span
                                     th:text="${characterData.characterProfiles.itemAvgLevel}"></span>
                             </p>
+                            <p><strong>전투력:</strong> <span
+                                    th:text="${characterData.characterProfiles.CombatPower}"></span>
+                            </p>
                         </div>
                     </div>
                     <!-- Character Ark Passive -->
@@ -145,11 +148,16 @@
                                                               style="color: gold;"></span>
                                                             <span th:case="9" th:text="${quality}"
                                                                   style="color: purple;"></span>
-                                                            <span th:case="7,8" th:text="${quality}"
+                                                            <span th:case="7" th:text="${quality}"
                                                                   style="color: blue;"></span>
-                                                            <span th:case="5,6" th:text="${quality}"
+                                                            <span th:case="8" th:text="${quality}"
+                                                                  style="color: blue;"></span>
+                                                            <span th:case="5" th:text="${quality}"
                                                                   style="color: green;"></span>
-                                                            <span th:case="*" th:text="${quality}"
+                                                            <span th:case="6" th:text="${quality}"
+                                                                  style="color: green;"></span>
+                                                            <span th:case="*"
+                                                                  th:text="${quality}"
                                                                   style="color: yellow;"></span>
                                                         </div>
                                                     </th:block>
@@ -184,6 +192,32 @@
                                         </div>
                                     </li>
                                 </ul>
+                                <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
+                                    <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
+
+                                        <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
+                                        <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
+                                            <div class="item-img">
+                                                <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                            </div>
+
+                                            <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
+                                            <div class="gem-tooltip-details" th:if="${item
+                                    .tooltip != null}"
+                                                 th:with="tooltipData=${item.tooltip.getGemsTooltip()}">
+                                                <div th:if="${tooltipData != null}" class="gem-tooltip-content">
+                                                    <strong th:text="${item.tooltip.getCleanedGemName()}"
+                                                            style="color: #A9D0F5;"></strong>
+                                                    <ul>
+                                                        <li th:each="tip : ${tooltipData.gemsTooltip}"
+                                                            th:text="${tip}"></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
                             </div>
                             <!-- Right Column: Accessories (7 items) -->
                             <div class="equipment-right">
@@ -206,29 +240,6 @@
                                         </div>
                                     </li>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
-                            <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
-
-                                <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
-                                <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
-                                    <div class="item-img">
-                                        <img alt="Gem Icon" th:src="${item.icon}"/>
-                                    </div>
-
-                                    <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
-                                    <div class="gem-tooltip-details" th:if="${item.tooltip != null}"
-                                         th:with="tooltipData=${item.tooltip.getGemsTooltip()}">
-                                        <div th:if="${tooltipData != null}">
-                                            <strong th:text="${item.name}" style="color: #A9D0F5;"></strong>
-                                            <ul>
-                                                <li th:each="tip : ${tooltipData.gemsTooltip}" th:text="${tip}"></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
                         </div>
                     </div>

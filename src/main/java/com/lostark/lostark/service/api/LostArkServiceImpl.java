@@ -47,7 +47,8 @@ public class LostArkServiceImpl implements LostArkService {
             return objectMapper.readValue(response.getBody(), SearchExpeditionDTO[].class);
         } catch (Exception e) {
             log.error("Error fetching or parsing expedition for character: {}", characterName, e);
-            return new SearchExpeditionDTO[0];
+            // 예외를 다시 던져 컨트롤러가 처리하도록 합니다.
+            throw new RuntimeException("로스트아크 API 호출 또는 원정대 데이터 파싱 중 오류 발생", e);
         }
     }
 
@@ -91,11 +92,12 @@ public class LostArkServiceImpl implements LostArkService {
 
                 return dto;
             }
+            return new SearchCharacterDTO(); // if 조건 불만족 시 빈 객체 반환 (기존 로직 유지)
         } catch (Exception e) {
             log.error("Error fetching or parsing character data for: {}", characterName, e);
-            return new SearchCharacterDTO(); // 실패 시 빈 객체 반환
+            // 예외를 다시 던져 컨트롤러가 처리하도록 합니다.
+            throw new RuntimeException("로스트아크 API 호출 또는 캐릭터 데이터 파싱 중 오류 발생", e);
         }
-        return new SearchCharacterDTO();
     }
 
 }
