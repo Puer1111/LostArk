@@ -88,7 +88,7 @@
                                                  th:attr="data-total-points=${currentTotalPoints}"
                                                  th:utext="${slot.tooltip.getElementHtml('Element_006')}"></div>
                                         </div>
-                                        <!-- Hidden gem effects for JavaScript processing -->
+                                        <!--     젬 정보 나열-->
                                         <div class="gem-effects-data" th:if="${slot.gems != null and !slot.gems.empty}">
                                             <span th:each="gem : ${slot.gems}"
                                                   th:data-gem-effects="${gem.getEffectsJson()}"
@@ -125,6 +125,27 @@
                     <!-- Character Equipment -->
                     <div class="section equipment"
                          th:if="${characterData.characterEquipment != null and !characterData.characterEquipment.empty}">
+                        <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
+                            <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
+                                <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
+                                <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
+                                    <div class="item-img">
+                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                    </div>
+                                    <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
+                                    <div class="gem-tooltip-details" th:if="${item.tooltip != null}"
+                                         th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
+                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
+                                            <strong th:text="${item.tooltip.getCleanedGemName()}"
+                                                    style="color: #A9D0F5;"></strong>
+                                            <ul>
+                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="equipment-columns">
                             <!-- Left Column: Armor (6 items) -->
                             <div class="equipment-left">
@@ -137,87 +158,33 @@
                                                     <img th:src="${item.icon}" alt="아이템 아이콘"/>
                                                     <th:block
                                                             th:with="quality=${item.tooltip.getQualityValue().isEmpty() ? 0 : T(java.lang.Integer).parseInt(item.tooltip.getQualityValue())}">
-                                                        <div class="item-quality"
-                                                             th:switch="${quality == 100 ? 100 : quality / 10}"
-                                                             th:style="'border-color: ' +
-                                                                  (${quality == 100} ? 'gold' :
-                                                                  (${quality >= 90} ? 'purple' :
-                                                                  (${quality >= 70} ? 'blue' :
-                                                                  (${quality >= 50} ? 'green' : 'yellow'))))">
-                                                        <span th:case="100" th:text="${quality}"
-                                                              style="color: gold;"></span>
-                                                            <span th:case="9" th:text="${quality}"
-                                                                  style="color: purple;"></span>
-                                                            <span th:case="7" th:text="${quality}"
-                                                                  style="color: blue;"></span>
-                                                            <span th:case="8" th:text="${quality}"
-                                                                  style="color: blue;"></span>
-                                                            <span th:case="5" th:text="${quality}"
-                                                                  style="color: green;"></span>
-                                                            <span th:case="6" th:text="${quality}"
-                                                                  style="color: green;"></span>
-                                                            <span th:case="*"
-                                                                  th:text="${quality}"
-                                                                  style="color: yellow;"></span>
-                                                        </div>
                                                     </th:block>
                                                 </div>
                                                 <div class="item-description">
-                                                <span th:switch="${item.grade}">
-                                                    <span th:case="'고대'" th:text="${item.grade}"
-                                                          style="color: #E3C7A1;"></span>
-                                                    <span th:case="'유물'" th:text="${item.grade}"
-                                                          style="color: #FA5D00;"></span>
-                                                    <span th:case="'전설'" th:text="${item.grade}"
-                                                          style="color: #F99200;"></span>
-                                                    <span th:case="'영웅'" th:text="${item.grade}"
-                                                          style="color: #8500b2;"></span>
-                                                    <span th:case="'희귀'" th:text="${item.grade}"
-                                                          style="color: #0091cc;"></span>
-                                                    <span th:case="'고급'" th:text="${item.grade}"
-                                                          style="color: #91FE02;"></span>
-                                                </span>
-                                                    <strong class="info-margin">
-                                                        <div class="dummy">
-                                                            강화 :<span
-                                                                th:text="${#strings.substring(item.name,1,3)}"></span>
-                                                        </div>
-                                                        <div class="dummy">
-                                                            상급재련 :<span
-                                                                th:utext="${item.tooltip.getAdvancedHoningLevel()}"></span>
-                                                        </div>
-                                                    </strong>
+                                                    <!--                                                    <span th:switch="${item.grade}">-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'고대'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #E3C7A1;"></span>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'유물'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #FA5D00;"></span>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'전설'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #F99200;"></span>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'영웅'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #8500b2;"></span>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'희귀'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #0091cc;"></span>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                        <span th:case="'고급'" th:text="${item.grade}"&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;                                                              style="color: #91FE02;"></span>&ndash;&gt;-->
+                                                    <!--                                                    </span>-->
+                                                    <span th:text="${item.name}"></span>
+                                                    <th:block
+                                                            th:if="${!item.tooltip.getAdvancedHoningLevel().isEmpty()}">
+                                                        <span th:text="'+' + ${item.tooltip.getAdvancedHoningLevel()}"></span>
+                                                    </th:block>
                                                 </div>
                                             </div>
                                         </div>
                                     </li>
                                 </ul>
-                                <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
-                                    <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
-
-                                        <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
-                                        <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
-                                            <div class="item-img">
-                                                <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
-                                            </div>
-
-                                            <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
-                                            <div class="gem-tooltip-details" th:if="${item
-                                    .tooltip != null}"
-                                                 th:with="tooltipData=${item.tooltip.getGemsTooltip()}">
-                                                <div th:if="${tooltipData != null}" class="gem-tooltip-content">
-                                                    <strong th:text="${item.tooltip.getCleanedGemName()}"
-                                                            style="color: #A9D0F5;"></strong>
-                                                    <ul>
-                                                        <li th:each="tip : ${tooltipData.gemsTooltip}"
-                                                            th:text="${tip}"></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
                             </div>
                             <!-- Right Column: Accessories (7 items) -->
                             <div class="equipment-right">

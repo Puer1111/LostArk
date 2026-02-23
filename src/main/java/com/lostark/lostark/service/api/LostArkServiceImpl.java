@@ -62,44 +62,66 @@ public class LostArkServiceImpl implements LostArkService {
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
             SearchCharacterDTO dto = objectMapper.readValue(response.getBody(), SearchCharacterDTO.class);
-            if (dto != null && dto.getCharacterEquipment() != null) {
-                // 1. 필터링 로직: 보여주고 싶은 장비 타입 정의
-                Set<String> desiredTypes = new HashSet<>(Arrays.asList(
-                        "투구", "어깨", "상의", "하의", "장갑", "무기",
-                        "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
-                ));
-
-                List<CharacterEquipment> filteredEquipment = dto.getCharacterEquipment().stream()
-                        .filter(equip -> desiredTypes.contains(equip.getType()))
-                        .collect(Collectors.toList());
-
-                // 2. 정렬 로직: 필터링된 리스트를 정렬
-                List<String> equipmentOrder = Arrays.asList(
-                        "투구", "어깨", "상의", "하의", "장갑", "무기",
-                        "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
-                );
-                Map<String, Integer> orderMap = new HashMap<>();
-                for (int i = 0; i < equipmentOrder.size(); i++) {
-                    orderMap.put(equipmentOrder.get(i), i);
-                }
-
-                filteredEquipment.sort(Comparator.comparingInt(equip ->
-                        orderMap.getOrDefault(equip.getType(), Integer.MAX_VALUE)
-                ));
-
-                // 3. DTO에 최종 리스트 설정
-                dto.setCharacterEquipment(filteredEquipment);
-
-                return dto;
+            if (dto == null) {
+                return new SearchCharacterDTO();
             }
-            return new SearchCharacterDTO(); // if 조건 불만족 시 빈 객체 반환 (기존 로직 유지)
+            sortGems(dto);
+            filterAndSortEquipment(dto);
+            return dto;
+
         } catch (Exception e) {
             log.error("Error fetching or parsing character data for: {}", characterName, e);
-            // 예외를 다시 던져 컨트롤러가 처리하도록 합니다.
             throw new RuntimeException("로스트아크 API 호출 또는 캐릭터 데이터 파싱 중 오류 발생", e);
         }
     }
 
+    private void sortGems(SearchCharacterDTO dto) {
+        if (dto.getCharacterGems() == null || dto.getCharacterGems().getGems() == null) {
+            return;
+        }
+        dto.getCharacterGems().getGems().sort(Comparator.comparing(gem -> {
+            if (gem.getTooltip() == null) return 2; // Gems without tooltips go last
+            String effectType = gem.getTooltip().getPrimaryEffectType();
+            switch (effectType) {
+                case "INCREASE": return 0; // '증가' (Increase) effects first
+                case "DECREASE": return 1; // '감소' (Decrease) effects second
+                default: return 2;         // Others/None last
+            }
+        }));
+    }
+
+    private void filterAndSortEquipment(SearchCharacterDTO dto) {
+        if (dto.getCharacterEquipment() == null) {
+            return;
+        }
+
+        // 1. 필터링 로직: 보여주고 싶은 장비 타입 정의
+        Set<String> desiredTypes = new HashSet<>(Arrays.asList(
+                "투구", "어깨", "상의", "하의", "장갑", "무기",
+                "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
+        ));
+
+        List<CharacterEquipment> filteredEquipment = dto.getCharacterEquipment().stream()
+                .filter(equip -> desiredTypes.contains(equip.getType()))
+                .collect(Collectors.toList());
+
+        // 2. 정렬 로직: 필터링된 리스트를 정렬
+        List<String> equipmentOrder = Arrays.asList(
+                "투구", "어깨", "상의", "하의", "장갑", "무기",
+                "목걸이", "귀걸이", "반지", "팔찌", "어빌리티 스톤"
+        );
+        Map<String, Integer> orderMap = new HashMap<>();
+        for (int i = 0; i < equipmentOrder.size(); i++) {
+            orderMap.put(equipmentOrder.get(i), i);
+        }
+
+        filteredEquipment.sort(Comparator.comparingInt(equip ->
+                orderMap.getOrDefault(equip.getType(), Integer.MAX_VALUE)
+        ));
+
+        // 3. DTO에 최종 리스트 설정
+        dto.setCharacterEquipment(filteredEquipment);
+    }
 }
 
 

@@ -272,18 +272,14 @@ h1, h2, h3 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex-wrap: wrap;
-    text-align: center;
 }
 
 .item-img > img {
     margin: 0;
+    border-radius: 3px;
 }
 
-.info-margin {
-    margin-left: 20px;
-    color: white;
-}
+
 
 .equipment-item, .accessory-item {
     min-height: 70px;

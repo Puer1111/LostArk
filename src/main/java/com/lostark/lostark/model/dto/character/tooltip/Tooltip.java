@@ -20,26 +20,6 @@ public class Tooltip {
         elements.put(name, value);
     }
 
-    public String toHtmlString() {
-        if (elements == null || elements.isEmpty()) {
-            return "";
-        }
-
-        StringBuilder html = new StringBuilder("<div>");
-        // Sort keys to maintain order
-        List<String> sortedKeys = new ArrayList<>(elements.keySet());
-        sortedKeys.sort(String::compareTo);
-
-        for (String key : sortedKeys) {
-            TooltipElement element = elements.get(key);
-            if (element != null) {
-                html.append(valueToHtml(element));
-            }
-        }
-        html.append("</div>");
-        return html.toString();
-    }
-
     public String getElementHtml(String elementKey) {
         if (elements == null || !elements.containsKey(elementKey)) {
             return "";
@@ -140,7 +120,7 @@ public class Tooltip {
 
         // 정규식을 사용하여 상급 재련 단계(숫자) 추출
         java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<FONT COLOR='#FFD200'>(\\d+)</FONT>단계");
-        java.util.regex.Matcher matcher = pattern.matcher(value);
+        java.util.regex.Matcher matcher = pattern.matcher( value);
 
         if (matcher.find()) {
             return matcher.group(1); // "40"과 같은 숫자 문자열 반환
@@ -223,34 +203,6 @@ public class Tooltip {
         }
     }
 
-    public int getGemPoint() {
-        TooltipElement element = elements.get("Element_005");
-        if (element == null || !(element.getValue() instanceof Map)) {
-            return 0;
-        }
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> valueMap = (Map<String, Object>) element.getValue();
-        Object element001 = valueMap.get("Element_001");
-
-        if (!(element001 instanceof String)) {
-            return 0;
-        }
-
-        String text = (String) element001;
-        Pattern pattern = Pattern.compile("<FONT COLOR = '#B7FB00'>(\\d+)</FONT>");
-        Matcher matcher = pattern.matcher(text);
-
-        if (matcher.find()) {
-            try {
-                return Integer.parseInt(matcher.group(1));
-            } catch (NumberFormatException e) {
-                // Should not happen if regex matches
-            }
-        }
-        return 0;
-    }
-
     public Map<String, Integer> extractGemEffects() {
         Map<String, Integer> effects = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
 
@@ -289,9 +241,9 @@ public class Tooltip {
 
     @Data
     public static class GemsTooltipData {
-        private List<String> gemsTooltip;
+        private List<String> skillEffects = new ArrayList<>(); // 스킬 효과 (예: 피해 증가, 재사용 대기시간 감소)
+        private List<String> additionalEffects = new ArrayList<>(); // 추가 효과 (예: 기본 공격력 증가)
     }
-
     public GemsTooltipData getGemsTooltip() {
 
         TooltipElement element006 = elements.get("Element_006");
@@ -301,8 +253,6 @@ public class Tooltip {
             return null;
 
         }
-
-
         Object value = element006.getValue();
 
         if (!(value instanceof Map)) {
@@ -311,38 +261,116 @@ public class Tooltip {
         }
         @SuppressWarnings("unchecked")
         Map<String, String> itemPartBox = (Map<String, String>) value;
-        String descriptionHtml = itemPartBox.get("Element_001");
-        if (descriptionHtml == null) {
+                String descriptionHtml = itemPartBox.get("Element_001");
+                if (descriptionHtml == null) {
+                    return null;
+                }
+        
+                GemsTooltipData data = new GemsTooltipData();
+        
+                String additionalEffectDelimiter = "<FONT COLOR='#A9D0F5'>추가 효과</FONT>";
+                int delimiterIndex = descriptionHtml.indexOf(additionalEffectDelimiter);
+        
+                String skillEffectPart;
+                String additionalEffectPart = null;
+        
+                if (delimiterIndex != -1) {
+                    skillEffectPart = descriptionHtml.substring(0, delimiterIndex);
+                    int additionalEffectStart = delimiterIndex + additionalEffectDelimiter.length(); // + "<BR>".length()는 parseAndAddEffects에서 처리
+                    if (additionalEffectStart < descriptionHtml.length()) {
+                        additionalEffectPart = descriptionHtml.substring(additionalEffectStart);
+                    }
+                } else {
+                    skillEffectPart = descriptionHtml;
+                }
+        
+                // 스킬 효과 파싱 (클래스명 제거)
+                parseAndAddEffects(skillEffectPart, data.getSkillEffects(), true);
+                // 추가 효과 파싱 (존재하는 경우, 클래스명 제거 안 함)
+                if (additionalEffectPart != null) {
+                    parseAndAddEffects(additionalEffectPart, data.getAdditionalEffects(), false);
+                }
+        
+                return data;
 
-            return null;
 
+
+    }
+
+    public List<String> getFilteredGemsTooltip() {
+        GemsTooltipData rawGemsTooltipData = getGemsTooltip();
+        if (rawGemsTooltipData == null || rawGemsTooltipData.getSkillEffects() == null) {
+            return Collections.emptyList();
         }
-        GemsTooltipData data = new GemsTooltipData();
-        // Extract descriptions from Element_001
-        String cleanedDescription = descriptionHtml.replaceAll("\\[[^\\]]+]\s*", "") // Remove [ClassName]
 
-                .replaceAll("<FONT[^>]*>", "") // Remove <FONT> tags
+        List<String> filteredList = new ArrayList<>();
+        // 정규 표현식: 숫자.숫자% 증가 또는 감소 패턴을 찾습니다.
+        // 예를 들어 "22.00% 감소", "1.00% 증가"와 같은 패턴을 찾습니다.
+        Pattern pattern = Pattern.compile("(\\d+\\.\\d+|\\d+)%\\s*(증가|감소)");
 
-                .replaceAll("</FONT>", "");
-        String[] parts = cleanedDescription.split("<BR>");
-        List<String> tooltips = new ArrayList<>();
-        for (String part : parts) {
-
-            String trimmedPart = part.trim();
-
-            if (!trimmedPart.isEmpty()) {
-
-                tooltips.add(trimmedPart);
-
+        for (String tooltip : rawGemsTooltipData.getSkillEffects()) {
+            Matcher matcher = pattern.matcher(tooltip);
+            if (matcher.find()) { // 패턴과 일치하는 부분이 있다면
+                filteredList.add(tooltip);
             }
-
         }
 
-        data.setGemsTooltip(tooltips);
+        // Sort the filteredList: "증가" items before "감소" items
+        Collections.sort(filteredList, (s1, s2) -> {
+            boolean s1IsIncrease = s1.contains("증가");
+            boolean s2IsIncrease = s2.contains("증가");
+
+            if (s1IsIncrease && !s2IsIncrease) { // s1이 증가이고 s2가 증가가 아니면 (즉 감소이면) s1이 먼저
+                return -1;
+            } else if (!s1IsIncrease && s2IsIncrease) { // s2가 증가이고 s1이 증가가 아니면 (즉 감소이면) s2가 먼저
+                return 1;
+            }
+            // 둘 다 증가이거나 둘 다 감소인 경우 (정규식 필터링으로 인해 이 외의 경우는 없음), 기존 순서 유지
+            return 0;
+        });
+
+        return filteredList;
+    }
+
+    public String getPrimaryEffectType() {
+        List<String> tips = getFilteredGemsTooltip();
+        if (tips == null || tips.isEmpty()) {
+            return "NONE";
+        }
+        // The first tip is considered primary due to the existing sort logic in getFilteredGemsTooltip
+        String firstTip = tips.get(0);
+        if (firstTip.contains("증가")) {
+            return "INCREASE";
+        }
+        if (firstTip.contains("감소")) {
+            return "DECREASE";
+        }
+        return "NONE";
+    }
 
 
-        return data;
 
+
+    private void parseAndAddEffects(String htmlPart, List<String> targetList, boolean removeClassName) {
+        if (htmlPart == null || htmlPart.trim().isEmpty()) {
+            return;
+        }
+        String cleanedDescription = htmlPart;
+        if (removeClassName) {
+            // [클래스명] 제거 (예: [아르카나])
+            cleanedDescription = cleanedDescription.replaceAll("\\[[^\\]]+]\s*", "");
+        }
+        // <FONT> 태그 제거
+        cleanedDescription = cleanedDescription.replaceAll("<FONT[^>]*>", "")
+                                .replaceAll("</FONT>", "");
+        String[] parts = cleanedDescription.split("<BR>");
+        for (String part : parts) {
+            String trimmedPart = part.trim();
+            // "추가 효과" 텍스트 자체는 리스트에 추가하지 않음
+            if (!trimmedPart.isEmpty() && !trimmedPart.equals("추가 효과")) {
+                targetList.add(trimmedPart);
+            }
+        }
     }
 
 
