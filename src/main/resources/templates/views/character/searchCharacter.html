@@ -15,9 +15,6 @@
     </th:block>
     <th:block th:fragment="mainContent">
         <div class="container">
-            <div class="gotoExpedition">
-                <button id="btn-expedition">원정대</button>
-            </div>
             <div class="layout-wrapper">
                 <div class="left-column">
                     <!-- Character Profiles -->
@@ -122,92 +119,148 @@
 
                 </div>
                 <div class="right-column">
-                    <!-- Character Equipment -->
-                    <div class="section equipment"
-                         th:if="${characterData.characterEquipment != null and !characterData.characterEquipment.empty}">
-                        <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
-                            <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
-                                <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
-                                <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
-                                    <div class="item-img">
-                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
-                                    </div>
-                                    <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
-                                    <div class="gem-tooltip-details" th:if="${item.tooltip != null}"
-                                         th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
-                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
-                                            <strong th:text="${item.tooltip.getCleanedGemName()}"
-                                                    style="color: #A9D0F5;"></strong>
-                                            <ul>
-                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
-                                            </ul>
+                    <div class="info-tabs">
+                        <button class="tab-btn active" data-target="equipment">장비</button>
+                        <button class="tab-btn" data-target="skills">스킬</button>
+                        <button class="tab-btn" data-target="ark-grid">아크 그리드</button>
+                        <button class="tab-btn" data-target="ark-passive">아크 패시브</button>
+                        <button class="tab-btn" data-target="expedition">원정대</button>
+                    </div>
+                    
+                    <!-- 1. 장비 탭 -->
+                    <div id="equipment" class="tab-content">
+                        <!-- Character Equipment -->
+                        <div class="section equipment"
+                             th:if="${characterData.characterEquipment != null and !characterData.characterEquipment.empty}">
+                            <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}">
+                                <div class="gems-item-content" style="display:flex; flex-wrap: wrap; gap: 10px;">
+                                    <!-- 각 보석 아이템(이미지 + 툴팁)을 감싸는 div -->
+                                    <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
+                                        <div class="item-img">
+                                            <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                        </div>
+                                        <!-- getGemsTooltip() 메서드 호출 및 결과 사용 -->
+                                        <div class="gem-tooltip-details" th:if="${item.tooltip != null}"
+                                             th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
+                                            <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
+                                                <strong th:text="${item.tooltip.getCleanedGemName()}"
+                                                        style="color: #A9D0F5;"></strong>
+                                                <ul>
+                                                    <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="equipment-columns">
+                                <!-- Left Column: Armor (6 items) -->
+                                <div class="equipment-left">
+                                    <ul class="equipment-list">
+                                        <li class="equipment-item" th:each="item : ${characterData.characterEquipment}"
+                                            th:if="${item.type == '무기' or item.type == '투구' or item.type == '어깨' or item.type == '상의' or item.type == '하의' or item.type == '장갑'}">
+                                            <div class="tooltip-content">
+                                                <div class="equipment-area">
+                                                    <div class="item-img">
+                                                        <img th:src="${item.icon}" alt="아이템 아이콘"/>
+                                                        <th:block
+                                                                th:with="quality=${item.tooltip.getQualityValue().isEmpty() ? 0 : T(java.lang.Integer).parseInt(item.tooltip.getQualityValue())}">
+                                                        </th:block>
+                                                    </div>
+                                                    <div class="item-description">
+                                                        <span th:text="${item.name}"></span>
+                                                        <th:block
+                                                                th:if="${!item.tooltip.getAdvancedHoningLevel().isEmpty()}">
+                                                            <span th:text="'+' + ${item.tooltip.getAdvancedHoningLevel()}"></span>
+                                                        </th:block>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- Right Column: Accessories (7 items) -->
+                                <div class="equipment-right">
+                                    <ul class="accessory-list">
+                                        <li class="accessory-item" th:each="item : ${characterData.characterEquipment}"
+                                            th:if="${item.type == '목걸이' or item.type == '귀걸이' or item.type == '반지' or item.type == '팔찌' or item.type == '어빌리티 스톤'}">
+                                            <div class="tooltip-content" th:if="${item.tooltip != null}">
+                                                <div class="equipment-area">
+                                                    <div class="item-img">
+                                                        <img th:src="${item.icon}" alt="아이템 아이콘"/>
+                                                    </div>
+                                                    <div th:utext="${item.tooltip.getElementHtml('Element_005')}"></div>
+                                                    <th:block
+                                                            th:if="${item.type == '목걸이' or item.type == '귀걸이' or item.type == '반지'}">
+                                                        <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
+                                                    </th:block>
+                                                    <div th:utext="${item.tooltip.extractEngravings()}"></div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="equipment-columns">
-                            <!-- Left Column: Armor (6 items) -->
-                            <div class="equipment-left">
-                                <ul class="equipment-list">
-                                    <li class="equipment-item" th:each="item : ${characterData.characterEquipment}"
-                                        th:if="${item.type == '무기' or item.type == '투구' or item.type == '어깨' or item.type == '상의' or item.type == '하의' or item.type == '장갑'}">
-                                        <div class="tooltip-content">
-                                            <div class="equipment-area">
-                                                <div class="item-img">
-                                                    <img th:src="${item.icon}" alt="아이템 아이콘"/>
-                                                    <th:block
-                                                            th:with="quality=${item.tooltip.getQualityValue().isEmpty() ? 0 : T(java.lang.Integer).parseInt(item.tooltip.getQualityValue())}">
-                                                    </th:block>
-                                                </div>
-                                                <div class="item-description">
-                                                    <!--                                                    <span th:switch="${item.grade}">-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'고대'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #E3C7A1;"></span>&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'유물'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #FA5D00;"></span>&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'전설'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #F99200;"></span>&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'영웅'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #8500b2;"></span>&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'희귀'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #0091cc;"></span>&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                        <span th:case="'고급'" th:text="${item.grade}"&ndash;&gt;-->
-                                                    <!--&lt;!&ndash;                                                              style="color: #91FE02;"></span>&ndash;&gt;-->
-                                                    <!--                                                    </span>-->
-                                                    <span th:text="${item.name}"></span>
-                                                    <th:block
-                                                            th:if="${!item.tooltip.getAdvancedHoningLevel().isEmpty()}">
-                                                        <span th:text="'+' + ${item.tooltip.getAdvancedHoningLevel()}"></span>
-                                                    </th:block>
-                                                </div>
-                                            </div>
+                    </div>
+
+                    <!-- 2. 스킬 탭 -->
+                    <div id="skills" class="tab-content" style="display: none;">
+                        <div class="section skills">
+                            <h2>전투 스킬</h2>
+                            <ul class="skill-list" style="display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0;">
+                                <li th:each="skill : ${characterData.characterCombatSkill}" th:if="${skill.level > 1}" class="skill-item" style="display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; gap: 15px;">
+                                    <!-- 스킬 기본 정보 (왼쪽) -->
+                                    <img th:src="${skill.icon}" alt="Skill Icon" style="width: 40px; height: 40px; border-radius: 4px;"/>
+                                    <div class="skill-info">
+                                        <strong th:text="${skill.name}" style="font-size: 1.1em; color: #fff;"></strong>
+                                        <p style="margin: 0; font-size: 0.9em; color: #ccc;">Lv.<span th:text="${skill.level}"></span></p>
+                                    </div>
+
+                                    <!-- 룬 및 트라이포드 (오른쪽 정렬) -->
+                                    <div class="skill-extras" style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                                        <!-- 룬 정보 -->
+                                        <div th:if="${skill.rune != null}" class="skill-rune" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 50px;">
+                                            <img th:src="${skill.rune.icon}" th:title="${skill.rune.name}" 
+                                                 class="rune-icon-img"
+                                                 th:classappend="'rune-border-' + ${skill.rune.grade}" />
+                                            <span th:text="${skill.rune.name}" style="font-size: 0.7em; color: #efefef; white-space: nowrap; text-align: center;"></span>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <!-- Right Column: Accessories (7 items) -->
-                            <div class="equipment-right">
-                                <ul class="accessory-list">
-                                    <li class="accessory-item" th:each="item : ${characterData.characterEquipment}"
-                                        th:if="${item.type == '목걸이' or item.type == '귀걸이' or item.type == '반지' or item.type == '팔찌' or item.type == '어빌리티 스톤'}">
-                                        <div class="tooltip-content" th:if="${item.tooltip != null}">
-                                            <div class="equipment-area">
-                                                <div class="item-img">
-                                                    <img th:src="${item.icon}" alt="아이템 아이콘"/>
+                                        
+                                        <!-- 트라이포드 -->
+                                        <div class="skill-tripods" style="display: flex; gap: 8px;">
+                                            <th:block th:each="tripod : ${skill.tripods}" th:if="${tripod.isSelected}">
+                                                <div class="tripod-wrapper" style="position: relative; display: inline-block;">
+                                                    <img th:src="${tripod.icon}" th:title="${tripod.name}" style="width: 28px; height: 28px; border-radius: 50%; border: 1px solid #555; display: block;"/>
+                                                    <span th:text="${tripod.slot}" style="position: absolute; bottom: -2px; right: -2px; background: rgba(0,0,0,0.8); color: #FFD700; font-size: 0.65em; font-weight: bold; padding: 0 3px; border-radius: 3px; line-height: 1.2; text-shadow: 1px 1px 1px #000;"></span>
                                                 </div>
-                                                <div th:utext="${item.tooltip.getElementHtml('Element_005')}"></div>
-                                                <!--                                                <div th:utext="${item.tooltip.getNestedElementHtml('Element_004', 'Element_001')}"></div>-->
-                                                <th:block
-                                                        th:if="${item.type == '목걸이' or item.type == '귀걸이' or item.type == '반지'}">
-                                                    <div th:utext="${item.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
-                                                </th:block>
-                                                <div th:utext="${item.tooltip.extractEngravings()}"></div>
-                                            </div>
+                                            </th:block>
                                         </div>
-                                    </li>
-                                </ul>
-                            </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 3. 아크 그리드 탭 -->
+                    <div id="ark-grid" class="tab-content" style="display: none;">
+                        <div class="section arkGrid">
+                             <!-- 아크 그리드 내용은 기존 좌측에 있던 것을 이곳으로 옮길 수도 있고, 여기 새로 구성할 수도 있습니다. -->
+                             <p>아크 그리드 탭 영역</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. 아크 패시브 탭 -->
+                    <div id="ark-passive" class="tab-content" style="display: none;">
+                        <div class="section arkPassive">
+                            <p>아크 패시브 탭 영역</p>
+                        </div>
+                    </div>
+
+                    <!-- 5. 원정대 탭 -->
+                    <div id="expedition" class="tab-content" style="display: none;">
+                        <div class="section expedition">
+                            <p>원정대 정보 탭 영역</p>
                         </div>
                     </div>
                 </div>

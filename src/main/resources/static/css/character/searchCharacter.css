@@ -39,7 +39,7 @@ h1, h2, h3 {
     max-width: 50px;
     height: auto;
     vertical-align: middle;
-    margin-right: 10px;
+    /*margin-right: 10px;*/
 }
 
 .section .arkPassive {
@@ -280,6 +280,9 @@ h1, h2, h3 {
 }
 
 
+.arkGrid-img{
+    margin-right:10px;
+}
 
 .equipment-item, .accessory-item {
     min-height: 70px;
@@ -354,4 +357,38 @@ h1, h2, h3 {
 
 .engraving-item-content[data-grade="유물"] .engraving-name {
     color: #000; /* 유물 등급 각인 이름 색상 */
+}
+
+/* =================================== */
+/* 스킬 룬 스타일 (Skill Rune) */
+/* =================================== */
+
+.rune-icon-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.5);
+    display: block;
+    border: 2px solid #777; /* 기본 테두리 */
+}
+
+/* 등급별 테두리 색상 */
+.rune-border-전설 { border-color: rgb(243, 147, 3) !important; }
+.rune-border-영웅 { border-color: rgb(212, 85, 255) !important; }
+.rune-border-희귀 { border-color: rgb(0, 181, 255) !important; }
+.rune-border-고급 { border-color: rgb(145, 254, 2) !important; }
+
+.skill-rune {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 50px;
+}
+
+.skill-rune span {
+    font-size: 0.7em;
+    color: #efefef;
+    white-space: nowrap;
+    text-align: center;
 }

@@ -31,7 +31,7 @@ public class Tooltip {
         }
         return valueToHtml(element);
     }
-
+    // 특정 요소의 하위 내용 뽑기 ( 장신구 )
     public String getNestedElementHtml(String topLevelKey, String nestedKey) {
         if (elements == null || !elements.containsKey(topLevelKey)) {
             return "";
@@ -432,6 +432,51 @@ public class Tooltip {
 
         return htmlString; // If no tags found, return original string as a last resort
 
+    }
+
+    /**
+     * 스킬 툴팁에서 무력화, 부위파괴, 면역 정보를 추출합니다.
+     */
+    public List<String> extractSkillAttributes() {
+        Set<String> attributes = new LinkedHashSet<>();
+        if (elements == null) return new ArrayList<>();
+
+        for (TooltipElement element : elements.values()) {
+            searchAttributesInObject(element.getValue(), attributes);
+        }
+        return new ArrayList<>(attributes);
+    }
+
+    private void searchAttributesInObject(Object value, Set<String> attributes) {
+        if (value instanceof String) {
+            String text = Jsoup.parse((String) value).text();
+
+            // 1. 무력화 (예: 무력화 : [중상])
+            if (text.contains("무력화")) {
+                Pattern p = Pattern.compile("무력화\\s*:\\s*\\[.*?\\]");
+                Matcher m = p.matcher(text);
+                if (m.find()) attributes.add(m.group().trim());
+            }
+
+            // 2. 부위파괴 (예: 부위파괴 : 레벨 1)
+            if (text.contains("부위파괴")) {
+                Pattern p = Pattern.compile("부위파괴\\s*:\\s*레벨\\s*\\d+");
+                Matcher m = p.matcher(text);
+                if (m.find()) attributes.add(m.group().trim());
+            }
+
+            // 3. 면역 효과
+            if (text.contains("경직 면역")) attributes.add("경직 면역");
+            if (text.contains("피격 면역")) attributes.add("피격 면역");
+            if (text.contains("상태 이상 면역")) attributes.add("상태 이상 면역");
+
+        } else if (value instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) value;
+            for (Object v : map.values()) {
+                searchAttributesInObject(v, attributes);
+            }
+        }
     }
 
 }

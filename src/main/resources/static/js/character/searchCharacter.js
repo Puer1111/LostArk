@@ -1,19 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // 캐릭터 조회 페이지 내의 '원정대' 버튼 기능
-    const pageExpeditionBtn = document.getElementById('btn-expedition');
-    if (pageExpeditionBtn) {
-        pageExpeditionBtn.addEventListener("click", function () {
-            // 페이지에 표시된 캐릭터 이름을 가져옵니다.
-            const characterNameSpan = document.querySelector('.character-name');
-            if (!characterNameSpan || !characterNameSpan.textContent) {
-                alert("페이지의 캐릭터 이름을 찾을 수 없습니다.");
-                return;
-            }
-            const characterName = characterNameSpan.textContent;
-            window.location.href = `/character/expedition/${characterName}`;
-        });
-    }
-
     // 아크 그리드 툴팁 처리 함수 호출
     processArkGridTooltips();
 
@@ -22,7 +7,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 각인 아이콘 위치 적용 함수 호출
     applyEngravingIcons();
+
+    // 탭 시스템 초기화
+    initTabSystem();
 });
+
+function initTabSystem() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const target = this.dataset.target;
+
+            // 버튼 활성화 스타일 변경
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+
+            // 탭 내용 Show/Hide 처리
+            tabContents.forEach(content => {
+                if (content.id === target) {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        });
+    });
+}
 
 
 function processArkGridTooltips() {
