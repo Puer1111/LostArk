@@ -386,9 +386,33 @@ h1, h2, h3 {
     min-width: 50px;
 }
 
-.skill-rune span {
-    font-size: 0.7em;
-    color: #efefef;
-    white-space: nowrap;
-    text-align: center;
+/* =================================== */
+/* 보석 레벨별 테두리 스타일 (Gem Levels) */
+/* =================================== */
+
+.gem-icon-wrapper {
+    padding: 2px; /* 테두리 두께 역할 */
+    border-radius: 6px;
+    display: inline-block;
 }
+
+/* 10레벨: 금색 계열 그라데이션 */
+.gem-border-10 {
+    background: linear-gradient(135deg, #403527, #d2bf91 93%);
+}
+
+/* 8~9레벨: 짙은 주황/빨강 계열 그라데이션 */
+.gem-border-8 {
+    background: linear-gradient(135deg, #3b1303, #a23405);
+}
+
+/* 7레벨 이하: 갈색/주황 계열 그라데이션 */
+.gem-border-base {
+    background: linear-gradient(135deg, #3c2201, #a86200);
+}
+
+.gem-icon-wrapper img {
+    display: block;
+    border-radius: 4px;
+}
+

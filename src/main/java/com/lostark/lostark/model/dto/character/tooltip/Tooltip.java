@@ -348,7 +348,35 @@ public class Tooltip {
         return "NONE";
     }
 
+    /**
+     * 보석의 효과를 확인하여 "피해" 또는 "감소"로 단순화된 이름을 반환합니다.
+     */
+    public String getSimplifiedGemName() {
+        String type = getPrimaryEffectType();
+        if ("INCREASE".equals(type)) {
+            return "피해";
+        }
+        if ("DECREASE".equals(type)) {
+            return "감소";
+        }
+        return getCleanedGemName(); // 판별 불가 시 기존 이름 반환
+    }
 
+
+
+
+    /**
+     * 보석 레벨에 따라 CSS 클래스명을 반환합니다.
+     */
+    public String getGemLevelClass(int level) {
+        if (level >= 10) {
+            return "gem-border-10"; // 10레벨
+        } else if (level >= 8) {
+            return "gem-border-8";  // 8~9레벨
+        } else {
+            return "gem-border-base"; // 7레벨 이하
+        }
+    }
 
 
     private void parseAndAddEffects(String htmlPart, List<String> targetList, boolean removeClassName) {
@@ -465,10 +493,13 @@ public class Tooltip {
                 if (m.find()) attributes.add(m.group().trim());
             }
 
-            // 3. 면역 효과
+            // 3. 면역 효과 (트라이포드 '강인함' 포함)
             if (text.contains("경직 면역")) attributes.add("경직 면역");
-            if (text.contains("피격 면역")) attributes.add("피격 면역");
+            if (text.contains("피격 면역") || text.contains("강인함")) attributes.add("피격 면역");
             if (text.contains("상태 이상 면역")) attributes.add("상태 이상 면역");
+
+            // 4. 카운터 가능 여부
+            if (text.contains("카운터 : 가능")) attributes.add("카운터");
 
         } else if (value instanceof Map) {
             @SuppressWarnings("unchecked")
