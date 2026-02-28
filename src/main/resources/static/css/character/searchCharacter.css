@@ -387,6 +387,60 @@ h1, h2, h3 {
 }
 
 /* =================================== */
+/* 드롭다운 툴팁 시스템 (Dropdown Tooltips) */
+/* =================================== */
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none; /* 평소에는 숨김 */
+    position: absolute;
+    background-color: #222;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+    z-index: 1000;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    color: #efefef;
+    font-size: 0.85em;
+    /* 툴팁 위치 조정 (기본값: 아래쪽) */
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5px;
+}
+
+/* 마우스를 올리면 툴팁 표시 */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* 툴팁 내부 리스트 스타일 */
+.dropdown-content ul {
+    margin: 8px 0 0 0;
+    padding-left: 15px;
+    list-style-type: disc;
+}
+
+.dropdown-content li {
+    margin-bottom: 4px;
+    background: none !important; /* 기존 .section li 배경 제거 */
+    padding: 0 !important;
+}
+
+/* 보석 전용 툴팁 위치 조정 (좌측으로 치우치지 않게) */
+.gem-mini-display.dropdown .dropdown-content {
+    left: auto;
+    right: 0;
+    transform: none;
+    top: 110%;
+}
+
+/* =================================== */
 /* 보석 레벨별 테두리 스타일 (Gem Levels) */
 /* =================================== */
 
