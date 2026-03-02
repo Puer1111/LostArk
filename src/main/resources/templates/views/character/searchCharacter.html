@@ -65,8 +65,8 @@
                     <div class="section arkGrid" th:if="${characterData.characterArkGrid != null}">
                         <h3>아크 그리드</h3>
                         <div th:if="${characterData.characterArkGrid.slots != null and !characterData.characterArkGrid.slots.empty}">
-                            <div class="arkGrid-list">
-                                <div class="arkGrid-item-container"
+                            <div class="arkGrid-simple-list">
+                                <div class="arkGrid-simple-item"
                                      th:each="slot : ${characterData.characterArkGrid.slots}"
                                      th:with="currentTotalPoints=${slot.point}">
                                     <img th:src="${slot.icon}" alt="슬롯 아이콘" class="arkGrid-img"/>
@@ -295,50 +295,49 @@
                     <!-- 3. 아크 그리드 탭 -->
                     <div id="ark-grid" class="tab-content" style="display: none;">
                         <div class="section arkGrid" th:if="${characterData.characterArkGrid != null}">
-                            <div class="arkGrid-list" style="display: flex; flex-direction: column; gap: 10px;">
-                                <div class="arkGrid-item" th:each="slot : ${characterData.characterArkGrid.slots}"
-                                     style="display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; gap: 15px;">
-                                    <div class="arkGrid-icon-wrapper">
-                                        <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"
-                                             style="width: 40px; height: 40px; border-radius: 4px; border: 1px solid #444;"/>
-                                    </div>
-                                    <div class="arkGrid-info">
-                                        <div class="arkGrid-name-area">
-                                            <strong th:text="${slot.name}"
-                                                    style="font-size: 0.9rem; color: #fff;"></strong>
+                            <div class="arkGrid-list">
+                                <div class="arkGrid-slot-box" th:each="slot : ${characterData.characterArkGrid.slots}">
+                                    <div class="arkGrid-item">
+                                        <div class="arkGrid-icon-wrapper">
+                                            <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"/>
                                         </div>
-                                        <p th:text="${slot.grade}"
-                                           style="margin: 0; font-size: 0.9em; color: #ccc;"></p>
-                                            <!--잼 정보-->
-<!--                                        <div class="arkGrid-gems" th:if="${slot.gems != null and !slot.gems.empty}"-->
-<!--                                             style="display: flex; gap: 8px;">-->
-<!--                                            <div th:each="gem : ${slot.gems}" class="gem-mini-display dropdown">-->
-<!--                                                <span class="gem-hover-target">-->
-<!--                                                    <img th:src="${gem.icon}"-->
-<!--                                                         style="width: 30px; height: 30px; border-radius: 4px; background: rgba(0,0,0,0.5); display: block;"-->
-<!--                                                         th:title="${gem.grade}"/>-->
-<!--                                                </span>-->
-<!--                                                <div class="dropdown-content gem-tooltip-overlay"-->
-<!--                                                     th:if="${gem.tooltip != null}">-->
-<!--                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>-->
-<!--                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_004')}"></div>-->
-<!--                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_005')}"></div>-->
-<!--                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_006')}"></div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                        </div>-->
-                                    </div>
-
-                                    <!-- 슬롯 코어 효과 (즉시 노출) -->
-                                    <div class="arkGrid-extras"
-                                         style="margin-left: auto; display: flex; align-items: center; border-left: 1px solid gray;">
-                                        <div class="core-effect-display" th:if="${slot.tooltip != null}"
-                                             style="font-size: 0.72rem; color: #efefef; padding: 8px 12px; width: 400px;">
-                                            <div th:if="${#strings.contains(slot.name, '질서의')}">
-                                                <div th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
+                                        <div class="arkGrid-info">
+                                            <div class="arkGrid-name-area">
+                                                <strong th:text="${slot.name}"></strong>
                                             </div>
-                                            <div th:if="${#strings.contains(slot.name, '혼돈의')}">
-                                                <div th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
+                                            <p th:text="${slot.grade}" class="arkGrid-grade"></p>
+                                        </div>
+                                        <!-- 상세보기 화살표 (우측 하단 고정) -->
+                                        <button class="arkGrid-detail-btn" type="button">
+                                            <span class="arrow" style="font-size:small;">∨ 잼 상세보기</span>
+                                        </button>
+
+                                        <!-- 슬롯 코어 효과 (즉시 노출) -->
+                                        <div class="arkGrid-extras" th:if="${slot.tooltip != null}">
+                                            <div class="core-effect-display">
+                                                <div th:if="${#strings.contains(slot.name, '질서의')}">
+                                                    <div th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
+                                                </div>
+                                                <div th:if="${#strings.contains(slot.name, '혼돈의')}">
+                                                    <div th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- 상세보기 패널 (기본 숨김) -->
+                                    <div class="arkGrid-detail-panel" style="display: none;">
+                                        <div class="arkGrid-gems-detail"
+                                             th:if="${slot.gems != null and !slot.gems.empty}">
+                                            <div th:each="gem : ${slot.gems}" class="arkGrid-gem-item">
+                                                <!--                                                <div class="arkGrid-gem-icon">-->
+                                                <!--                                                </div>-->
+                                                <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
+                                                    <img th:src="${gem.icon}" th:title="${gem.grade}" class="arkGrid-gem-icon-img"/>
+                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
+                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_004')}"></div>
+                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_005')}"></div>
+                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_006')}"></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

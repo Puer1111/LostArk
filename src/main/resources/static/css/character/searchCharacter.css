@@ -230,15 +230,25 @@ h1, h2, h3 {
     margin-right: 10px;
 }
 
-/* arkGrid region */
-.arkGrid-list {
+/* =================================== */
+/* 아크 그리드 미니 버전 (Left Column) */
+/* =================================== */
+.arkGrid-simple-list {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    margin-top: 10px;
 }
 
-.arkGrid-item-container {
+.arkGrid-simple-item {
     position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arkGrid-simple-item:hover .arkGrid-description {
+    display: block;
 }
 
 .arkGrid-description {
@@ -257,16 +267,171 @@ h1, h2, h3 {
     color: white;
 }
 
-.arkGrid-item-container:hover .arkGrid-description {
+/* =================================== */
+/* 아크 그리드 상세 버전 (Tab Content) */
+/* =================================== */
+.arkGrid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.arkGrid-item {
+    display: flex;
+    align-items: center; /* 이미지, 텍스트, 엑스트라 모두를 세로 중앙 정렬 */
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 15px;
+    border-radius: 8px;
+    gap: 15px;
+    position: relative; /* 상세보기 버튼 배치를 위한 기준점 */
+}
+
+.arkGrid-slot-box {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.arkGrid-detail-panel {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 8px 8px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    margin-top: -2px;
+}
+
+.arkGrid-gems-detail {
+    display: flex;
+    gap: 15px;
+}
+
+.arkGrid-gem-item {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.arkGrid-gem-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.arkGrid-gem-icon img {
+    width: 35px;
+    height: 35px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #444;
+}
+
+.arkGrid-gem-info {
+    flex: 1;
+    color: #efefef;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 이미지와 텍스트 모두 수평 중앙 정렬 */
+    text-align: center; /* 텍스트 자체도 중앙 정렬 */
+}
+
+.arkGrid-gem-icon-img {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.arkGrid-gem-info div {
+    margin-bottom: 3px;
+    width: 100%; /* 텍스트 영역 너비 확보 */
+}
+
+.arkGrid-icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arkGrid-icon-wrapper img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    border: 1px solid #444;
     display: block;
 }
 
+.arkGrid-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-right: 15px;
+}
+
+.arkGrid-name-area {
+    display: flex;
+    align-items: center;
+}
+
+.arkGrid-name-area strong {
+    font-size: 0.9rem;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.arkGrid-grade {
+    margin: 0;
+    font-size: 0.85em;
+    color: #ccc;
+    line-height: 1.2;
+}
+
+.arkGrid-extras {
+    display: flex;
+    align-items: center;
+    border-left: 1px solid #555;
+    padding-left: 15px;
+}
+
+.core-effect-display {
+    font-size: 0.72rem;
+    color: #efefef;
+    padding: 8px 12px;
+    width: 400px;
+}
+
+/* 아크 그리드 공통 이미지 스타일 */
 .arkGrid-img {
     width: 40px;
     height: 40px;
     display: block;
+    margin-right: 10px;
 }
 
+/* 상세보기 화살표 버튼 스타일 */
+.arkGrid-detail-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0 5px;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 5;
+}
+.arkGrid-detail-btn .arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
 /* Styles moved from inline */
 .item-img {
     display: flex;
@@ -280,8 +445,8 @@ h1, h2, h3 {
 }
 
 
-.arkGrid-img{
-    margin-right:10px;
+.arkGrid-img {
+    margin-right: 10px;
 }
 
 .equipment-item, .accessory-item {
@@ -367,16 +532,27 @@ h1, h2, h3 {
     width: 32px;
     height: 32px;
     border-radius: 4px;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: block;
     border: 2px solid #777; /* 기본 테두리 */
 }
 
 /* 등급별 테두리 색상 */
-.rune-border-전설 { border-color: rgb(243, 147, 3) !important; }
-.rune-border-영웅 { border-color: rgb(212, 85, 255) !important; }
-.rune-border-희귀 { border-color: rgb(0, 181, 255) !important; }
-.rune-border-고급 { border-color: rgb(145, 254, 2) !important; }
+.rune-border-전설 {
+    border-color: rgb(243, 147, 3) !important;
+}
+
+.rune-border-영웅 {
+    border-color: rgb(212, 85, 255) !important;
+}
+
+.rune-border-희귀 {
+    border-color: rgb(0, 181, 255) !important;
+}
+
+.rune-border-고급 {
+    border-color: rgb(145, 254, 2) !important;
+}
 
 .skill-rune {
     display: flex;
@@ -400,7 +576,7 @@ h1, h2, h3 {
     position: absolute;
     background-color: #222;
     min-width: 200px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
     z-index: 1000;
     padding: 12px;
     border-radius: 8px;
@@ -414,10 +590,10 @@ h1, h2, h3 {
     margin-top: 5px;
 }
 
-/* 마우스를 올리면 툴팁 표시 */
-.dropdown:hover .dropdown-content {
-    display: block;
-}
+/*!* 마우스를 올리면 툴팁 표시 *!*/
+/*.dropdown:hover .dropdown-content {*/
+/*    display: block;*/
+/*}*/
 
 /* 툴팁 내부 리스트 스타일 */
 .dropdown-content ul {

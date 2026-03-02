@@ -10,7 +10,38 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 탭 시스템 초기화
     initTabSystem();
+
+    // 아크 그리드 상세보기 버튼 초기화
+    initArkGridDetailButtons();
 });
+
+function initArkGridDetailButtons() {
+    // 이미 이벤트가 등록되어 있다면 다시 등록하지 않음 (중복 방지)
+    if (document.arkGridEventRegistered) return;
+
+    document.addEventListener('click', function (event) {
+        const button = event.target.closest('.arkGrid-detail-btn');
+        if (button) {
+            event.preventDefault();
+            button.classList.toggle('active');
+
+            // 버튼이 속한 arkGrid-slot-box 안에서 상세 패널을 찾음
+            const slotBox = button.closest('.arkGrid-slot-box');
+            if (slotBox) {
+                const panel = slotBox.querySelector('.arkGrid-detail-panel');
+                if (panel) {
+                    // active 클래스 여부에 따라 보이기/숨기기
+                    panel.style.display = button.classList.contains('active') ? 'block' : 'none';
+                }
+            }
+            
+            console.log('Button clicked, active class toggled:', button.classList.contains('active'));
+        }
+    });
+
+    // 등록 완료 표시
+    document.arkGridEventRegistered = true;
+}
 
 function initTabSystem() {
     const tabButtons = document.querySelectorAll('.tab-btn');
