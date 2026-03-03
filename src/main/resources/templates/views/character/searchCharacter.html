@@ -40,21 +40,21 @@
                         </div>
                     </div>
                     <!-- Character Ark Passive -->
-                    <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}">
+                    <div class="section arkPassive-simple" th:if="${characterData.characterArkPassive != null}">
                         <div th:if="${characterData.characterArkPassive.points != null and !characterData.characterArkPassive.points.empty}"
                              style="display: flex;">
                             <div th:each="point : ${characterData.characterArkPassive.points}"
-                                 class="ark-passive-container">
-                                <div class="ark-passive-header">
+                                 class="arkPassive-simple-container">
+                                <div class="arkPassive-simple-header">
                                     <h3><span th:text="${point.name}"></span>: <span th:text="${point.value}"></span>
                                     </h3>
                                 </div>
-                                <ul class="ark-passive-content">
+                                <ul class="arkPassive-simple-content">
                                     <th:block th:each="effect : ${characterData.characterArkPassive.effects}">
                                         <li th:if="${effect.name == point.name}">
                                             <img th:src="${effect.icon}" alt="Effect Icon"
                                                  style="width: 20px; height: 20px; margin-right: 5px;">
-                                            <span th:utext="${#strings.trim(#strings.substringAfter(effect.description, '</FONT>'))}"></span>
+                                            <span th:utext="${effect.effectDetail}"></span>
                                         </li>
                                     </th:block>
                                 </ul>
@@ -348,8 +348,60 @@
 
                     <!-- 4. 아크 패시브 탭 -->
                     <div id="ark-passive" class="tab-content" style="display: none;">
-                        <div class="section arkPassive">
-                            <p>아크 패시브 탭 영역</p>
+                        <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}" style="display: flex; flex-direction: row; gap: 20px;">
+                            <!-- 진화 (Evolution) 컬럼 -->
+                            <div class="ark-passive-column" id="evolution">
+                                <h3>진화</h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '진화' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Evolution Icon" style="width: 32px; height: 32px;"/>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#F1D594" class="effect-name" th:text="${effect.pureName}"></font>
+                                            <font color="#F1D594" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 깨달음 (Enlightenment) 컬럼 -->
+                            <div class="ark-passive-column" id="enlightenment">
+                                <h3>깨달음</h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '깨달음' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Enlightenment Icon" style="width: 32px; height: 32px;"/>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#83E9FF" class="effect-name" th:text="${effect.pureName}"></font>
+                                            <font color="#83E9FF" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 도약 (Leap) 컬럼 -->
+                            <div class="ark-passive-column" id="leap">
+                                <h3>도약</h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '도약' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Leap Icon" style="width: 32px; height: 32px;"/>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#C2EA55" class="effect-name" th:text="${effect.pureName}"></font>
+                                            <font color="#C2EA55" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

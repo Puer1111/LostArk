@@ -42,7 +42,7 @@ h1, h2, h3 {
     /*margin-right: 10px;*/
 }
 
-.section .arkPassive {
+.section .arkPassive-simple {
     display: flex;
 }
 
@@ -142,11 +142,11 @@ h1, h2, h3 {
     flex: 2;
 }
 
-.ark-passive-container {
+.arkPassive-simple-container {
     position: relative; /* 자식 요소의 절대 위치 지정을 위한 기준점 */
 }
 
-.ark-passive-content {
+.arkPassive-simple-content {
     justify-content: space-between;
     display: none; /* 평소에는 숨김 */
     flex-direction: column;
@@ -166,11 +166,11 @@ h1, h2, h3 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
 }
 
-.ark-passive-container:hover .ark-passive-content {
+.arkPassive-simple-container:hover .arkPassive-simple-content {
     display: flex; /* 마우스를 올리면 flex로 표시 */
 }
 
-.ark-passive-header {
+.arkPassive-simple-header {
     width: 95px;
     display: flex;
     flex-wrap: nowrap;
@@ -178,19 +178,19 @@ h1, h2, h3 {
 }
 
 /* HTML에서 옮겨온 인라인 스타일 (이전과 동일하게 유지) */
-.ark-passive-header h3 {
+.arkPassive-simple-header h3 {
     margin-top: 10px;
     display: flex; /* 이 부분을 추가하여 <span> 태그들을 가로로 정렬합니다. */
     align-items: center; /* (선택 사항) <span> 태그들의 세로 중앙을 맞춥니다. */
     /* justify-content: space-between; (선택 사항) <span> 태그들 사이에 공간을 균등하게 분배하려면 이 속성을 추가합니다. */
 }
 
-.ark-passive-content li {
+.arkPassive-simple-content li {
     display: flex;
     margin-bottom: 3px;
 }
 
-.ark-passive-content li span {
+.arkPassive-simple-content li span {
     font-size: 0.8em;
     display: block;
 }
@@ -294,12 +294,13 @@ h1, h2, h3 {
 
 .arkGrid-detail-panel {
     background: rgba(0, 0, 0, 0.4);
-    border-radius: 0 0 8px 8px;
+    /*border-radius: 25%;*/
     padding: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-top: none;
     margin-top: -2px;
 }
+
 
 .arkGrid-gems-detail {
     display: flex;
@@ -312,6 +313,8 @@ h1, h2, h3 {
     align-items: flex-start;
     padding-bottom: 10px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    justify-content: center;
+    max-height: 375px;
 }
 
 .arkGrid-gem-item:last-child {
@@ -335,6 +338,8 @@ h1, h2, h3 {
     flex-direction: column;
     align-items: center; /* 이미지와 텍스트 모두 수평 중앙 정렬 */
     text-align: center; /* 텍스트 자체도 중앙 정렬 */
+    border:1px solid gray;
+    height: 375px;
 }
 
 .arkGrid-gem-icon-img {
@@ -645,4 +650,97 @@ h1, h2, h3 {
     display: block;
     border-radius: 4px;
 }
+
+/* =================================== */
+/* 아크 패시브 상세 탭 (Ark Passive Tab) */
+/* =================================== */
+
+.section.arkPassive {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.ark-passive-column {
+    flex: 1; /* 세 컬럼이 동일한 너비 차지 */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ark-passive-column h3 {
+    text-align: center;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    color: #ffd700; /* 금색 계열로 포인트 */
+}
+
+/* 티어별 층(Floor) 섹션 */
+.ark-tier-section {
+    height: 80px; /* 모든 티어 높이 통일 */
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    padding: 10px 5px;
+    position: relative;
+    display: flex;
+    align-items: center; /* 내용물 세로 중앙 정렬 */
+    justify-content: center; /* 가로 중앙 정렬 추가 */
+}
+
+.ark-tier-section:last-child {
+    border-bottom: none;
+}
+
+/* 티어 표시 (왼쪽 상단에 작게) */
+.ark-tier-section::before {
+    content: attr(data-tier) " Tier";
+    position: absolute;
+    top: 2px;
+    left: 0;
+    font-size: 0.65em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+/* 개별 효과 아이템 배치 */
+.ark-passive-effect-item {
+    display: flex;
+    flex-direction: column; /* 가로에서 세로 배치로 변경 */
+    align-items: center;
+    gap: 5px; /* 아이콘과 텍스트 사이 간격 좁힘 */
+    margin: 10px 5px 0 5px; /* 상 10px, 좌우 5px 여백 */
+    text-align: center;
+}
+
+.effect-header img {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #555;
+    padding: 2px;
+}
+
+.effect-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.effect-name {
+    font-size: 0.7rem;
+    font-weight: 600; /* 두께를 bold에서 600으로 살짝 줄임 */
+}
+
+.effect-level {
+    font-size: 0.65rem;
+    opacity: 0.9;
+}
+
+.effect-description {
+    font-size: 0.75em;
+    color: #efefef;
+    line-height: 1.2;
+}
+
 
