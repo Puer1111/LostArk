@@ -17,4 +17,7 @@ public class SearchExpeditionDTO {
     private String characterLevel;
     @JsonProperty("ItemAvgLevel")
     private String itemAvgLevel;
+
+    private String characterImage;
+    private String combatPower;
 }

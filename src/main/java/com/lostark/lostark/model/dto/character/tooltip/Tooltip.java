@@ -223,7 +223,6 @@ public class Tooltip {
         }
 
         String html = (String) element001Value;
-        System.out.println("Extracting Gem Effects from HTML: " + html); // Debug log
 
         // Regex to find patterns like "[Name]" and "Lv.X"
         // Example: [낙인력] <FONT color='#FFD200'>Lv.4</FONT>

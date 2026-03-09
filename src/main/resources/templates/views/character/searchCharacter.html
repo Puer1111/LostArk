@@ -332,7 +332,8 @@
                                                 <!--                                                <div class="arkGrid-gem-icon">-->
                                                 <!--                                                </div>-->
                                                 <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
-                                                    <img th:src="${gem.icon}" th:title="${gem.grade}" class="arkGrid-gem-icon-img"/>
+                                                    <img th:src="${gem.icon}" th:title="${gem.grade}"
+                                                         class="arkGrid-gem-icon-img"/>
                                                     <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
                                                     <div th:utext="${gem.tooltip.getElementHtml('Element_004')}"></div>
                                                     <div th:utext="${gem.tooltip.getElementHtml('Element_005')}"></div>
@@ -348,20 +349,34 @@
 
                     <!-- 4. 아크 패시브 탭 -->
                     <div id="ark-passive" class="tab-content" style="display: none;">
-                        <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}" style="display: flex; flex-direction: row; gap: 20px;">
+                        <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}"
+                             style="display: flex; flex-direction: row; gap: 20px;">
                             <!-- 진화 (Evolution) 컬럼 -->
                             <div class="ark-passive-column" id="evolution">
-                                <h3>진화</h3>
-                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                <h3>[진화] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                            th:if="${point.name == '진화'}" th:text="${point.description}"
+                                            style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;"></p>
+                                </h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
                                     <div th:each="effect : ${characterData.characterArkPassive.effects}"
                                          th:if="${effect.name == '진화' and effect.tier == t}"
                                          class="ark-passive-effect-item">
                                         <div class="effect-header">
-                                            <img th:src="${effect.icon}" alt="Evolution Icon" style="width: 32px; height: 32px;"/>
+                                            <img th:src="${effect.icon}" alt="Evolution Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
                                         </div>
                                         <div class="effect-info">
-                                            <font color="#F1D594" class="effect-name" th:text="${effect.pureName}"></font>
-                                            <font color="#F1D594" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                            <font color="#F1D594" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#F1D594" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
                                         </div>
                                     </div>
                                 </div>
@@ -369,17 +384,31 @@
 
                             <!-- 깨달음 (Enlightenment) 컬럼 -->
                             <div class="ark-passive-column" id="enlightenment">
-                                <h3>깨달음</h3>
-                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                <h3>[깨달음] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                             th:if="${point.name == '진화'}" th:text="${point.description}"
+                                             style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;"></p>
+                                </h3>
+
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
                                     <div th:each="effect : ${characterData.characterArkPassive.effects}"
                                          th:if="${effect.name == '깨달음' and effect.tier == t}"
                                          class="ark-passive-effect-item">
                                         <div class="effect-header">
-                                            <img th:src="${effect.icon}" alt="Enlightenment Icon" style="width: 32px; height: 32px;"/>
+                                            <img th:src="${effect.icon}" alt="Enlightenment Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
                                         </div>
                                         <div class="effect-info">
-                                            <font color="#83E9FF" class="effect-name" th:text="${effect.pureName}"></font>
-                                            <font color="#83E9FF" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                            <font color="#83E9FF" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#83E9FF" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
                                         </div>
                                     </div>
                                 </div>
@@ -387,17 +416,30 @@
 
                             <!-- 도약 (Leap) 컬럼 -->
                             <div class="ark-passive-column" id="leap">
-                                <h3>도약</h3>
-                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section" th:attr="data-tier=${t}">
+                                <h3>[도약] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                            th:if="${point.name == '진화'}" th:text="${point.description}"
+                                            style="font-size: 0.9em; color: #ccc; margin-bottom: 10px;"></p>
+                                </h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
                                     <div th:each="effect : ${characterData.characterArkPassive.effects}"
                                          th:if="${effect.name == '도약' and effect.tier == t}"
                                          class="ark-passive-effect-item">
                                         <div class="effect-header">
-                                            <img th:src="${effect.icon}" alt="Leap Icon" style="width: 32px; height: 32px;"/>
+                                            <img th:src="${effect.icon}" alt="Leap Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
                                         </div>
                                         <div class="effect-info">
-                                            <font color="#C2EA55" class="effect-name" th:text="${effect.pureName}"></font>
-                                            <font color="#C2EA55" class="effect-level" th:text="${effect.pureLevel}"></font>
+                                            <font color="#C2EA55" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#C2EA55" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
                                         </div>
                                     </div>
                                 </div>
@@ -408,7 +450,37 @@
                     <!-- 5. 원정대 탭 -->
                     <div id="expedition" class="tab-content" style="display: none;">
                         <div class="section expedition">
-                            <p>원정대 정보 탭 영역</p>
+                            <div class="expedition-container"
+                                 th:if="${characterData.expeditions != null and !characterData.expeditions.empty}">
+                                <div th:each="char : ${characterData.expeditions}" class="expedition-card"
+                                     th:style="'background-image: url(' + ${char.characterImage} + ');'">
+                                    <div class="card-header">
+                                        <div class="server-name" th:text="${char.serverName}"></div>
+                                        <a th:href="|/character/${char.characterName}|">
+                                            <h3 class="character-name" th:text="${char.characterName}"></h3>
+                                        </a>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="info-row">
+                                            <span class="label">클래스</span>
+                                            <span class="value" th:text="${char.characterClassName}"></span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">아이템 레벨</span>
+                                            <span class="value" th:text="${char.itemAvgLevel}"></span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">전투력</span>
+                                            <span class="value"
+                                                  th:text="${char.combatPower != null ? char.combatPower : '-'}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div th:if="${characterData.expeditions == null or characterData.expeditions.empty}"
+                                 class="no-data">
+                                <p>원정대 정보가 없습니다.</p>
+                            </div>
                         </div>
                     </div>
                 </div>

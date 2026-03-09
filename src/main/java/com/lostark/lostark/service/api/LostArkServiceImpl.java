@@ -1,7 +1,9 @@
 package com.lostark.lostark.service.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lostark.lostark.config.aspect.LogExecutionTime;
 import com.lostark.lostark.model.dto.character.CharacterEquipment;
+import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,7 @@ public class LostArkServiceImpl implements LostArkService {
     }
 
     @Override
+    @LogExecutionTime
     public SearchExpeditionDTO[] getExpedition(String characterName) {
         log.info("Service.getExpedition.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
@@ -44,15 +47,36 @@ public class LostArkServiceImpl implements LostArkService {
         HttpEntity<String> entity = new HttpEntity<>(createHeaders());
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-            return objectMapper.readValue(response.getBody(), SearchExpeditionDTO[].class);
+            SearchExpeditionDTO[] siblings = objectMapper.readValue(response.getBody(), SearchExpeditionDTO[].class);
+
+            if (siblings != null) {
+                // 각 원정대원별로 프로필 정보를 추가로 조회하여 이미지와 전투력을 보완
+                // API 호출 제한이 있으므로 원정대원이 많을 경우를 대비해 순차적으로 처리하거나, 
+                // 필요에 따라 병렬 스트림(parallelStream)을 고려할 수 있습니다.
+                for (SearchExpeditionDTO sibling : siblings) {
+                    try {
+                        URI profileUri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
+                                .path("{characterName}/profiles").encode().buildAndExpand(sibling.getCharacterName()).toUri();
+                        ResponseEntity<String> profileRes = restTemplate.exchange(profileUri, HttpMethod.GET, entity, String.class);
+                        CharacterProfiles profile = objectMapper.readValue(profileRes.getBody(), CharacterProfiles.class);
+                        if (profile != null) {
+                            sibling.setCharacterImage(profile.getCharacterImage());
+                            sibling.setCombatPower(profile.getCombatPower());
+                        }
+                    } catch (Exception e) {
+                        log.warn("Failed to fetch profile for sibling: {}", sibling.getCharacterName());
+                    }
+                }
+            }
+            return siblings;
         } catch (Exception e) {
             log.error("Error fetching or parsing expedition for character: {}", characterName, e);
-            // 예외를 다시 던져 컨트롤러가 처리하도록 합니다.
             throw new RuntimeException("로스트아크 API 호출 또는 원정대 데이터 파싱 중 오류 발생", e);
         }
     }
 
     @Override
+    @LogExecutionTime
     public SearchCharacterDTO getCharacter(String characterName) {
         log.info("Service.getCharacter.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
@@ -65,6 +89,22 @@ public class LostArkServiceImpl implements LostArkService {
             if (dto == null) {
                 return new SearchCharacterDTO();
             }
+            
+            // 원정대 정보 조회 및 추가
+            SearchExpeditionDTO[] expeditionArray = getExpedition(characterName);
+            if (expeditionArray != null) {
+                List<SearchExpeditionDTO> expeditionList = new ArrayList<>(Arrays.asList(expeditionArray));
+                
+                // 아이템 레벨 내림차순 정렬 (높은 레벨이 먼저 오도록)
+                expeditionList.sort((s1, s2) -> {
+                    double level1 = Double.parseDouble(s1.getItemAvgLevel().replace(",", ""));
+                    double level2 = Double.parseDouble(s2.getItemAvgLevel().replace(",", ""));
+                    return Double.compare(level2, level1); // 내림차순
+                });
+                
+                dto.setExpeditions(expeditionList);
+            }
+
             sortGems(dto);
             filterAndSortEquipment(dto);
             return dto;

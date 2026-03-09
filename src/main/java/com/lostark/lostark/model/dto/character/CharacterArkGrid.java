@@ -57,9 +57,7 @@ public class CharacterArkGrid {
                 return "{}";
             }
             try {
-            String jsonString = objectMapper.writeValueAsString(tooltip.extractGemEffects());
-                System.out.println("Generated Gem Effects JSON: " + jsonString); // Debug log
-                return jsonString;
+                return objectMapper.writeValueAsString(tooltip.extractGemEffects());
             } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
                 System.err.println("Error serializing gem effects to JSON: " + e.getMessage()); // Log error
                 return "{}";

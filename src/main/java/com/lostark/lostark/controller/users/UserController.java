@@ -63,13 +63,13 @@ public class UserController {
     }
 
     @GetMapping("/kakao/login")
-    public void kakaoLogin(HttpServletResponse response) throws IOException {
+    public void loginWithKaKao(HttpServletResponse response) throws IOException {
         response.sendRedirect(kakaoApi.getAuthorizationCode());
     }
 
     // 카카오 로그인 콜백
     @GetMapping("/kakao/callback")
-    public String kakaoCallback(@RequestParam("code") String code, HttpSession session) {
+    public String CallbackToKaKao(@RequestParam("code") String code, HttpSession session) {
         String accessToken = kakaoApi.getAccessToken(code);
         HashMap<String, Object> userInfo = kakaoApi.getUserInfo(accessToken);
 

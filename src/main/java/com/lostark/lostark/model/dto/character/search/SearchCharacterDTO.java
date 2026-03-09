@@ -32,4 +32,6 @@ public class SearchCharacterDTO {
     private CharacterArkPassive characterArkPassive;
     @JsonProperty("ArkGrid")
     private CharacterArkGrid characterArkGrid;
+
+    private List<SearchExpeditionDTO> expeditions;
 }

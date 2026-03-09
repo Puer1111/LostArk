@@ -13,7 +13,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 아크 그리드 상세보기 버튼 초기화
     initArkGridDetailButtons();
+
+    // 원정대 카드 클릭 이벤트 초기화
+    initExpeditionCards();
 });
+
+function initExpeditionCards() {
+    const cards = document.querySelectorAll('.expedition-card');
+    cards.forEach(card => {
+        card.addEventListener('click', function (event) {
+            // 클릭된 요소가 이미 a 태그이거나 a 태그의 자식인 경우 중복 이동 방지
+            if (event.target.tagName === 'A' || event.target.closest('a')) return;
+
+            const link = this.querySelector('.card-header a');
+            if (link) {
+                window.location.href = link.getAttribute('href');
+            }
+        });
+    });
+}
 
 function initArkGridDetailButtons() {
     // 이미 이벤트가 등록되어 있다면 다시 등록하지 않음 (중복 방지)

@@ -728,7 +728,7 @@ h1, h2, h3 {
 }
 
 .effect-name {
-    font-size: 0.7rem;
+    font-size: 0.59rem;
     font-weight: 600; /* 두께를 bold에서 600으로 살짝 줄임 */
 }
 
@@ -743,4 +743,183 @@ h1, h2, h3 {
     line-height: 1.2;
 }
 
+/* =================================== */
+/* 아크 패시브 툴팁 (Ark Passive Tooltip) */
+/* =================================== */
 
+.effect-header {
+    position: relative; /* 툴팁 배치의 기준점 */
+}
+
+.ark-passive-tooltip {
+    display: none; /* 평상시 숨김 */
+    position: absolute;
+    top: 40px; /* 아이콘 아래에 표시 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #efefef;
+    text-align: left;
+}
+
+/* 호버 시 툴팁 표시 */
+.ark-passive-effect-item:hover .ark-passive-tooltip {
+    display: block;
+}
+
+.ark-passive-tooltip .tooltip-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    color: #ffd700;
+}
+
+.ark-passive-tooltip .tooltip-description {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+/* 툴팁 내부의 <FONT> 태그 색상 유지 */
+.ark-passive-tooltip font {
+    font-weight: normal;
+}
+
+/* =================================== */
+/* 원정대 탭 스타일 (Expedition Tab) */
+/* =================================== */
+
+.expedition-container {
+    display: grid; /* Flex 대신 Grid 사용 */
+    grid-template-columns: repeat(4, 1fr); /* 4개 열을 균등하게(1fr) 배치 */
+    gap: 10px; /* 요청하신 gap 10px 유지 */
+    width: 100%; /* 부모 컨테이너(754px) 가득 채움 */
+    padding: 10px 0;
+}
+
+.expedition-card {
+    width: 100%; /* Grid cell 너비에 맞춤 */
+    min-height: 260px; /* 가로 너비 증가에 따른 높이 상향 조정 */
+    border-radius: 12px;
+    background-size: cover;
+    background-position: top center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
+    /* 정보를 중앙 하단으로 배치하기 위한 설정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.expedition-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 215, 0, 0.6);
+}
+
+/* 카드 중앙부터 하단까지 어두워지는 그라데이션 (가독성 향상) */
+.expedition-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* 그라데이션 시작 지점을 50%로 낮추어 상단을 더 밝게 유지 */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.4) 75%, rgba(0, 0, 0, 0.8) 100%);
+    z-index: 1;
+}
+
+.expedition-card .card-header,
+.expedition-card .card-body {
+    position: relative;
+    z-index: 2;
+    padding: 8px 12px;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 1);
+}
+
+.expedition-card .card-header {
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.expedition-card .server-name {
+    font-size: 0.65rem;
+    color: #ddd;
+    margin-bottom: 2px;
+}
+
+.expedition-card .character-name {
+    font-size: 1rem;
+    margin: 0;
+    color: #ffd700;
+    font-weight: bold;
+    /* 긴 닉네임 처리 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expedition-card .card-body {
+    padding-top: 8px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.expedition-card .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+    font-size: 0.75rem;
+}
+
+.expedition-card .label {
+    color: #ccc;
+    font-size: 0.7rem;
+}
+
+.expedition-card .value {
+    font-weight: 600;
+    color: #fff;
+}
+
+.no-data {
+    text-align: center;
+    padding: 50px;
+    color: #888;
+}
+
+/* 반응형 Grid 설정 */
+@media (max-width: 1024px) {
+    .expedition-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .expedition-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .expedition-container {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+    .expedition-card {
+        max-width: 320px;
+    }
+}

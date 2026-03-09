@@ -70,7 +70,7 @@ public class CharacterArkPassive {
          */
         public String getEffectDetail() {
             if (description == null || !description.contains("</FONT>")) {
-                return description;
+                return description != null ? description.replace("||", "").trim() : null;
             }
 
             int lastStart = description.lastIndexOf("<FONT");
@@ -79,10 +79,20 @@ public class CharacterArkPassive {
             if (lastStart != -1 && lastEnd != -1) {
                 int contentStart = description.indexOf(">", lastStart) + 1;
                 if (contentStart > 0 && contentStart < lastEnd) {
-                    return description.substring(contentStart, lastEnd).trim();
+                    return description.substring(contentStart, lastEnd).replace("||", "").trim();
                 }
             }
-            return description;
+            return description.replace("||", "").trim();
+        }
+
+        /**
+         * 툴팁의 특정 요소를 가져와서 "||" 기호를 제거한 후 반환합니다.
+         */
+        public String getCleanedToolTipHtml(String key) {
+            if (toolTip == null) {
+                return "";
+            }
+            return toolTip.getElementHtml(key).replace("||", "");
         }
 
         /**
