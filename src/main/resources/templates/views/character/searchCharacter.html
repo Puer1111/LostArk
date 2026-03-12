@@ -19,7 +19,7 @@
                 <div class="left-column">
                     <!-- Character Profiles -->
                     <div class="section profiles" th:if="${characterData.characterProfiles != null}"
-                         th:style="'background-image: url(' + ${characterData.characterProfiles.characterImage} + ');'">
+                         th:style="${characterData.characterProfiles.characterImage != null and !characterData.characterProfiles.characterImage.isEmpty()} ? 'background-image: url(' + ${characterData.characterProfiles.characterImage} + ');' : ''">
                         <div class="profile-info">
                             <!--        <h2>캐릭터 프로필</h2>-->
                             <p><strong>이름:</strong> <span th:text="${characterData.characterProfiles.characterName}"
@@ -120,11 +120,11 @@
                 </div>
                 <div class="right-column">
                     <div class="info-tabs">
-                        <button class="tab-btn active" data-target="equipment">장비</button>
-                        <button class="tab-btn" data-target="skills">스킬</button>
-                        <button class="tab-btn" data-target="ark-grid">아크 그리드</button>
-                        <button class="tab-btn" data-target="ark-passive">아크 패시브</button>
-                        <button class="tab-btn" data-target="expedition">원정대</button>
+                        <button type="button" class="tab-btn active" data-target="equipment">장비</button>
+                        <button type="button" class="tab-btn" data-target="skills">스킬</button>
+                        <button type="button" class="tab-btn" data-target="ark-grid">아크 그리드</button>
+                        <button type="button" class="tab-btn" data-target="ark-passive">아크 패시브</button>
+                        <button type="button" class="tab-btn" data-target="expedition">원정대</button>
                     </div>
 
                     <!-- 1. 장비 탭 -->
@@ -315,12 +315,14 @@
                                         <!-- 슬롯 코어 효과 (즉시 노출) -->
                                         <div class="arkGrid-extras" th:if="${slot.tooltip != null}">
                                             <div class="core-effect-display">
-                                                <div th:if="${#strings.contains(slot.name, '질서의')}">
-                                                    <div th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
-                                                </div>
-                                                <div th:if="${#strings.contains(slot.name, '혼돈의')}">
-                                                    <div th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
-                                                </div>
+                                                <div th:if="${#strings.contains(slot.name, '질서의')}"
+                                                     class="ark-grid-tooltip"
+                                                     th:attr="data-total-points=${slot.point}"
+                                                     th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
+                                                <div th:if="${#strings.contains(slot.name, '혼돈의')}"
+                                                     class="ark-grid-tooltip"
+                                                     th:attr="data-total-points=${slot.point}"
+                                                     th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -453,12 +455,16 @@
                             <div class="expedition-container"
                                  th:if="${characterData.expeditions != null and !characterData.expeditions.empty}">
                                 <div th:each="char : ${characterData.expeditions}" class="expedition-card"
-                                     th:style="'background-image: url(' + ${char.characterImage} + ');'">
+                                     th:data-character-name="${char.characterName}"
+                                     th:style="${char.characterImage != null and !char.characterImage.isEmpty()} ? 'background-image: url(' + ${char.characterImage} + ');' : ''">
                                     <div class="card-header">
                                         <div class="server-name" th:text="${char.serverName}"></div>
-                                        <a th:href="|/character/${char.characterName}|">
+                                        <a th:if="${char.characterName != null and !char.characterName.isEmpty()}"
+                                           th:href="|/character/${char.characterName}|">
                                             <h3 class="character-name" th:text="${char.characterName}"></h3>
                                         </a>
+                                        <h3 th:if="${char.characterName == null or char.characterName.isEmpty()}"
+                                            class="character-name" th:text="${char.characterName}"></h3>
                                     </div>
                                     <div class="card-body">
                                         <div class="info-row">

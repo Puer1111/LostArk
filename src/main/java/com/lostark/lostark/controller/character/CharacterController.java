@@ -35,15 +35,6 @@ public class CharacterController {
         return "character/searchCharacter";
     }
 
-    // 캐릭터 검색 - 원정대
-    @GetMapping("/expedition/{characterName}")
-    public String getExpedition(@PathVariable String characterName, Model model) {
-        log.info("Controller.getExpedition.characterName = {}", characterName);
-        SearchExpeditionDTO[] characterProfiles = apiService.getExpedition(characterName);
-        model.addAttribute("Expeditions", characterProfiles);
-        return "character/allExpedition";
-    }
-
     @GetMapping("/class")
     public String getClassInfo() {
         return "character/synergyInformation";

@@ -27,7 +27,11 @@ function initExpeditionCards() {
 
             const link = this.querySelector('.card-header a');
             if (link) {
-                window.location.href = link.getAttribute('href');
+                const href = link.getAttribute('href');
+                // href가 유효한 캐릭터 이름을 포함하고 있는지 확인 (단순히 /character/ 인 경우 차단)
+                if (href && href !== '/character' && href !== '/character/') {
+                    window.location.href = href;
+                }
             }
         });
     });
@@ -66,7 +70,10 @@ function initTabSystem() {
     const tabContents = document.querySelectorAll('.tab-content');
 
     tabButtons.forEach(button => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function (event) {
+            event.preventDefault(); // 기본 동작(폼 제출 등) 차단
+            event.stopPropagation(); // 이벤트 전파 차단 (원정대 카드 클릭 오작동 방지)
+            
             const target = this.dataset.target;
 
             // 버튼 활성화 스타일 변경
@@ -93,13 +100,18 @@ function processArkGridTooltips() {
         const totalPoints = parseInt(tooltip.dataset.totalPoints, 10);
         if (isNaN(totalPoints)) return;
 
-        const contentContainer = tooltip.querySelector('.ItemPartBox .Element_001');
-        if (!contentContainer) return;
+        // 컨테이너 찾기 (구조적 유연성 확보)
+        let contentContainer = tooltip.querySelector('.ItemPartBox .Element_001') || 
+                               tooltip.querySelector('.Element_001') || 
+                               (tooltip.classList.contains('Element_001') ? tooltip : null) ||
+                               tooltip;
 
         const rawHtml = contentContainer.innerHTML;
         const lines = rawHtml.split(/<br\s*\/?>/i);
         const pointPattern = /\[(\d+)[Pp]\]/;
-        const percentagePattern = /\d+(\.\d+)?%/; // 숫자.숫자% 또는 숫자% 패턴
+        const percentagePattern = /\d+(\.\d+)?%/;
+
+        let currentRequiredPoints = -1; // 포인트 요구사항을 다음 줄까지 유지하기 위한 변수
 
         const processedLines = lines.map(line => {
             if (line.trim() === '') return line;
@@ -107,33 +119,34 @@ function processArkGridTooltips() {
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = line;
 
-            let requiredPoints = -1;
-            // 라인 전체에서 [XXP] 패턴을 찾아 requiredPoints를 결정
+            // 해당 줄에서 새로운 포인트 요구사항이 있는지 확인
             const linePointMatch = line.match(pointPattern);
             if (linePointMatch) {
-                requiredPoints = parseInt(linePointMatch[1], 10);
+                currentRequiredPoints = parseInt(linePointMatch[1], 10);
             }
 
-            const isActive = (requiredPoints === -1 || totalPoints >= requiredPoints);
-            const targetColor = isActive ? '#FFFFFF' : '#808080';
+            const isActive = (currentRequiredPoints === -1 || totalPoints >= currentRequiredPoints);
+            // 비활성 상태일 때만 회색(#808080)을 적용하고, 활성 상태면 스타일을 건드리지 않음
+            const targetColor = isActive ? null : '#808080';
 
-            // 임시 div의 모든 자식 노드를 순회하며 색상 변경
-            // NodeList는 실시간 컬렉션이므로, 변경 시 문제가 발생할 수 있어 Array.from으로 복사
-            Array.from(tempDiv.childNodes).forEach(node => {
-                if (node.nodeType === Node.TEXT_NODE) {
-                    // 텍스트 노드인 경우, span으로 감싸서 색상 적용
-                    const span = document.createElement('span');
-                    span.style.color = targetColor;
-                    span.textContent = node.textContent;
-                    node.replaceWith(span);
-                } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'FONT') {
-                    const fontContent = node.textContent;
-                    // [XXP] 또는 퍼센트 패턴을 포함하는 FONT 태그는 색상 변경하지 않음
-                    if (!pointPattern.test(fontContent) && !percentagePattern.test(fontContent)) {
+            if (targetColor) {
+                Array.from(tempDiv.childNodes).forEach(node => {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        if (node.textContent.trim() !== '') {
+                            const span = document.createElement('span');
+                            span.style.color = targetColor;
+                            span.textContent = node.textContent;
+                            node.replaceWith(span);
+                        }
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        // 모든 하위 요소(FONT, SPAN 등)의 색상을 회색으로 덮어씀
                         node.style.color = targetColor;
+                        node.querySelectorAll('*').forEach(el => {
+                            el.style.color = targetColor;
+                        });
                     }
-                }
-            });
+                });
+            }
             return tempDiv.innerHTML;
         });
 
