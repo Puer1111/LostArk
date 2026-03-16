@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>파티 시뮬레이터</title>
+    <title>실시간 레이드 파티 시뮬레이터 & 추천기</title>
     <link th:fragment="pageCss" rel="stylesheet" href="/css/character/partySimulator.css">
 </head>
 <body>
@@ -12,174 +12,13 @@
         script = ~{::pageScript}
     )}">
     <th:block th:fragment="mainContent">
-    <!-- 디자인을 위한 CSS 스타일 -->
-    <style>
-        :root {
-            --color-dps: #d0021b;
-            --color-supporter: #4caf50;
-            --bg-dark-primary: #1e1e1e;
-            --bg-dark-secondary: #2d2d2d;
-            --text-light: #f0f0f0;
-            --border-color: #444;
-        }
-
-        .simulator-body-container {
-            background-color: var(--bg-dark-primary);
-            color: var(--text-light);
-        }
-
-        #class-selection {
-            border-right-color: var(--border-color);
-        }
-        .class-group h3:hover {
-            background-color: var(--bg-dark-secondary);
-        }
-        .job-item:hover {
-            background-color: #444;
-        }
-
-        #simulator-area {
-            background-color: transparent;
-            padding: 0;
-        }
-        .simulator-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .simulator-header h2 {
-            color: var(--text-light);
-        }
-        #simulator-area > p {
-            color: #aaa;
-            font-size: 0.9em;
-        }
-
-        #party-slots-container {
-            display: flex;
-            flex-direction: column;
-            gap: 8px; /* 카드 사이의 간격 */
-        }
-
-        .party-slot {
-            border: 2px dashed var(--border-color);
-            border-radius: 5px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 0.9em;
-            transition: background-color 0.2s;
-        }
-        /* 이 부분이 핵심적인 수정사항입니다. */
-        .party-slot > span {
-            pointer-events: none; /* 마우스 이벤트를 통과시켜 부모 div가 감지하도록 함 */
-        }
-        
-        .party-slot.drag-over {
-            background-color: var(--bg-dark-secondary);
-            border-color: #666;
-        }
-
-        .character-card {
-            display: flex;
-            align-items: center;
-            background-color: var(--bg-dark-secondary);
-            border-radius: 5px;
-            padding: 8px;
-            gap: 15px;
-            border-left: 5px solid transparent; /* 역할 강조선 */
-            transition: border-color 0.3s;
-        }
-
-        .character-card[data-role="딜러"] {
-            border-left-color: var(--color-dps);
-        }
-        .character-card[data-role="서포터"] {
-            border-left-color: var(--color-supporter);
-        }
-
-        .role-icon {
-            width: 36px;
-            height: 36px;
-            flex-shrink: 0;
-        }
-        .role-icon svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .class-details {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .class-name {
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-
-        .role-switch {
-            display: flex;
-            gap: 5px;
-        }
-        .role-switch .role-btn {
-            font-size: 0.8em;
-            padding: 2px 8px;
-            border: 1px solid #555;
-            background-color: transparent;
-            color: #aaa;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .role-switch .role-btn.active {
-            color: white;
-        }
-        .role-switch .role-btn.dps.active {
-            background-color: var(--color-dps);
-            border-color: var(--color-dps);
-        }
-        .role-switch .role-btn.supporter.active {
-            background-color: var(--color-supporter);
-            border-color: var(--color-supporter);
-        }
-
-        .remove-btn {
-            background: none;
-            border: none;
-            color: #888;
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 0 10px;
-        }
-        .remove-btn:hover {
-            color: white;
-        }
-        
-        /* 우측 시너지 영역 다크모드 스타일 */
-        .synergy-details-area {
-            background-color: var(--bg-dark-secondary);
-            border-color: var(--border-color);
-        }
-        .synergy-details-area h3 {
-            border-bottom-color: var(--border-color);
-        }
-        .synergy-provider-list > li {
-            color: #ccc;
-        }
-
-    </style>
-
     <div class="simulator-body-container">
         <!-- 좌측 클래스 선택 영역 -->
         <div id="class-selection">
-            <h2>클래스/직업</h2>
-             <div class="class-group">
-                    <h3 data-class="warrior" style="cursor: pointer;">전사</h3>
+            <div class="class-list-section">
+                <h2>클래스 목록</h2>
+                <div class="class-group">
+                    <h3 data-class="warrior">전사</h3>
                     <div id="jobs-warrior" class="job-list" style="display: none;">
                         <div class="job-item">디스트로이어</div>
                         <div class="job-item">워로드</div>
@@ -190,7 +29,7 @@
                 </div>
 
                 <div class="class-group">
-                    <h3 data-class="martial-artist" style="cursor: pointer;">무도가</h3>
+                    <h3 data-class="martial-artist">무도가</h3>
                     <div id="jobs-martial-artist" class="job-list" style="display: none;">
                         <div class="job-item">배틀마스터</div>
                         <div class="job-item">인파이터</div>
@@ -202,7 +41,7 @@
                 </div>
 
                 <div class="class-group">
-                    <h3 data-class="hunter" style="cursor: pointer;">헌터</h3>
+                    <h3 data-class="hunter">헌터</h3>
                     <div id="jobs-hunter" class="job-list" style="display: none;">
                         <div class="job-item">데빌헌터</div>
                         <div class="job-item">블래스터</div>
@@ -213,7 +52,7 @@
                 </div>
 
                 <div class="class-group">
-                    <h3 data-class="magician" style="cursor: pointer;">마법사</h3>
+                    <h3 data-class="magician">마법사</h3>
                     <div id="jobs-magician" class="job-list" style="display: none;">
                         <div class="job-item">바드</div>
                         <div class="job-item">소서리스</div>
@@ -223,7 +62,7 @@
                 </div>
 
                 <div class="class-group">
-                    <h3 data-class="assassin" style="cursor: pointer;">암살자</h3>
+                    <h3 data-class="assassin">암살자</h3>
                     <div id="jobs-assassin" class="job-list" style="display: none;">
                         <div class="job-item">블레이드</div>
                         <div class="job-item">데모닉</div>
@@ -233,44 +72,91 @@
                 </div>
 
                 <div class="class-group">
-                    <h3 data-class="specialist" style="cursor: pointer;">스페셜리스트</h3>
+                    <h3 data-class="specialist">스페셜리스트</h3>
                     <div id="jobs-specialist" class="job-list" style="display: none;">
                         <div class="job-item">도화가</div>
                         <div class="job-item">기상술사</div>
                     </div>
                 </div>
+            </div>
         </div>
 
-        <!-- 중앙 메인 콘텐츠 영역 -->
+        <!-- 중앙 메인 시뮬레이터 영역 -->
         <div class="main-content-area">
-            <!-- 파티 구성 공간 -->
-            <div id="simulator-area">
-                <div class="simulator-header">
-                    <h2>파티 구성 공간</h2>
-                    <button class="synergy-reload" onClick="window.location.reload();">초기화</button>
+            <div id="simulator-header">
+                <div class="title-group">
+                    <h2>공격대 구성판</h2>
+                    <select id="raid-select">
+                        <option value="none">레이드 선택</option>
+                        <option value="behemoth">에기르</option>
+                        <option value="abre Shud">아브렐슈드(2막)</option>
+                        <option value="kazeros">카제로스</option>
+                    </select>
                 </div>
-                <p>이곳에 좌측의 직업들을 드래그 앤 드롭하여 파티를 구성합니다. (최대 4명)</p>
-                
-                <div id="party-slots-container">
-                    <div class="party-slot" data-slot-id="1"><span>슬롯 1</span></div>
-                    <div class="party-slot" data-slot-id="2"><span>슬롯 2</span></div>
-                    <div class="party-slot" data-slot-id="3"><span>슬롯 3</span></div>
-                    <div class="party-slot" data-slot-id="4"><span>슬롯 4</span></div>
+                <div class="action-group">
+                    <button id="share-btn">공유하기</button>
+                    <button id="reset-btn">초기화</button>
                 </div>
-
-                <div id="party-validation-message" style="color: red; font-weight: bold; margin-top: 10px;"></div>
             </div>
 
-            <!-- 우측 시너지 상세 정보 영역 -->
-            <div class="synergy-details-area">
-                <h3>현재 파티 시너지</h3>
-                <div id="synergy-summary">
-                    <!-- 전체 파티 시너지 요약 정보가 여기에 표시됩니다. -->
+            <div class="raid-board">
+                <!-- 1파티 -->
+                <div class="party-container" data-party-id="1">
+                    <h3>1 파티</h3>
+                    <div class="party-slots">
+                        <div class="party-slot" data-slot-id="1"><span>슬롯 1</span></div>
+                        <div class="party-slot" data-slot-id="2"><span>슬롯 2</span></div>
+                        <div class="party-slot" data-slot-id="3"><span>슬롯 3</span></div>
+                        <div class="party-slot" data-slot-id="4"><span>슬롯 4</span></div>
+                    </div>
+                </div>
+
+                <!-- 2파티 -->
+                <div class="party-container" data-party-id="2">
+                    <h3>2 파티</h3>
+                    <div class="party-slots">
+                        <div class="party-slot" data-slot-id="5"><span>슬롯 5</span></div>
+                        <div class="party-slot" data-slot-id="6"><span>슬롯 6</span></div>
+                        <div class="party-slot" data-slot-id="7"><span>슬롯 7</span></div>
+                        <div class="party-slot" data-slot-id="8"><span>슬롯 8</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 추천 및 메시지 영역 -->
+            <div id="recommendation-area">
+                <h3>시너지 추천 및 가이드</h3>
+                <div id="recommendation-list">
+                    <p>파티원을 추가하면 실시간으로 분석하여 최적의 클래스를 추천해 드립니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 우측 상세 시너지 패널 -->
+        <div class="synergy-details-area">
+            <h2>공격대 시너지 리포트</h2>
+            
+            <div id="synergy-total-summary">
+                <p class="empty-msg">파티원을 추가하세요.</p>
+            </div>
+
+            <div class="party-detail-section">
+                <div class="p-header">1 파티 시너지</div>
+                <div id="synergy-party-1" class="p-content">
+                    <p class="empty-msg">정보 없음</p>
+                </div>
+            </div>
+
+            <div class="party-detail-section">
+                <div class="p-header">2 파티 시너지</div>
+                <div id="synergy-party-2" class="p-content">
+                    <p class="empty-msg">정보 없음</p>
                 </div>
             </div>
         </div>
     </div>
-</th:block>
+    </th:block>
+
     <th:block th:fragment="pageScript">
         <script type="module" src="/js/character/partySimulator.js"></script>
     </th:block>

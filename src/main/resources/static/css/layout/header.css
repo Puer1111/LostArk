@@ -119,6 +119,7 @@
 
 .secondary-nav a {
     padding: 8px 15px;
+    margin: 0 10px;
     text-decoration: none;
     color: #f0f0f0;
     font-weight: 500;

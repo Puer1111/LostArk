@@ -61,11 +61,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <span class="rate-info">${rateInfo.trim()}</span>
                                 </div>
                                 <div class="synergy-item-details hidden">
-                                    <p>${source.skillDescription}</p>
+                                    <div class="detail-section skill-section">
+                                        <div class="section-title">스킬 설명</div>
+                                        <p class="section-description">${source.skillDescription || '설명이 없습니다.'}</p>
+                                    </div>
                                     ${source.tripodName ? `
-                                    <p>${source.tripodName}</p>
-                                    <img src="${source.tripodImg}" alt="${source.tripodName}" class="skill-icon">
-                                    <p>${source.tripodDescription}</p>
+                                    <div class="detail-section tripod-section">
+                                        <div class="section-title">트라이포드: ${source.tripodName} <span class="tripod-rate">[${source.tripodRate}]</span></div>
+                                        <div class="tripod-content">
+                                            <img src="${source.tripodImg}" alt="${source.tripodName}" class="tripod-icon">
+                                            <p class="section-description">${source.tripodDescription}</p>
+                                        </div>
+                                    </div>
                                     ` : ''}
                                 </div>
                             </li>

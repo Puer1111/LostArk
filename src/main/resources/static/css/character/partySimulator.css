@@ -1,106 +1,349 @@
+:root {
+    --color-dps: #d0021b;
+    --color-supporter: #4caf50;
+    --bg-dark-1: #121212;
+    --bg-dark-2: #1e1e1e;
+    --bg-dark-3: #2a2a2a;
+    --text-1: #e0e0e0;
+    --text-2: #a0a0a0;
+    --border: #333;
+    --accent: #3498db;
+    --radius: 8px;
+}
+
+/* 레이아웃 공통 */
 .simulator-body-container {
     display: flex;
     gap: 20px;
     padding: 20px;
-}
-h2 {
-    margin: 0;
+    background-color: var(--bg-dark-1);
+    color: var(--text-1);
+    min-height: calc(100vh - 100px);
 }
 
+/* 사이드바 */
 #class-selection {
-    width: 250px;
-    border-right: 1px solid #eaeaea;
-    padding-right: 20px;
+    width: 280px;
     flex-shrink: 0;
-}
-
-.main-content-area {
-    display: flex;
-    flex-grow: 1;
-    gap: 20px;
+    background-color: var(--bg-dark-2);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
 }
 
 .class-group h3 {
     cursor: pointer;
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-top: 15px;
-    margin-bottom: 10px;
-    padding: 5px;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+    background-color: var(--bg-dark-3);
+    padding: 10px;
+    border-radius: 4px;
+    margin: 5px 0;
+    font-size: 1rem;
+    transition: 0.2s;
 }
 
-.class-group h3:hover {
-    background-color: #f0f0f0;
-}
+.class-group h3:hover { filter: brightness(1.2); }
 
 .job-list {
-    padding-left: 15px;
-    border-left: 2px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
 }
 
 .job-item {
-    padding: 8px;
+    background-color: #333;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.85rem;
     cursor: grab;
-    border-radius: 3px;
+    text-align: left; /* 세로 나열 시 왼쪽 정렬이 더 깔끔함 */
+    transition: 0.2s;
 }
 
 .job-item:hover {
-    background-color: #e9e9e9;
+    background-color: var(--accent);
+    color: white;
 }
 
-#simulator-area {
-    flex: 3;
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
+/* 메인 영역 */
+.main-content-area {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-
-.synergy-details-area {
-    flex: 1;
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #eaeaea;
-    height: 600px; /* 고정 높이 설정 (필요시 값 조절) */
-    overflow-y: auto; /* 내용이 많아지면 세로 스크롤을 사용합니다. */
+#simulator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--bg-dark-2);
+    padding: 15px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
 }
 
-/* --- Synergy Details Area Styles --- */
-.synergy-details-area h3 {
-    margin-top: 0;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 10px;
+#raid-select {
+    background-color: var(--bg-dark-3);
+    color: white;
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 4px;
 }
 
-.synergy-main-list {
-    list-style-type: none;
-    padding-left: 0;
+.action-group button {
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    border: none;
+    color: white;
+}
+
+#share-btn { background-color: #27ae60; }
+#reset-btn { background-color: #e74c3c; }
+
+.raid-board {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.party-container {
+    background-color: var(--bg-dark-2);
+    padding: 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    min-width: 0;
+}
+
+.party-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.party-slot {
+    height: 80px;
+    border: 2px dashed #444;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: 0.2s;
+    overflow: hidden;
+}
+
+.party-slot.drag-over {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-color: var(--accent);
+}
+
+.party-synergy-summary {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--bg-dark-3);
+    border-radius: 6px;
+    min-height: 60px;
+}
+
+/* 캐릭터 카드 */
+.character-card {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    background-color: var(--bg-dark-3);
+    padding: 0 15px;
+    border-radius: 6px;
+    gap: 12px;
+    border-left: 4px solid transparent;
+    box-sizing: border-box;
+}
+
+.character-card[data-role="딜러"] { border-left-color: var(--color-dps); }
+.character-card[data-role="서포터"] { border-left-color: var(--color-supporter); }
+
+.role-icon { width: 32px; height: 32px; flex-shrink: 0; }
+
+.class-details { 
+    flex-grow: 1; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    min-width: 0;
+}
+
+.class-name { 
+    font-weight: bold; 
+    font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.role-info-area {
+    height: 24px;
+    width: 120px;
+    display: flex;
+}
+
+.role-switch {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.role-btn {
+    flex: 1;
+    font-size: 0.7rem;
+    padding: 2px 4px;
+    border-radius: 3px;
+    border: 1px solid #444;
+    background: none;
+    color: #888;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.role-btn.active { color: white; background-color: #444; }
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* 시너지 배지 및 요약 */
+.synergy-badge-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    background-color: #333;
+    color: #666;
+    border: 1px solid #444;
+}
+
+.badge.active { background-color: rgba(52, 152, 219, 0.2); color: var(--accent); border-color: var(--accent); }
+.badge.warn { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; border-color: #e74c3c; }
+/* 캐릭터 카드 내부 레이아웃 */
+.name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.synergy-tag-list {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.synergy-tag {
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    color: var(--text-2);
+    white-space: nowrap;
+}
+
+.synergy-tag.awk {
+    background-color: #5b2c6f !important;
+    border: 1px solid #48235a;
+    color: white !important;
+    font-weight: bold;
+}
+
+/* 우측 상세 시너지 패널 */
+.synergy-details-area {
+    width: 320px;
+    flex-shrink: 0;
+    background-color: var(--bg-dark-2);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
     gap: 15px;
 }
 
-.synergy-provider-list {
-    list-style-type: none;
-    padding-left: 0;
+.synergy-details-area h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 8px;
 }
 
-.synergy-main-list > li {
+#synergy-total-summary {
+    background-color: var(--bg-dark-3);
+    padding: 15px;
+    border-radius: 6px;
+    border-top: 2px solid #555;
+    border-bottom: 2px solid #555;
+}
+
+/* 우측 상세 패널 파티 섹션 */
+.party-detail-section {
+    margin-top: 10px;
+    border-top: 1.5px solid rgba(52, 152, 219, 0.5); /* 다른 색상 적용 */
+    border-bottom: 1.5px solid rgba(52, 152, 219, 0.5); /* 다른 색상 적용 */
+    padding: 15px 0;
+}
+
+.p-header {
+    font-size: 0.9rem;
     font-weight: bold;
-    margin-top: 12px;
+    color: var(--accent);
+    margin-bottom: 10px;
 }
 
-.synergy-provider-list {
-    margin-top: 6px;
+.p-content {
+    background-color: var(--bg-dark-3);
+    padding: 12px;
+    border-radius: 6px;
+    min-height: 40px;
 }
 
-.synergy-provider-list > li {
-    font-weight: normal;
-    font-size: 0.9em;
-    color: #555;
-    margin-top: 4px;
+.synergy-group {
+    margin-bottom: 15px;
 }
+
+.synergy-group:last-child { margin-bottom: 0; }
+
+.group-title {
+    font-size: 0.75rem;
+    color: var(--text-2);
+    margin-bottom: 6px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 2px;
+}
+
+.awakening-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.awk-item {
+    font-size: 0.8rem;
+    color: #ffd700;
+    display: flex;
+    gap: 5px;
+}
+
+.awk-class { font-weight: bold; }
+.awk-skill { color: #aaa; }
+
