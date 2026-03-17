@@ -23,7 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn: document.getElementById('reset-btn'),
         shareBtn: document.getElementById('share-btn'),
         recommendationList: document.getElementById('recommendation-list'),
-        totalSummary: document.getElementById('synergy-total-summary')
+        totalSummary: document.getElementById('synergy-total-summary'),
+        // 검색 엘리먼트 추가
+        searchInput: document.getElementById('character-search-input'),
+        searchBtn: document.getElementById('character-search-btn')
     };
 
     // --- 초기화 ---
@@ -114,17 +117,66 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         elements.shareBtn.addEventListener('click', handleShare);
+
+        // 5. 캐릭터 검색 이벤트
+        elements.searchBtn.addEventListener('click', handleCharacterSearch);
+        elements.searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleCharacterSearch();
+        });
     };
 
     // --- 비즈니스 로직 ---
-    const addJobToSlot = (slotId, jobName) => {
+    const handleCharacterSearch = async () => {
+        const characterName = elements.searchInput.value.trim();
+        if (!characterName) {
+            alert('캐릭터명을 입력해주세요.');
+            return;
+        }
+
+        elements.searchBtn.disabled = true;
+        elements.searchBtn.textContent = '조회 중...';
+
+        try {
+            // 방금 만든 간소화된 API 엔드포인트 호출
+            const response = await fetch(`/character/api/simplified/${encodeURIComponent(characterName)}`);
+            if (!response.ok) throw new Error('캐릭터를 찾을 수 없거나 서버 오류가 발생했습니다.');
+
+            const data = await response.json();
+            
+            // SimplifiedCharacterDTO의 characterClassName 사용
+            const className = data.characterClassName;
+            
+            if (className) {
+                // 첫 번째 빈 슬롯 찾기 (1번부터 8번까지)
+                const emptySlotId = raidState.slots.findIndex((s, i) => i > 0 && s === null);
+                if (emptySlotId !== -1) {
+                    // 검색된 상세 데이터(이미지, 전투력 등)를 함께 전달
+                    addJobToSlot(emptySlotId, className, data);
+                    elements.searchInput.value = '';
+                } else {
+                    alert('모든 슬롯이 가득 찼습니다.');
+                }
+            } else {
+                alert('캐릭터 정보를 가져왔으나 클래스 정보를 확인할 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('Search Error:', error);
+            alert(error.message);
+        } finally {
+            elements.searchBtn.disabled = false;
+            elements.searchBtn.textContent = '조회';
+        }
+    };
+
+    const addJobToSlot = (slotId, jobName, characterData = null) => {
         const classData = jobData.find(j => j.className === jobName);
         if (!classData) return;
 
         raidState.slots[slotId] = {
             className: jobName,
             selectedEngravingIndex: 0,
-            data: classData
+            data: classData,
+            characterData: characterData // 이미지, 닉네임, 전투력 등 저장
         };
         updateAll();
     };
@@ -157,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!state) {
                 slot.innerHTML = `<span>슬롯 ${slotId}</span>`;
+                slot.style.backgroundImage = 'none';
                 return;
             }
 
@@ -176,14 +229,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     return `<span class="synergy-tag ${isAwk ? 'awk' : ''}">${isAwk ? '[각성] ' : ''}${shortName}</span>`;
                 }).join('');
 
+            // 배경 이미지 처리 (검색된 캐릭터인 경우)
+            if (state.characterData && state.characterData.characterImage) {
+                slot.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url(${state.characterData.characterImage})`;
+                slot.style.backgroundSize = 'cover';
+                slot.style.backgroundPosition = 'center'; // 다시 center로 원복
+            } else {
+                slot.style.backgroundImage = 'none';
+            }
+
             slot.innerHTML = `
-                <div class="character-card" data-role="${role}">
+                <div class="character-card ${state.characterData ? 'is-searched' : ''}" data-role="${role}">
                     <div class="role-icon">${getRoleIcon(role)}</div>
                     <div class="class-details">
                         <div class="name-row">
+                            ${state.characterData ? `<span class="user-nickname">${state.characterData.characterName}</span>` : ''}
                             <span class="class-name">${state.className}</span>
                             <div class="synergy-tag-list">${synergyTags}</div>
                         </div>
+                        <div class="info-row">
+                             ${state.characterData ? `<span class="combat-power">전투력: ${state.characterData.combatPower}</span>` : ''}
+                        </div>
+                        ${!state.characterData ? `
                         <div class="role-info-area">
                             <div class="role-switch">
                                 ${state.data.classEngravings.map((eng, idx) => `
@@ -192,6 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 `).join('')}
                             </div>
                         </div>
+                        ` : ''}
                     </div>
                     <button class="remove-btn">&times;</button>
                 </div>

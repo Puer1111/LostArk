@@ -17,4 +17,11 @@ public interface LostArkService {
      * @return
      */
     SearchCharacterDTO getCharacter(String characterName);
+
+    /**
+     * 파티 시뮬레이터를 위한 간소화된 캐릭터 정보 조회 ( 캐릭터 명 )
+     * @param characterName
+     * @return SimplifiedCharacterDTO
+     */
+    com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO getSimplifiedCharacter(String characterName);
 }

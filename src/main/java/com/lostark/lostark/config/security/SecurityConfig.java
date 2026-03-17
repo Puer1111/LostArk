@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/users/kakao/callback", // 카카오 로그인 콜백
                                 "/users/kakao/login", // 카카오 인가코드 페이지
                                 "/users/logout",// 로그아웃
-                                "/character/party-simulator"// 파티 시뮬레이터 페이지
+                                "/character/party-simulator",// 파티 시뮬레이터 페이지
+                                "/character/api/**" // 캐릭터 간소화 검색 API 허용
                         ).permitAll()
 
                         // "/admin/**" 경로는 ADMIN 권한을 가진 사용자만 접근 가능

@@ -6,6 +6,7 @@ import com.lostark.lostark.model.dto.character.CharacterEquipment;
 import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
+import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -161,6 +162,36 @@ public class LostArkServiceImpl implements LostArkService {
 
         // 3. DTO에 최종 리스트 설정
         dto.setCharacterEquipment(filteredEquipment);
+    }
+
+    @Override
+    @LogExecutionTime
+    public SimplifiedCharacterDTO getSimplifiedCharacter(String characterName) {
+        log.info("Service.getSimplifiedCharacter.characterName = {}", characterName);
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
+                .path("{characterName}/profiles").encode().buildAndExpand(characterName).toUri();
+        HttpEntity<String> entity = new HttpEntity<>(createHeaders());
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            CharacterProfiles profile = objectMapper.readValue(response.getBody(), CharacterProfiles.class);
+
+            if (profile == null) {
+                return null;
+            }
+
+            return SimplifiedCharacterDTO.builder()
+                    .characterImage(profile.getCharacterImage())
+                    .characterName(profile.getCharacterName())
+                    .characterClassName(profile.getCharacterClassName())
+                    .combatPower(profile.getCombatPower())
+                    .itemLevel(profile.getItemAvgLevel())
+                    .build();
+
+        } catch (Exception e) {
+            log.error("Error fetching simplified character data for: {}", characterName, e);
+            throw new RuntimeException("로스트아크 API 호출 중 오류 발생", e);
+        }
     }
 }
 

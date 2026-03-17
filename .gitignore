@@ -37,7 +37,6 @@ out/
 .vscode/
 
 application.properties
-Review.md
 build.gradle
 gradlew.bat
 gradlew

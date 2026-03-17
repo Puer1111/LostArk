@@ -29,6 +29,62 @@
     border-radius: var(--radius);
     padding: 20px;
     border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* 닉네임 검색 영역 스타일 */
+.search-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--text-1);
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+}
+
+.search-box {
+    display: flex;
+    gap: 8px;
+}
+
+#character-search-input {
+    flex-grow: 1;
+    background-color: var(--bg-dark-3);
+    border: 1px solid var(--border);
+    color: var(--text-1);
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#character-search-input:focus {
+    border-color: var(--accent);
+}
+
+#character-search-btn {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+#character-search-btn:hover {
+    background-color: #2980b9;
+}
+
+.class-list-section h2 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--text-1);
+    border-left: 4px solid var(--text-2);
+    padding-left: 10px;
 }
 
 .class-group h3 {
@@ -56,7 +112,7 @@
     border-radius: 4px;
     font-size: 0.85rem;
     cursor: grab;
-    text-align: left; /* 세로 나열 시 왼쪽 정렬이 더 깔끔함 */
+    text-align: left;
     transition: 0.2s;
 }
 
@@ -82,6 +138,8 @@
     padding: 15px 20px;
     border-radius: var(--radius);
     border: 1px solid var(--border);
+    height: 120px;
+    box-sizing: border-box;
 }
 
 #raid-select {
@@ -105,8 +163,8 @@
 #reset-btn { background-color: #e74c3c; }
 
 .raid-board {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex-direction: column; /* 파티를 위아래로 배치 */
     gap: 20px;
     width: 100%;
 }
@@ -121,12 +179,14 @@
 
 .party-slots {
     display: flex;
-    flex-direction: column;
+    flex-direction: row; /* 슬롯을 가로로 배치 */
     gap: 10px;
+    width: 100%;
 }
 
 .party-slot {
-    height: 80px;
+    flex: 1; /* 4개의 슬롯이 균등하게 가로 공간 차지 */
+    height: 300px; /* 세로 길이를 더 늘려 캐릭터 이미지 강조 */
     border: 2px dashed #444;
     border-radius: 6px;
     display: flex;
@@ -135,6 +195,7 @@
     color: #666;
     transition: 0.2s;
     overflow: hidden;
+    position: relative;
 }
 
 .party-slot.drag-over {
@@ -155,42 +216,57 @@
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center;
+    flex-direction: column; /* 세로 정렬 */
+    justify-content: flex-end; /* 아래쪽으로 밀기 */
+    align-items: center; /* 가로 중앙 정렬 */
     background-color: var(--bg-dark-3);
-    padding: 0 15px;
+    padding: 15px;
     border-radius: 6px;
-    gap: 12px;
+    gap: 10px;
     border-left: 4px solid transparent;
     box-sizing: border-box;
+    position: relative;
+    transition: all 0.3s ease;
 }
 
 .character-card[data-role="딜러"] { border-left-color: var(--color-dps); }
 .character-card[data-role="서포터"] { border-left-color: var(--color-supporter); }
 
-.role-icon { width: 32px; height: 32px; flex-shrink: 0; }
+/* 검색된 캐릭터 전용 스타일 (기존 스타일 위에 덮어씌움) */
+.character-card.is-searched {
+    background-color: transparent !important;
+    border-left-color: transparent !important;
+}
+
+.role-icon { 
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 32px; 
+    height: 32px; 
+    flex-shrink: 0; 
+}
 
 .class-details { 
-    flex-grow: 1; 
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    height: 100%;
-    min-width: 0;
+    align-items: center; /* 가로 중앙 */
+    gap: 5px;
 }
 
 .class-name { 
     font-weight: bold; 
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-bottom: 4px;
+    font-size: 1.1rem;
+    color: #fff;
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+    text-align: center;
 }
 
 .role-info-area {
-    height: 24px;
-    width: 120px;
-    display: flex;
+    width: 100%;
+    max-width: 140px;
+    margin-top: 5px;
 }
 
 .role-switch {
@@ -201,25 +277,61 @@
 
 .role-btn {
     flex: 1;
-    font-size: 0.7rem;
-    padding: 2px 4px;
-    border-radius: 3px;
-    border: 1px solid #444;
-    background: none;
-    color: #888;
+    font-size: 0.75rem;
+    padding: 4px 2px;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background: rgba(0,0,0,0.5);
+    color: #aaa;
     cursor: pointer;
     white-space: nowrap;
+    transition: all 0.2s;
 }
 
-.role-btn.active { color: white; background-color: #444; }
+.role-btn.active { 
+    color: white; 
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
 
 .remove-btn {
-    background: none;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.3);
     border: none;
-    color: #666;
+    color: #fff;
     font-size: 1.2rem;
     cursor: pointer;
-    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 검색된 캐릭터 정보 스타일 보강 */
+.user-nickname {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 1px 1px 3px rgba(0,0,0,1);
+    margin-bottom: 2px;
+}
+
+.combat-power {
+    font-size: 0.8rem;
+    color: #00ffcc;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,1);
+}
+
+.name-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
 /* 시너지 배지 및 요약 */
@@ -236,34 +348,28 @@
 
 .badge.active { background-color: rgba(52, 152, 219, 0.2); color: var(--accent); border-color: var(--accent); }
 .badge.warn { background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; border-color: #e74c3c; }
-/* 캐릭터 카드 내부 레이아웃 */
-.name-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-    width: 100%;
-}
 
 .synergy-tag-list {
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 .synergy-tag {
-    font-size: 0.65rem;
-    padding: 1px 5px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-    color: var(--text-2);
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid #444;
+    border-radius: 4px;
+    color: #eee;
     white-space: nowrap;
 }
 
 .synergy-tag.awk {
     background-color: #5b2c6f !important;
-    border: 1px solid #48235a;
-    color: white !important;
+    border: 1px solid #ffd700;
+    color: #ffd700 !important;
     font-weight: bold;
 }
 
@@ -295,11 +401,10 @@
     border-bottom: 2px solid #555;
 }
 
-/* 우측 상세 패널 파티 섹션 */
 .party-detail-section {
     margin-top: 10px;
-    border-top: 1.5px solid rgba(52, 152, 219, 0.5); /* 다른 색상 적용 */
-    border-bottom: 1.5px solid rgba(52, 152, 219, 0.5); /* 다른 색상 적용 */
+    border-top: 1.5px solid rgba(52, 152, 219, 0.5);
+    border-bottom: 1.5px solid rgba(52, 152, 219, 0.5);
     padding: 15px 0;
 }
 
@@ -317,10 +422,7 @@
     min-height: 40px;
 }
 
-.synergy-group {
-    margin-bottom: 15px;
-}
-
+.synergy-group { margin-bottom: 15px; }
 .synergy-group:last-child { margin-bottom: 0; }
 
 .group-title {
@@ -331,19 +433,7 @@
     padding-bottom: 2px;
 }
 
-.awakening-list {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.awk-item {
-    font-size: 0.8rem;
-    color: #ffd700;
-    display: flex;
-    gap: 5px;
-}
-
+.awakening-list { display: flex; flex-direction: column; gap: 4px; }
+.awk-item { font-size: 0.8rem; color: #ffd700; display: flex; gap: 5px; }
 .awk-class { font-weight: bold; }
 .awk-skill { color: #aaa; }
-
