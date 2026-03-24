@@ -95,12 +95,28 @@
             <div id="simulator-header">
                 <div class="title-group">
                     <h2>공격대 구성판</h2>
-                    <select id="raid-select">
-                        <option value="none">레이드 선택</option>
-                        <option value="behemoth">에기르</option>
-                        <option value="abre Shud">아브렐슈드(2막)</option>
-                        <option value="kazeros">카제로스</option>
-                    </select>
+                    
+                    <!-- 카테고리 커스텀 셀렉트 -->
+                    <div class="custom-select-box" id="category-custom-box">
+                        <div class="custom-select-trigger">종류 선택</div>
+                        <div class="custom-options" id="category-options">
+                            <!-- JS에서 생성 -->
+                        </div>
+                        <select id="category-select" style="display: none;">
+                            <option value="none">종류 선택</option>
+                        </select>
+                    </div>
+
+                    <!-- 레이드 커스텀 셀렉트 -->
+                    <div class="custom-select-box" id="raid-custom-box">
+                        <div class="custom-select-trigger">레이드 선택</div>
+                        <div class="custom-options" id="raid-options">
+                            <!-- JS에서 생성 -->
+                        </div>
+                        <select id="raid-select" style="display: none;">
+                            <option value="none">레이드 선택</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="action-group">
                     <button id="share-btn">공유하기</button>
@@ -167,7 +183,7 @@
     </th:block>
 
     <th:block th:fragment="pageScript">
-        <script type="module" src="/js/character/partySimulator.js"></script>
+        <script type="module" src="/js/partySimulator/partySimulator.js"></script>
     </th:block>
 </div>
 </body>
