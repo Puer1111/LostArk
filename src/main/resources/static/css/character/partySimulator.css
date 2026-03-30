@@ -170,7 +170,7 @@
 
 .party-slot {
     flex: 1;
-    height: 300px; /* 캐릭터 이미지 강조를 위해 높이 복구 */
+    height: 300px;
     border: 2px dashed #444;
     border-radius: 6px;
     display: flex;
@@ -182,90 +182,159 @@
     overflow: hidden;
     background-size: cover;
     background-position: center top;
+    background-repeat: no-repeat;
+}
+
+/* 캐릭터가 있을 때 이미지를 더 밝고 선명하게 */
+.party-slot.has-character {
+    border-style: solid;
+    filter: brightness(1.15) contrast(1.05);
 }
 
 .party-slot.drag-over { background-color: rgba(52, 152, 219, 0.1); border-color: var(--accent); }
-.party-slot.selected { border: 2px solid var(--accent); background-color: rgba(52, 152, 219, 0.05); }
+.party-slot.selected { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); }
 
 /* 슬롯 내부 오버레이 및 정보 */
-.character-overlay {
+.character-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    position: relative;
+    /* 필터 중첩 방지를 위해 카드 자체는 원래 밝기로 유지 시도 */
+    filter: brightness(0.9); 
+}
+
+.card-bottom-content {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
-    padding: 15px 10px;
+    height: 60%;
+    /* 이미지가 밝아졌으므로 하단 그림자를 조금 더 명확하게 하여 가독성 확보 */
+    background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
+    padding: 12px 10px;
     box-sizing: border-box;
+    justify-content: flex-end;
+    gap: 4px;
 }
 
-.job-info {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+.search-info {
+    text-align: center;
+    margin-bottom: 6px;
 }
 
 .user-nickname {
     font-size: 0.95rem;
-    font-weight: bold;
     color: #ffd700;
-    text-shadow: 1px 1px 2px #000;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px #000;
+}
+
+.combat-stats {
+    font-size: 0.75rem;
+    color: #00ffcc;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px #000;
 }
 
 .job-name { 
+    font-size: 0.85rem;
     font-weight: bold; 
-    color: var(--accent); 
-    text-shadow: 1px 1px 2px #000;
-}
-
-.combat-power {
-    font-size: 0.8rem;
-    color: #00ffcc;
-    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 1px 1px 3px #000;
 }
 
 .remove-btn {
     position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.5);
-    border: none;
+    top: 8px;
+    right: 8px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.3);
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1rem;
     cursor: pointer;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 10;
+    transition: 0.2s;
+}
+
+.remove-btn:hover {
+    background: rgba(231, 76, 60, 0.9);
+    border-color: #e74c3c;
 }
 
 .engraving-selector {
     display: flex;
-    flex-direction: column;
     gap: 4px;
-    width: 100%;
-    margin-top: 8px;
+    justify-content: center;
+    margin-top: 2px;
 }
 
 .role-btn {
-    font-size: 0.7rem;
-    padding: 3px;
-    border-radius: 4px;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 3px;
     border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(0,0,0,0.6);
-    color: #ddd;
+    background: rgba(30,30,30,0.9);
+    color: #ccc;
     cursor: pointer;
     transition: 0.2s;
 }
 
-.role-btn.active { background-color: var(--accent); color: white; border-color: var(--accent); }
+.role-btn.active { 
+    background: var(--accent);
+    color: white; 
+    border-color: var(--accent);
+}
+
+.fixed-engraving {
+    font-size: 0.7rem;
+    color: #fff;
+    background: rgba(52, 152, 219, 0.4);
+    border: 1px solid rgba(52, 152, 219, 0.6);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.synergy-preview {
+    margin-top: 4px;
+}
+
+.effect-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    justify-content: center;
+}
+
+.effect-tag {
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    background: rgba(52, 152, 219, 0.25);
+    border: 1px solid rgba(52, 152, 219, 0.5);
+    color: #ffffff;
+    border-radius: 4px;
+    white-space: nowrap;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.effect-tag.none {
+    color: #999;
+    border-color: #555;
+    background: transparent;
+}
 
 /* 시너지 리포트 스타일 */
 .synergy-list { display: flex; flex-direction: column; gap: 8px; }
