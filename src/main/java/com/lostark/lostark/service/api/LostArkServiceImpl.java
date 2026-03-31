@@ -2,6 +2,7 @@ package com.lostark.lostark.service.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.config.aspect.LogExecutionTime;
+import com.lostark.lostark.config.headers.HeaderUtils;
 import com.lostark.lostark.model.dto.character.CharacterEquipment;
 import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
@@ -28,16 +29,7 @@ import java.util.stream.Collectors;
 public class LostArkServiceImpl implements LostArkService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
-    @Value("${lostark.api.key}")
-    private String apiKey;
-
-    private HttpHeaders createHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", "application/json");
-        headers.set("Authorization", "bearer " + apiKey);
-        return headers;
-    }
+    private final HeaderUtils headerUtils;
 
     @Override
     @LogExecutionTime
@@ -45,7 +37,7 @@ public class LostArkServiceImpl implements LostArkService {
         log.info("Service.getExpedition.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
                 .path("{characterName}/siblings").encode().buildAndExpand(characterName).toUri();
-        HttpEntity<String> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
             SearchExpeditionDTO[] siblings = objectMapper.readValue(response.getBody(), SearchExpeditionDTO[].class);
@@ -82,7 +74,7 @@ public class LostArkServiceImpl implements LostArkService {
         log.info("Service.getCharacter.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
                 .path("{characterName}").encode().buildAndExpand(characterName).toUri();
-        HttpEntity<String> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
@@ -170,7 +162,7 @@ public class LostArkServiceImpl implements LostArkService {
         log.info("Service.getSimplifiedCharacter.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
                 .path("{characterName}/profiles").encode().buildAndExpand(characterName).toUri();
-        HttpEntity<String> entity = new HttpEntity<>(createHeaders());
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);

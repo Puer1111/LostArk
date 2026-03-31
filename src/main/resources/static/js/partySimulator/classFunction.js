@@ -2,6 +2,7 @@
  * 사이드바 클래스 선택 및 드래그 기능 관련 모듈
  */
 import {jobData} from "../character/synergyDataV2.js";
+import {commonFunction} from "../common/commonFunction.js";
 
 export const classFunction = {
     /**

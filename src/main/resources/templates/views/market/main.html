@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>거래소</title>
+    <!-- Custom CSS -->
+    <link th:fragment="pageCss" rel="stylesheet" th:href="@{/css/market/market.css}">
+</head>
+<body>
+    <div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+        <th:block th:fragment="mainContent">
+            <nav class="market-nav">
+                <ul class="nav-list">
+                    <li><a href="#" class="nav-item" data-category="Gems">보석</a></li>
+                    <li><a href="#" class="nav-item" data-category="Life">생활 재료</a></li>
+                    <li><a href="#" class="nav-item" data-category="Engravings">각인서</a></li>
+                    <li><a href="#" class="nav-item" data-category="Enhancement">재련 재료</a></li>
+                </ul>
+            </nav>
+            <div class="market-container">
+                <!-- 거래소 콘텐츠가 들어갈 자리 -->
+                <h1>거래소</h1>
+                <p>로스트아크 거래소 정보 및 시세 분석 영역입니다.</p>
+            </div>
+        </th:block>
+
+        <th:block th:fragment="pageScript">
+            <!-- Custom JS (모듈 방식으로 설정) -->
+            <script type="module" th:src="@{/js/market/market.js}"></script>
+        </th:block>
+    </div>
+</body>
+</html>
