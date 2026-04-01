@@ -22,11 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
             await new Promise(resolve => setTimeout(resolve, 1500));
             // 실제 API 호출
             try {
-                const response = await fetch(`/market/api/items/${categoryValue}`);
+                // 카테고리에 따른 API 엔드포인트 분기
+                const apiUrl = categoryValue === 'Gems' 
+                    ? '/market/api/gems' 
+                    : `/market/api/items/${categoryValue}`;
+
+                const response = await fetch(apiUrl);
                 const data = await response.json();
 
                 if (data && data.Items) {
-                    updateMarketContent(categoryName, data.Items);
+                    updateMarketContent(categoryName, data.Items, categoryValue);
                 } else {
                     marketContainer.innerHTML = `<p class="error-msg">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
                 }
@@ -37,13 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    function updateMarketContent(categoryName, items) {
+    function updateMarketContent(categoryName, items, categoryValue) {
         let html = `
             <h1 class="market-title">${categoryName} 실시간 시세</h1>
             <div class="market-items-grid">
         `;
-
         items.forEach(item => {
+            // 경매장(Gems)과 거래소 아이템의 가격 정보 구조가 다름
+            let priceInfo = '';
+            if (categoryValue === 'Gems' && item.AuctionInfo) {
+                priceInfo = `
+                    <div class="item-price">
+                        <span class="price-label">즉시입찰가:</span>
+                        <span class="price-value">${item.AuctionInfo.BuyPrice.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+            else if (item.CurrentMinPrice !== undefined) {
+                priceInfo = `
+                    <div class="item-price">
+                        <span class="price-label">최저가:</span>
+                        <span class="price-value">${item.CurrentMinPrice.toLocaleString()}</span>
+                    </div>
+                `;
+            }
+
             html += `
                 <div class="market-item-card ${item.Grade}">
                     <div class="item-icon">
@@ -52,15 +75,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="item-info">
                         <div class="item-name">${item.Name}</div>
                         <div class="item-grade">${item.Grade}</div>
-                        <div class="item-price">
-                            <span class="price-label">최저가:</span>
-                            <span class="price-value">${item.CurrentMinPrice.toLocaleString()}</span>
-                        </div>
+                        ${priceInfo}
                     </div>
                 </div>
             `;
         });
-
         html += `</div>`;
         marketContainer.innerHTML = html;
     }

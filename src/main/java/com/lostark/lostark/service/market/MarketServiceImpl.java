@@ -28,7 +28,7 @@ public class MarketServiceImpl implements MarketService {
         // 요청 바디 설정
         Map<String, Object> body = new HashMap<>();
         body.put("CategoryCode", categoryCode);
-        body.put("ItemGrade", "유물");
+//        body.put("ItemGrade", "유물");
         body.put("PageNo", 1);
         body.put("Sort", "CURRENT_MIN_PRICE");
         body.put("SortCondition", "DESC");
@@ -39,6 +39,20 @@ public class MarketServiceImpl implements MarketService {
             return restTemplate.postForObject(url, entity, Object.class);
         } catch (Exception e) {
             log.error("로스트아크 거래소 API 호출 실패: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public Object getAuctionItems(Map<String, Object> body) {
+        String url = "https://developer-lostark.game.onstove.com/auctions/items";
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headerUtils.createHeaders());
+
+        try {
+            return restTemplate.postForObject(url, entity, Object.class);
+        } catch (Exception e) {
+            log.error("로스트아크 경매장 API 호출 실패: {}", e.getMessage());
             return null;
         }
     }
