@@ -32,8 +32,8 @@ body {
 }
 
 .content {
-    padding: 20px;
+    padding: 30px 20px;
     margin: 0 auto; /* 가운데 정렬 */
-    max-width: 1200px; /* 최대 너비 설정 */
-    border: 1px solid #ddd;
+    max-width: 1400px; /* 고해상도 모니터 대응을 위해 너비 약간 확장 */
+    box-sizing: border-box;
 }

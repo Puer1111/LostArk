@@ -7,31 +7,43 @@
     <link th:fragment="pageCss" rel="stylesheet" th:href="@{/css/market/market.css}">
 </head>
 <body>
-    <div th:replace="~{layout/layout :: layout(
+<div th:replace="~{layout/layout :: layout(
         css = ~{::pageCss},
         content = ~{::mainContent},
         script = ~{::pageScript}
     )}">
-        <th:block th:fragment="mainContent">
-            <nav class="market-nav">
-                <ul class="nav-list">
-                    <li><a href="#" class="nav-item" data-category="Gems">보석</a></li>
-                    <li><a href="#" class="nav-item" data-category="Life">생활 재료</a></li>
-                    <li><a href="#" class="nav-item" data-category="Engravings">각인서</a></li>
-                    <li><a href="#" class="nav-item" data-category="Enhancement">재련 재료</a></li>
-                </ul>
-            </nav>
-            <div class="market-container">
-                <!-- 거래소 콘텐츠가 들어갈 자리 -->
-                <h1>거래소</h1>
+    <th:block th:fragment="mainContent">
+        <nav class="market-nav">
+            <ul class="nav-list">
+                <li><a href="#" class="nav-item" data-category="Gems">보석</a></li>
+                <li><a href="#" class="nav-item" data-category="Life">생활 재료</a></li>
+                <li><a href="#" class="nav-item" data-category="Engravings">각인서</a></li>
+                <li><a href="#" class="nav-item" data-category="Enhancement">재련 재료</a></li>
+            </ul>
+        </nav>
+        <div class="market-container">
+            <div class="market-header">
+                <h1 class="market-title">거래소</h1>
+                <div id="quick-filters"></div>
+                <div class="sort-container" style="display: none;">
+                    <select id="sort-select" class="sort-select">
+                        <option value="name">이름 순</option>
+                        <option value="grade">등급 순</option>
+                        <option value="price-asc">가격 낮은 순</option>
+                        <option value="price-desc">가격 높은 순</option>
+                    </select>
+                </div>
+            </div>
+            <div id="market-content-area">
                 <p>로스트아크 거래소 정보 및 시세 분석 영역입니다.</p>
             </div>
-        </th:block>
+        </div>
+    </th:block>
 
-        <th:block th:fragment="pageScript">
-            <!-- Custom JS (모듈 방식으로 설정) -->
-            <script type="module" th:src="@{/js/market/market.js}"></script>
-        </th:block>
-    </div>
+    <th:block th:fragment="pageScript">
+        <!-- Custom JS (모듈 방식으로 설정) -->
+        <script type="module" th:src="@{/js/market/market.js}"></script>
+    </th:block>
+</div>
 </body>
 </html>

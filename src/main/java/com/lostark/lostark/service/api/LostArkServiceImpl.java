@@ -11,6 +11,7 @@ import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,7 @@ public class LostArkServiceImpl implements LostArkService {
 
     @Override
     @LogExecutionTime
+    @Cacheable(value = "expeditionCache", key = "#characterName")
     public SearchExpeditionDTO[] getExpedition(String characterName) {
         log.info("Service.getExpedition.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
@@ -70,6 +72,7 @@ public class LostArkServiceImpl implements LostArkService {
 
     @Override
     @LogExecutionTime
+    @Cacheable(value = "characterCache", key = "#characterName")
     public SearchCharacterDTO getCharacter(String characterName) {
         log.info("Service.getCharacter.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")

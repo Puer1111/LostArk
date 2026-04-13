@@ -1,3 +1,8 @@
+/* 스크롤바 유무에 따른 화면 흔들림 방지 */
+html {
+    scrollbar-gutter: stable;
+}
+
 /* 거래소 메인 네비게이션 스타일 */
 .market-nav {
     background-color: #1c1c1e;
@@ -5,6 +10,8 @@
     border-radius: 8px;
     margin-bottom: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transform: scale(0.85);
+    transform-origin: top center;
 }
 
 .nav-list {
@@ -43,12 +50,135 @@
     border-radius: 8px;
     min-height: 500px;
     color: #ffffff;
+    /*margin: 0 auto;*/
+    transform: scale(0.85);
+    transform-origin: top center;
 }
 
-.market-container h1 {
-    margin-top: 0;
-    font-size: 1.8rem;
+.market-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-bottom: 1px solid #3a3a3c;
     padding-bottom: 15px;
     margin-bottom: 20px;
+    gap: 20px;
+}
+
+.market-container h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    border-bottom: none;
+    padding-bottom: 0;
+    white-space: nowrap;
+}
+
+/* 퀵 필터 버튼 스타일 */
+#quick-filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background-color: #2c2c2e;
+    color: #b0b0b0;
+    border: 1px solid #3a3a3c;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    color: #ffffff;
+    border-color: #e2bb59;
+}
+
+.filter-btn.active {
+    background-color: #e2bb59;
+    color: #1c1c1e;
+    border-color: #e2bb59;
+    font-weight: bold;
+}
+
+.sort-container {
+    display: flex;
+    align-items: center;
+}
+
+.sort-select {
+    background-color: #1c1c1e;
+    color: #ffffff;
+    border: 1px solid #3a3a3c;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.sort-select:hover {
+    border-color: #e2bb59;
+}
+
+.market-items-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.market-item-card {
+    background-color: #2c2c2e;
+    padding: 15px 25px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    gap: 20px;
+    transition: background-color 0.2s;
+}
+
+.market-item-card:hover {
+    background-color: #3a3a3c;
+}
+
+.item-icon img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    margin-bottom: 0;
+}
+
+.item-info {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.item-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+    width: 300px;
+}
+
+.item-grade {
+    font-size: 0.9rem;
+    color: #b0b0b0;
+    width: 100px;
+}
+
+.item-price {
+    font-size: 1.2rem;
+    color: #e2bb59;
+    font-weight: 600;
+}
+
+.price-label {
+    font-size: 0.8rem;
+    color: #888;
+    margin-right: 5px;
 }

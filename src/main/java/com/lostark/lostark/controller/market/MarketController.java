@@ -39,16 +39,6 @@ public class MarketController {
     @GetMapping("/api/gems")
     @ResponseBody
     public ResponseEntity<Object> getGems() {
-        Map<String, Object> body = new HashMap<>();
-        body.put("Sort", "BUY_PRICE");
-        body.put("CategoryCode", 210000);
-        body.put("CharacterClass", "데빌헌터");
-        body.put("ItemTier", 4);
-        body.put("ItemGrade", "전설");
-        body.put("ItemName", "7레벨 겁화");
-        body.put("PageNo", 0);
-        body.put("SortCondition", "ASC");
-
-        return ResponseEntity.ok(marketService.getAuctionItems(body));
+        return ResponseEntity.ok(marketService.getGems());
     }
 }

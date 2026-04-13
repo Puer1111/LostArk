@@ -13,7 +13,10 @@
 <body>
 <div th:replace="~{layout/header :: unified-header-fragment}"></div>
 
-<th:block th:replace="${content}"></th:block>
+<main class="content">
+    <th:block th:replace="${content}"></th:block>
+</main>
+
 <script defer src="/js/layout/header.js"></script>
 <th:block th:replace="${script}"></th:block>
 </body>
