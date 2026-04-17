@@ -126,30 +126,78 @@ html {
 .market-items-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+    padding: 10px 0;
 }
 
+/* 등급별 색상 변수 정의 */
 .market-item-card {
-    background-color: #2c2c2e;
-    padding: 15px 25px;
+    --grade-color: #efefef;
+    --grade-bg: rgba(239, 239, 239, 0.05);
+}
+.market-item-card.고대 { --grade-color: rgb(227, 199, 161); --grade-bg: rgba(227, 199, 161, 0.1); }
+.market-item-card.유물 { --grade-color: rgb(250, 93, 0); --grade-bg: rgba(250, 93, 0, 0.1); }
+.market-item-card.전설 { --grade-color: rgb(249, 146, 0); --grade-bg: rgba(249, 146, 0, 0.1); }
+.market-item-card.영웅 { --grade-color: rgb(206, 67, 252); --grade-bg: rgba(206, 67, 252, 0.1); }
+.market-item-card.희귀 { --grade-color: rgb(0, 181, 255); --grade-bg: rgba(0, 181, 255, 0.1); }
+.market-item-card.고급 { --grade-color: rgb(145, 254, 2); --grade-bg: rgba(145, 254, 2, 0.1); }
+
+.market-item-card {
+    background: linear-gradient(90deg, #2c2c2e 0%, #242426 100%);
+    padding: 12px 25px;
     border-radius: 8px;
     display: flex;
     flex-direction: row;
     align-items: center;
     text-align: left;
     gap: 20px;
-    transition: background-color 0.2s;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-left: 4px solid var(--grade-color);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+}
+
+.market-item-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 10% 50%, var(--grade-bg), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .market-item-card:hover {
-    background-color: #3a3a3c;
+    background-color: #323235;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 
+                0 0 15px var(--grade-bg);
+}
+
+.market-item-card:hover::before {
+    opacity: 1;
+}
+
+.item-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .item-icon img {
-    width: 50px;
-    height: 50px;
-    border-radius: 8px;
-    margin-bottom: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    display: block;
 }
 
 .item-info {
@@ -157,28 +205,75 @@ html {
     flex: 1;
     justify-content: space-between;
     align-items: center;
+    z-index: 1;
 }
 
 .item-name {
-    font-weight: bold;
-    font-size: 1.1rem;
-    width: 300px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    width: 280px;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    color: var(--grade-color);
 }
 
 .item-grade {
-    font-size: 0.9rem;
-    color: #b0b0b0;
-    width: 100px;
+    font-size: 0.85rem;
+    width: 80px;
+    text-align: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--grade-color);
+}
+
+/* 시세 변동 시그널 배지 */
+.price-signal {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 90px;
+    justify-content: center;
+}
+
+.signal-up {
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.15);
+    border: 1px solid rgba(255, 77, 77, 0.3);
+}
+
+.signal-down {
+    color: #4d94ff;
+    background: rgba(77, 148, 255, 0.15);
+    border: 1px solid rgba(77, 148, 255, 0.3);
+}
+
+.signal-stable {
+    color: #a0a0a0;
+    background: rgba(160, 160, 160, 0.1);
+    border: 1px solid rgba(160, 160, 160, 0.2);
 }
 
 .item-price {
-    font-size: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.price-value {
+    font-size: 1.25rem;
     color: #e2bb59;
-    font-weight: 600;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
 }
 
 .price-label {
-    font-size: 0.8rem;
-    color: #888;
-    margin-right: 5px;
+    font-size: 0.75rem;
+    color: #a0a0a0;
+    font-weight: 400;
 }

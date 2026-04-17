@@ -167,23 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const gradeColors = {
-            '고대': 'rgb(227, 199, 161)',
-            '유물': 'rgb(250, 93, 0)',
-            '전설': 'rgb(249, 146, 0)',
-            '영웅': 'rgb(206, 67, 252)',
-            '희귀': 'rgb(0, 181, 255)',
-            '고급': 'rgb(145, 254, 2)',
-            '일반': '#efefef'
-        };
-
         let html = `<div class="market-items-grid">`;
 
         items.forEach(item => {
+            const isGem = currentCategoryValue === 'Gems';
             const price = getPrice(item);
-            let priceLabel = currentCategoryValue === 'Gems' ? '즉시입찰가' : '최저가';
-            const color = gradeColors[item.Grade] || 'inherit';
-            const colorStyle = `style="color: ${color}; font-weight: bold;"`;
+            let priceLabel = isGem ? '즉시 구매가' : '최저가';
+
+            // 백엔드에서 주입된 Signal 데이터 처리
+            let signalHtml = '';
+            if (item.Signal) {
+                const signal = item.Signal;
+                const statusClass = `signal-${signal.status.toLowerCase()}`;
+                const diffText = signal.diffRate !== 0 ? `(${signal.diffRate > 0 ? '▲' : '▼'}${Math.abs(signal.diffRate)}%)` : '';
+                signalHtml = `<div class="price-signal ${statusClass}">${signal.message} ${diffText}</div>`;
+            }
 
             html += `
                 <div class="market-item-card ${item.Grade}">
@@ -191,10 +189,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         <img src="${item.Icon}" alt="${item.Name}">
                     </div>
                     <div class="item-info">
-                        <div class="item-name" ${colorStyle}>${item.Name}</div>
-                        <div class="item-grade" ${colorStyle}>${item.Grade}</div>
+                        <div class="item-name">${item.Name}</div>
+                        <div class="item-grade">${item.Grade}</div>
+                        
+                        ${signalHtml}
+                        
                         <div class="item-price">
-                            <span class="price-label">${priceLabel}:</span>
+                            <span class="price-label">${priceLabel}</span>
                             <span class="price-value">${price.toLocaleString()}</span>
                         </div>
                     </div>
