@@ -4,6 +4,7 @@ import com.lostark.lostark.config.headers.HeaderUtils;
 import com.lostark.lostark.model.entity.market.MarketPriceSummary;
 import com.lostark.lostark.repository.market.MarketPriceHistoryRepository;
 import com.lostark.lostark.repository.market.MarketPriceSummaryRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -81,6 +82,7 @@ public class MarketServiceImpl implements MarketService {
                 }
                 try { Thread.sleep(50); } catch (InterruptedException ignored) {}
             }
+
         }
 
         if (lastResponse == null) return null;
@@ -215,9 +217,6 @@ public class MarketServiceImpl implements MarketService {
             LocalDateTime end = LocalDateTime.now().minusSeconds(5);
             avgPrice = historyRepository.getAveragePrice(itemName, start, end);
         }
-
-
-
         
         if (avgPrice == null || avgPrice == 0) {
             result.put("status", "STABLE");
