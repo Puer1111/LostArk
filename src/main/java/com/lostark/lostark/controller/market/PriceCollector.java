@@ -2,9 +2,10 @@ package com.lostark.lostark.controller.market;
 
 import com.lostark.lostark.model.entity.market.MarketPriceHistory;
 import com.lostark.lostark.model.entity.market.MarketPriceSummary;
-import com.lostark.lostark.repository.market.MarketPriceHistoryRepository;
-import com.lostark.lostark.repository.market.MarketPriceSummaryRepository;
+import com.lostark.lostark.model.market.MarketPriceHistoryRepository;
+import com.lostark.lostark.model.market.MarketPriceSummaryRepository;
 import com.lostark.lostark.service.market.MarketService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +25,27 @@ public class PriceCollector {
     private final MarketService marketService;
     private final MarketPriceHistoryRepository historyRepository;
     private final MarketPriceSummaryRepository summaryRepository;
+
+    /**
+     * 서버 24시간 유지 못할 시 최근 데이터로 로직 수행 메서드
+     */
+    @PostConstruct
+    public void init() {
+        log.info("서버 기동: 최근 데이터 기반 누락된 시세 정산 확인 중...");
+        List<java.sql.Date> recentDates = historyRepository.findRecentDates();
+        
+        for (java.sql.Date sqlDate : recentDates) {
+            LocalDate targetDate = sqlDate.toLocalDate();
+            // 오늘 날짜는 데이터가 계속 쌓이는 중이므로 제외 (원할 경우 포함 가능)
+            if (targetDate.equals(LocalDate.now())) continue;
+
+            long count = summaryRepository.countBySummaryDate(targetDate);
+            if (count == 0) {
+                log.info("{} 날짜의 정산 데이터가 없어 정산을 시작합니다.", targetDate);
+                performSummarize(targetDate);
+            }
+        }
+    }
 
     @Scheduled(fixedRate = 60000)
     public void collectPrices() {
@@ -47,25 +69,54 @@ public class PriceCollector {
     @Scheduled(cron = "0 5 0 * * *")
     public void summarizeAndCleanup() {
         log.info("전일 시세 데이터 정산 시작...");
-        LocalDateTime start = LocalDateTime.now().minusDays(1).with(LocalTime.MIN);
-        LocalDateTime end = LocalDateTime.now().minusDays(1).with(LocalTime.MAX);
+        performSummarize(LocalDate.now().minusDays(1));
 
-        // 1. 전일 평균가 계산
+        // 3일 이상 된 상세 데이터 삭제 (분석용 여유분 포함)
+        historyRepository.deleteByCollectedAtBefore(LocalDateTime.now().minusDays(3));
+        log.info("전일 데이터 정산 및 상세 이력 정리 완료");
+    }
+
+    private void performSummarize(LocalDate targetDate) {
+        LocalDateTime start = targetDate.atStartOfDay();
+        LocalDateTime end = targetDate.atTime(LocalTime.MAX);
+
+        // 1. 해당 날짜 평균가 계산
         List<Map<String, Object>> averages = historyRepository.getDailyAverages(start, end);
         
-        // 2. 요약 테이블 저장
-        for (Map<String, Object> row : averages) {
-            summaryRepository.save(MarketPriceSummary.builder()
-                    .itemName((String) row.get("itemName"))
-                    .avgPrice((Double) row.get("avgPrice"))
-                    .summaryDate(LocalDate.now().minusDays(1))
-                    .itemCategory((String) row.get("category"))
-                    .build());
+        if (averages.isEmpty()) {
+            log.info("{} 날짜에 정산할 데이터가 없습니다.", targetDate);
+            return;
         }
 
-        // 3. 3일 이상 된 상세 데이터 삭제 (분석용 여유분 포함)
-        historyRepository.deleteByCollectedAtBefore(LocalDateTime.now().minusDays(3));
-        log.info("전일 데이터 정산 및 상세 이력 정리 완료 (총 {}건 요약)", averages.size());
+        // 2. 요약 테이블 저장
+        int saveCount = 0;
+        for (Map<String, Object> row : averages) {
+            try {
+                String name = null;
+                Double avg = null;
+                String category = null;
+
+                // Key 대소문자 방어적 처리
+                for (String key : row.keySet()) {
+                    if (key.equalsIgnoreCase("itemName")) name = (String) row.get(key);
+                    if (key.equalsIgnoreCase("avgPrice")) avg = ((Number) row.get(key)).doubleValue();
+                    if (key.equalsIgnoreCase("category")) category = (String) row.get(key);
+                }
+
+                if (name != null && avg != null) {
+                    summaryRepository.save(MarketPriceSummary.builder()
+                            .itemName(name)
+                            .avgPrice(avg)
+                            .summaryDate(targetDate)
+                            .itemCategory(category)
+                            .build());
+                    saveCount++;
+                }
+            } catch (Exception e) {
+                log.error("요약 데이터 저장 중 오류: {}", e.getMessage());
+            }
+        }
+        log.info("{} 날짜 정산 완료 (총 {}건 요약)", targetDate, saveCount);
     }
 
     private void collectGems() {

@@ -1,4 +1,4 @@
-package com.lostark.lostark.repository.market;
+package com.lostark.lostark.model.market;
 
 import com.lostark.lostark.model.entity.market.MarketPriceHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,4 +37,8 @@ public interface MarketPriceHistoryRepository extends JpaRepository<MarketPriceH
     @Transactional
     @Query("DELETE FROM MarketPriceHistory m WHERE m.collectedAt < :threshold")
     void deleteByCollectedAtBefore(@Param("threshold") LocalDateTime threshold);
+
+    // 추가: 데이터가 존재하는 최근 2일의 날짜를 조회 (MySQL 기준)
+    @Query(value = "SELECT DISTINCT DATE(collected_at) FROM market_price_history ORDER BY DATE(collected_at) DESC LIMIT 2", nativeQuery = true)
+    List<java.sql.Date> findRecentDates();
 }

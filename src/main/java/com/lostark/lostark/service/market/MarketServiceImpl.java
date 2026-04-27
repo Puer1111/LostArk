@@ -2,12 +2,10 @@ package com.lostark.lostark.service.market;
 
 import com.lostark.lostark.config.headers.HeaderUtils;
 import com.lostark.lostark.model.entity.market.MarketPriceSummary;
-import com.lostark.lostark.repository.market.MarketPriceHistoryRepository;
-import com.lostark.lostark.repository.market.MarketPriceSummaryRepository;
-import jakarta.annotation.PostConstruct;
+import com.lostark.lostark.model.market.MarketPriceHistoryRepository;
+import com.lostark.lostark.model.market.MarketPriceSummaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
@@ -15,11 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,20 +39,30 @@ public class MarketServiceImpl implements MarketService {
         for (int categoryCode : categoryCodes) {
             if (categoryCode == 0) continue;
 
-            int itemsInThisCategory = 0;
-            for (int pageNo = 1; pageNo <= 5; pageNo++) {
+            int itemsProcessedFromApi = 0; // API에서 실제로 가져온 원본 아이템 수
+            for (int pageNo = 1; pageNo <= 15; pageNo++) { // 최대 150개 품목까지 조회 확대
                 Map<String, Object> response = fetchMarketPage(url, categoryCode, pageNo);
 
                 if (response == null || !response.containsKey("Items")) break;
 
-                List<Object> items = (List<Object>) response.get("Items");
-                if (items == null || items.isEmpty()) break;
+                List<Object> rawItems = (List<Object>) response.get("Items");
+                if (rawItems == null || rawItems.isEmpty()) break;
 
-                if (categoryCode == 50010 || categoryCode == 50020) {
-                    items = filterEnhancementItems(items, categoryCode);
+                itemsProcessedFromApi += rawItems.size();
+                List<Object> filteredItems = rawItems;
+
+                // 각인서(40000)인 경우 유물 등급만 확실하게 필터링
+                if (categoryCode == 40000) {
+                    filteredItems = rawItems.stream()
+                            .filter(item -> item instanceof Map && "유물".equals(((Map<?, ?>) item).get("Grade")))
+                            .collect(Collectors.toList());
                 }
 
-                for (Object item : items) {
+                if (categoryCode == 50010 || categoryCode == 50020) {
+                    filteredItems = filterEnhancementItems(rawItems, categoryCode);
+                }
+
+                for (Object item : filteredItems) {
                     if (item instanceof Map) {
                         Map<String, Object> itemMap = (Map<String, Object>) item;
                         itemMap.put("CategoryCode", categoryCode);
@@ -72,14 +76,16 @@ public class MarketServiceImpl implements MarketService {
                     }
                 }
 
-                allItems.addAll(items);
-                itemsInThisCategory += items.size();
+                allItems.addAll(filteredItems);
                 lastResponse = response;
 
                 Object totalCountObj = response.get("TotalCount");
                 if (totalCountObj instanceof Integer) {
-                    if (itemsInThisCategory >= (int) totalCountObj) break;
+                    // API에서 준 전체 개수만큼 다 긁었으면 종료
+                    if (itemsProcessedFromApi >= (int) totalCountObj) break;
                 }
+                
+                // 마지막 페이지가 아니면 딜레이 (Rate Limit 방지)
                 try { Thread.sleep(50); } catch (InterruptedException ignored) {}
             }
 
@@ -94,9 +100,12 @@ public class MarketServiceImpl implements MarketService {
     private Map fetchMarketPage(String url, int categoryCode, int pageNo) {
         Map<String, Object> body = new HashMap<>();
         body.put("CategoryCode", categoryCode);
-        body.put("PageNo", pageNo);
+        if (categoryCode == 40000) {
+            body.put("ItemGrades", "유물");
+        }
         body.put("Sort", "CURRENT_MIN_PRICE");
         body.put("SortCondition", "DESC");
+        body.put("PageNo", pageNo);
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headerUtils.createHeaders());
         try {
             return restTemplate.postForObject(url, entity, Map.class);
@@ -182,7 +191,7 @@ public class MarketServiceImpl implements MarketService {
         body.put("ItemTier", tier);
         body.put("ItemName", itemName);
         body.put("Sort", "BIDSTART_PRICE");
-        body.put("SortCondition", "DESC");
+        body.put("SortCondition", "ASC");
         body.put("PageNo", 0);
         Object response = getAuctionItems(body);
         if (response instanceof Map) {
@@ -212,8 +221,8 @@ public class MarketServiceImpl implements MarketService {
         if (yesterdaySummary.isPresent()) {
             avgPrice = yesterdaySummary.get().getAvgPrice();
         } else {
-            // 2. 요약 데이터가 없으면(테스트 중이거나 첫 실행 시) 실시간 이력 테이블에서 직접 계산 (최근 1시간 테스트용 로직 유지)
-            LocalDateTime start = LocalDateTime.now().minusHours(1);
+            // 2. 요약 데이터가 없으면 최근 24시간 이력에서 평균 계산 (더 넓은 범위로 보정)
+            LocalDateTime start = LocalDateTime.now().minusDays(1);
             LocalDateTime end = LocalDateTime.now().minusSeconds(5);
             avgPrice = historyRepository.getAveragePrice(itemName, start, end);
         }
@@ -228,15 +237,19 @@ public class MarketServiceImpl implements MarketService {
         double diffRate = ((currentPrice - avgPrice) / avgPrice) * 100;
         result.put("diffRate", Math.round(diffRate * 10) / 10.0);
 
+        // 시그널 기준 보정: -2% ~ +2% 사이는 안정권으로 판단
         if (diffRate <= -5) {
             result.put("status", "DOWN");
             result.put("message", "급락! 특가");
-        } else if (diffRate < 0) {
+        } else if (diffRate <= -2) {
             result.put("status", "DOWN");
             result.put("message", "최근보다 저렴");
         } else if (diffRate >= 5) {
             result.put("status", "UP");
             result.put("message", "상승세");
+        } else if (diffRate >= 2) {
+            result.put("status", "UP");
+            result.put("message", "최근보다 비쌈");
         } else {
             result.put("status", "STABLE");
             result.put("message", "가격 안정");

@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentItems = data.Items;
                     marketTitle.textContent = `${categoryName} 시세`;
                     sortContainer.style.display = 'flex';
-                    sortSelect.value = 'name';
+                    sortSelect.value = 'price-desc';
 
                     // 퀵 필터 버튼 생성
                     renderQuickFilters(currentCategoryValue);
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let priceLabel = isGem ? '즉시 구매가' : '최저가';
 
             // 백엔드에서 주입된 Signal 데이터 처리
-            let signalHtml = '';
+            let signalHtml = '<div class="price-signal empty"></div>';
             if (item.Signal) {
                 const signal = item.Signal;
                 const statusClass = `signal-${signal.status.toLowerCase()}`;
@@ -191,9 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="item-info">
                         <div class="item-name">${item.Name}</div>
                         <div class="item-grade">${item.Grade}</div>
-                        
                         ${signalHtml}
-                        
                         <div class="item-price">
                             <span class="price-label">${priceLabel}</span>
                             <span class="price-value">${price.toLocaleString()}</span>

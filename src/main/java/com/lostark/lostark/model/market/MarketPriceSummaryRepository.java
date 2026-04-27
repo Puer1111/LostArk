@@ -1,4 +1,4 @@
-package com.lostark.lostark.repository.market;
+package com.lostark.lostark.model.market;
 
 import com.lostark.lostark.model.entity.market.MarketPriceSummary;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,4 +12,7 @@ public interface MarketPriceSummaryRepository extends JpaRepository<MarketPriceS
     
     // 특정 아이템의 특정 날짜 평균가 조회
     Optional<MarketPriceSummary> findByItemNameAndSummaryDate(String itemName, LocalDate summaryDate);
+
+    // 추가: 특정 날짜의 정산 데이터 존재 여부 확인용
+    long countBySummaryDate(LocalDate summaryDate);
 }
