@@ -1,19 +1,11 @@
 /* Noto Sans KR 폰트 사용을 권장합니다. */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f8f9fa; /* 밝은 회색 배경 */
-    font-family: 'Noto Sans KR', sans-serif;
-}
-
 .form-container {
     width: 100%;
     max-width: 450px;
     padding: 20px;
+    margin: 40px auto; /* 상하 여백을 주어 헤더 아래 중앙에 위치하도록 함 */
 }
 
 .signup-card {
@@ -27,17 +19,91 @@ body {
 .signup-card h2 {
     font-weight: 700;
     color: #333;
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+    font-size: 0.95rem;
+}
+
+.input-group {
+    display: flex;
+    gap: 8px;
+}
+
+.form-control {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 500;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.btn-secondary {
+    color: #6c757d;
+    background-color: transparent;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    color: #fff;
+    background-color: #6c757d;
 }
 
 .btn-primary {
-    padding: 12px;
-    font-size: 1.1rem;
+    width: 100%;
+    margin-top: 1rem;
     font-weight: 700;
-    background-color: #0d6efd; /* 부트스트랩 기본 파란색 */
+    color: #fff;
+    background-color: #0d6efd;
     border: none;
-    transition: background-color 0.2s;
 }
 
 .btn-primary:hover {
-    background-color: #0b5ed7; /* 호버 시 약간 어둡게 */
+    background-color: #0b5ed7;
+}
+
+.btn-primary:disabled {
+    background-color: #6c757d;
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* 상태 메시지 스타일 */
+#id-check-status, #password-match-status {
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    min-height: 1.25rem;
 }

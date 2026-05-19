@@ -3,16 +3,62 @@ import {classFunction} from './classFunction.js';
 import {raidFunction} from './raidFunction.js';
 
 /**
- * 실시간 레이드 파티 시뮬레이터 & 추천기 - 메인 오케스트레이터
+ * 실시간 레이드 파티 시뮬레이터 - 상태 관리 컨테이너
+ * (캡슐화, 참조 유지, 타입 검증 담당)
  */
+class RaidStateContainer {
+    constructor() {
+        this._state = {
+            slots: Array(9).fill(null),
+            selectedRaid: 'none',
+            selectedSlotId: null
+        };
+    }
+
+    // 외부에서는 이 getter를 통해 읽기 전용으로 접근하거나 참조 유지
+    get state() {
+        return this._state;
+    }
+
+    /**
+     * 외부 데이터(LocalStorage, URL)를 안전하게 주입 (Sanitization)
+     */
+    hydrate(data) {
+        if (!data || typeof data !== 'object') return;
+
+        // 1. slots 검증 및 정제
+        if (Array.isArray(data.slots) && data.slots.length === 9) {
+            this._state.slots = data.slots.map(slot => {
+                if (!slot || typeof slot !== 'object') return null;
+                return {
+                    jobName: typeof slot.jobName === 'string' ? slot.jobName : '',
+                    activeEngravingIndex: Number.isInteger(slot.activeEngravingIndex) ? slot.activeEngravingIndex : 0,
+                    searchData: (slot.searchData && typeof slot.searchData === 'object') ? slot.searchData : null
+                };
+            });
+        }
+
+        // 2. selectedRaid 검증
+        if (typeof data.selectedRaid === 'string' && raidConfigs[data.selectedRaid]) {
+            this._state.selectedRaid = data.selectedRaid;
+        }
+
+        // 3. selectedSlotId 검증 (정수 혹은 null만 허용)
+        if (Number.isInteger(data.selectedSlotId) || data.selectedSlotId === null) {
+            this._state.selectedSlotId = data.selectedSlotId;
+        }
+    }
+
+    reset() {
+        this._state.slots = Array(9).fill(null);
+        this._state.selectedSlotId = null;
+        this._state.selectedRaid = 'none';
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const MAX_SLOTS = 8;
-
-    let raidState = {
-        slots: Array(9).fill(null), // 1~8번 슬롯 사용
-        selectedRaid: 'none',
-        selectedSlotId: null
-    };
+    const raidManager = new RaidStateContainer();
 
     const elements = {
         classSelection: document.getElementById('class-selection'),
@@ -27,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
         resetBtn: document.getElementById('reset-btn'),
         shareBtn: document.getElementById('share-btn'),
         recommendationList: document.getElementById('recommendation-list'),
-        totalSummary: document.getElementById('synergy-total-summary'),
         searchInput: document.getElementById('character-search-input'),
         searchBtn: document.getElementById('character-search-btn'),
         partyContainers: document.querySelectorAll('.party-container'),
@@ -35,27 +80,19 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const init = () => {
-        // 직업 아이템 드래그 설정
         document.querySelectorAll('.job-item').forEach(item => {
             item.setAttribute('draggable', 'true');
         });
 
-        // 레이드 선택기 초기화
         raidFunction.initRaidSelects(elements);
-        
-        // 이벤트 바인딩
         bindEvents();
-        
-        // 데이터 로드
         loadFromLocalStorage();
         loadFromUrl();
-        
-        // 전체 UI 업데이트
         updateAll();
     };
 
     const bindEvents = () => {
-        // 1. 커스텀 셀렉트 박스 이벤트 (레이드 관련)
+        // 커스텀 셀렉트 박스
         [elements.categoryCustomBox, elements.raidCustomBox].forEach(box => {
             if (!box) return;
             box.querySelector('.custom-select-trigger').addEventListener('click', (e) => {
@@ -87,35 +124,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.addEventListener('click', () => raidFunction.closeAllCustomSelects(elements));
 
-        // 2. 클래스 사이드바 & 파티 슬롯 연계 기능 초기화 (classFunction)
-        classFunction.initSidebarEvents(elements, raidState, updateAll, saveToLocalStorage);
+        // 클래스 사이드바 & 검색 (매니저 전달)
+        classFunction.initSidebarEvents(elements, raidManager, updateAll, saveToLocalStorage);
 
-        // 3. 레이드 보드 클릭 (슬롯 선택)
+        // 슬롯 선택
         elements.raidBoard.addEventListener('click', (e) => {
             const slot = e.target.closest('.party-slot');
             if (!slot) return;
             const slotId = parseInt(slot.dataset.slotId);
-
-            // 카드 내부의 버튼(제거, 각인 변경) 클릭은 classFunction에서 처리하므로 무시
             if (e.target.closest('.remove-btn') || e.target.closest('.role-btn')) return;
 
-            raidFunction.handleSlotSelection(elements, raidState, slotId);
+            raidFunction.handleSlotSelection(elements, raidManager, slotId);
         });
 
-        // 4. 레이드 설정 변경
+        // 레이드 설정 변경
         elements.categorySelect.addEventListener('change', (e) => {
-            raidFunction.handleCategoryChange(e, elements, raidState, updateAll);
+            raidFunction.handleCategoryChange(e, elements, raidManager, updateAll);
         });
 
         elements.raidSelect.addEventListener('change', (e) => {
-            raidFunction.handleRaidChange(e, raidState, () => raidFunction.updateRaidLayout(elements, raidState, MAX_SLOTS), updateAll);
+            raidFunction.handleRaidChange(e, raidManager, () => raidFunction.updateRaidLayout(elements, raidManager, MAX_SLOTS), updateAll);
         });
 
-        // 5. 기타 액션
         elements.resetBtn.addEventListener('click', () => {
             if (confirm('모든 구성을 초기화하시겠습니까?')) {
-                raidState.slots = Array(9).fill(null);
-                raidState.selectedSlotId = null;
+                raidManager.reset();
                 localStorage.removeItem('raidState_v1');
                 updateAll();
             }
@@ -125,10 +158,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateSlotsUI = () => {
+        const { state } = raidManager;
         elements.partySlots.forEach(slot => {
             const slotId = parseInt(slot.dataset.slotId);
-            const data = raidState.slots[slotId];
-            const config = raidConfigs[raidState.selectedRaid] || raidConfigs['none'];
+            const data = state.slots[slotId];
+            const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
 
             if (slotId > config.maxPlayers) {
                 slot.classList.add('disabled');
@@ -142,42 +176,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 slot.innerHTML = `<span>슬롯 ${slotId}</span>`;
                 slot.style.backgroundImage = 'none';
                 slot.classList.remove('has-character');
-                // 선택 상태 유지
-                slot.classList.toggle('selected', slotId === raidState.selectedSlotId);
+                slot.classList.toggle('selected', slotId === state.selectedSlotId);
                 return;
             }
 
-            // 직업 카드 렌더링 호출
-            classFunction.renderJobCard(slot, data.jobName, data.searchData, data.activeEngravingIndex, raidState, updateAll, saveToLocalStorage);
-            // 선택 상태 유지
-            slot.classList.toggle('selected', slotId === raidState.selectedSlotId);
+            classFunction.renderJobCard(slot, data.jobName, data.searchData, data.activeEngravingIndex, raidManager, updateAll, saveToLocalStorage);
+            slot.classList.toggle('selected', slotId === state.selectedSlotId);
         });
     };
 
     const updateAll = () => {
         updateSlotsUI();
-        raidFunction.analyzeSynergy(elements, raidState);
+        raidFunction.analyzeSynergy(elements, raidManager);
     };
 
-    const saveToLocalStorage = () => localStorage.setItem('raidState_v1', JSON.stringify(raidState));
+    const saveToLocalStorage = () => localStorage.setItem('raidState_v1', JSON.stringify(raidManager.state));
     
     const loadFromLocalStorage = () => {
         const saved = localStorage.getItem('raidState_v1');
         if (saved) {
             try {
-                const loadedState = JSON.parse(saved);
-                raidState = loadedState;
-                if (raidState.selectedRaid !== 'none') {
-                    const config = raidConfigs[raidState.selectedRaid];
+                const loadedData = JSON.parse(saved);
+                raidManager.hydrate(loadedData);
+                
+                const { state } = raidManager;
+                if (state.selectedRaid !== 'none') {
+                    const config = raidConfigs[state.selectedRaid];
                     if (config) {
+                        // UI 수동 갱신 (이벤트 발생시키지 않음)
                         elements.categorySelect.value = config.category;
                         elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.category;
-                        elements.categorySelect.dispatchEvent(new Event('change'));
-                        elements.raidSelect.value = raidState.selectedRaid;
+                        
+                        // 레이드 목록 UI만 갱신
+                        raidFunction.updateRaidOptionsUI(config.category, elements);
+                        
+                        elements.raidSelect.value = state.selectedRaid;
                         elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.name;
                     }
                 }
-                raidFunction.updateRaidLayout(elements, raidState, MAX_SLOTS);
+                raidFunction.updateRaidLayout(elements, raidManager, MAX_SLOTS);
             } catch (e) {
                 console.error('로컬 스토리지 로드 실패', e);
             }
@@ -185,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleShare = () => {
-        const stateStr = btoa(encodeURIComponent(JSON.stringify(raidState)));
+        const stateStr = btoa(encodeURIComponent(JSON.stringify(raidManager.state)));
         const url = `${window.location.origin}${window.location.pathname}?state=${stateStr}`;
         navigator.clipboard.writeText(url).then(() => alert('공유 URL이 복사되었습니다.'));
     };
@@ -195,18 +232,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const stateParam = params.get('state');
         if (stateParam) {
             try {
-                raidState = JSON.parse(decodeURIComponent(atob(stateParam)));
-                if (raidState.selectedRaid !== 'none') {
-                    const config = raidConfigs[raidState.selectedRaid];
+                const loadedData = JSON.parse(decodeURIComponent(atob(stateParam)));
+                raidManager.hydrate(loadedData);
+
+                const { state } = raidManager;
+                if (state.selectedRaid !== 'none') {
+                    const config = raidConfigs[state.selectedRaid];
                     if (config) {
+                        // UI 수동 갱신
                         elements.categorySelect.value = config.category;
                         elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.category;
-                        elements.categorySelect.dispatchEvent(new Event('change'));
-                        elements.raidSelect.value = raidState.selectedRaid;
+                        
+                        raidFunction.updateRaidOptionsUI(config.category, elements);
+                        
+                        elements.raidSelect.value = state.selectedRaid;
                         elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.name;
                     }
                 }
-                raidFunction.updateRaidLayout(elements, raidState, MAX_SLOTS);
+                raidFunction.updateRaidLayout(elements, raidManager, MAX_SLOTS);
             } catch (e) {
                 console.error('URL 데이터 로드 실패', e);
             }

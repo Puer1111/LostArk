@@ -906,6 +906,33 @@ h1, h2, h3 {
     color: #888;
 }
 
+/* =================================== */
+/* 로딩 스피너 (Loading Spinner) */
+/* =================================== */
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 0;
+    color: #888;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-left-color: #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* 반응형 Grid 설정 */
 @media (max-width: 1024px) {
     .expedition-container {

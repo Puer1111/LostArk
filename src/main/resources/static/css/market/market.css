@@ -135,6 +135,7 @@ html {
     --grade-color: #efefef;
     --grade-bg: rgba(239, 239, 239, 0.05);
 }
+.market-item-card.에스더 { --grade-color: #3CF2E6; --grade-bg: rgba(60, 242, 230, 0.1); }
 .market-item-card.고대 { --grade-color: rgb(227, 199, 161); --grade-bg: rgba(227, 199, 161, 0.1); }
 .market-item-card.유물 { --grade-color: rgb(250, 93, 0); --grade-bg: rgba(250, 93, 0, 0.1); }
 .market-item-card.전설 { --grade-color: rgb(249, 146, 0); --grade-bg: rgba(249, 146, 0, 0.1); }

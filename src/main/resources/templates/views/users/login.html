@@ -13,21 +13,19 @@
     )}">
         <!-- login.html의 실제 내용물은 이 th:block 프래그먼트 안에 정의됩니다. -->
         <th:block th:fragment="loginBody">
-            <div class="content">
-                <div class="login-container">
-                    <h2>Login</h2>
-                        <div class="form-group">
-                            <label for="userId">Username</label>
-                            <input type="text" id="userId" name="userId" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="userPassword">Password</label>
-                            <input type="password" id="userPassword" name="userPassword" required>
-                        </div>
-                        <button type="button" id="btn-login">Login</button>
-                        <a href="/users/signup" id="btn-signUp">signUp</a>
-                    <a href="/users/kakao/login">카카오로 로그인</a>
-                </div>
+            <div class="login-container">
+                <h2>Login</h2>
+                    <div class="form-group">
+                        <label for="userId">Username</label>
+                        <input type="text" id="userId" name="userId" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Password</label>
+                        <input type="password" id="userPassword" name="userPassword" required>
+                    </div>
+                    <button type="button" id="btn-login">Login</button>
+                    <a href="/users/signup" id="btn-signUp">signUp</a>
+                <a href="/users/kakao/login">카카오로 로그인</a>
             </div>
         </th:block>
         <script th:fragment="pageScript" src="/js/users/login.js"></script>

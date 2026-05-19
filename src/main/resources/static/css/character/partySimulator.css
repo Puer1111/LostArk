@@ -93,18 +93,17 @@
     justify-content: space-between;
     align-items: center;
     background-color: var(--bg-dark-2);
-    padding: 15px 20px;
+    padding: 12px 20px;
     border-radius: var(--radius);
     border: 1px solid var(--border);
 }
 
-.title-group { display: flex; align-items: center; gap: 15px; }
-.title-group h2 { margin: 0; font-size: 1.4rem; }
+.selection-group { display: flex; align-items: center; gap: 12px; }
 
 /* 커스텀 셀렉트 박스 */
 .custom-select-box {
     position: relative;
-    width: 140px;
+    width: 150px;
     background-color: var(--bg-dark-3);
     border: 1px solid var(--border);
     border-radius: 4px;

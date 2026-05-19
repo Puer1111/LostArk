@@ -450,42 +450,18 @@
                     </div>
 
                     <!-- 5. 원정대 탭 -->
-                    <div id="expedition" class="tab-content" style="display: none;">
+                    <div id="expedition" class="tab-content" style="display: none;" 
+                         th:data-character-name="${characterData.characterProfiles.characterName}">
                         <div class="section expedition">
-                            <div class="expedition-container"
-                                 th:if="${characterData.expeditions != null and !characterData.expeditions.empty}">
-                                <div th:each="char : ${characterData.expeditions}" class="expedition-card"
-                                     th:data-character-name="${char.characterName}"
-                                     th:style="${char.characterImage != null and !char.characterImage.isEmpty()} ? 'background-image: url(' + ${char.characterImage} + ');' : ''">
-                                    <div class="card-header">
-                                        <div class="server-name" th:text="${char.serverName}"></div>
-                                        <a th:if="${char.characterName != null and !char.characterName.isEmpty()}"
-                                           th:href="|/character/${char.characterName}|">
-                                            <h3 class="character-name" th:text="${char.characterName}"></h3>
-                                        </a>
-                                        <h3 th:if="${char.characterName == null or char.characterName.isEmpty()}"
-                                            class="character-name" th:text="${char.characterName}"></h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="info-row">
-                                            <span class="label">클래스</span>
-                                            <span class="value" th:text="${char.characterClassName}"></span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="label">아이템 레벨</span>
-                                            <span class="value" th:text="${char.itemAvgLevel}"></span>
-                                        </div>
-                                        <div class="info-row">
-                                            <span class="label">전투력</span>
-                                            <span class="value"
-                                                  th:text="${char.combatPower != null ? char.combatPower : '-'}"></span>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div id="expedition-loading" class="loading-container">
+                                <div class="spinner"></div>
+                                <p>원정대 정보를 불러오는 중입니다...</p>
                             </div>
-                            <div th:if="${characterData.expeditions == null or characterData.expeditions.empty}"
-                                 class="no-data">
-                                <p>원정대 정보가 없습니다.</p>
+                            <div id="expedition-container" class="expedition-container" style="display: none;">
+                                <!-- 비동기로 로드된 데이터가 여기에 삽입됨 -->
+                            </div>
+                            <div id="expedition-error" class="no-data" style="display: none;">
+                                <p>원정대 정보를 불러오는 데 실패했습니다.</p>
                             </div>
                         </div>
                     </div>

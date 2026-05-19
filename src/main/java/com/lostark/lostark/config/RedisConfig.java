@@ -28,6 +28,8 @@ public class RedisConfig {
         // 특정 캐시에 대해 1분 만료 설정
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("characterCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
+        cacheConfigurations.put("expeditionCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
+        cacheConfigurations.put("profileCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
         cacheConfigurations.put("marketCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
         cacheConfigurations.put("gemCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
         cacheConfigurations.put("auctionCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));

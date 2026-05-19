@@ -28,14 +28,26 @@ public class CharacterController {
         return "index";
     }
 
-    // 캐릭터 검색
+    /**
+     * 캐릭터 상세 정보 조회
+     */
     @GetMapping("/{characterName}")
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
-        log.debug("Received characterName for getCharacter: {}", characterName); // 디버그 로그 추가
         SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
         model.addAttribute("characterData", searchCharacterDTO);
         return "character/searchCharacter";
+    }
+
+    /**
+     * 원정대 정보 비동기 조회를 위한 API (JSON 반환)
+     */
+    @GetMapping("/api/expedition/{characterName}")
+    @ResponseBody
+    public ResponseEntity<SearchExpeditionDTO[]> getExpedition(@PathVariable String characterName) {
+        log.info("Controller.getExpedition.characterName: {}", characterName);
+        SearchExpeditionDTO[] expeditions = apiService.getExpedition(characterName);
+        return ResponseEntity.ok(expeditions);
     }
 
     /**

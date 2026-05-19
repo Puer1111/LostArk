@@ -8,7 +8,7 @@ export const classFunction = {
     /**
      * 사이드바와 관련된 이벤트를 초기화합니다.
      */
-    initSidebarEvents: (elements, raidState, updateAll, saveToLocalStorage) => {
+    initSidebarEvents: (elements, raidManager, updateAll, saveToLocalStorage) => {
         if (!elements || !elements.classSelection) return;
 
         // 1. 사이드바 그룹(전사, 무도가 등) 열기/닫기
@@ -58,7 +58,7 @@ export const classFunction = {
                     const slotId = parseInt(slot.dataset.slotId);
                     
                     // 해당 슬롯에 데이터 업데이트
-                    raidState.slots[slotId] = {
+                    raidManager.state.slots[slotId] = {
                         jobName: jobName,
                         activeEngravingIndex: 0,
                         searchData: null
@@ -74,12 +74,14 @@ export const classFunction = {
         if (elements.searchBtn && elements.searchInput) {
             const handleSearch = async () => {
                 const characterName = elements.searchInput.value.trim();
+                const { state } = raidManager;
+
                 if (!characterName) {
                     alert('캐릭터명을 입력해주세요.');
                     return;
                 }
 
-                if (!raidState.selectedSlotId) {
+                if (!state.selectedSlotId) {
                     alert('캐릭터를 배치할 슬롯을 먼저 선택해주세요.');
                     return;
                 }
@@ -94,10 +96,10 @@ export const classFunction = {
                     }
                     
                     const characterData = await response.json();
-                    const slotId = raidState.selectedSlotId;
+                    const slotId = state.selectedSlotId;
 
                     // 상태 업데이트
-                    raidState.slots[slotId] = {
+                    state.slots[slotId] = {
                         jobName: characterData.characterClassName,
                         activeEngravingIndex: 0,
                         searchData: characterData
@@ -121,7 +123,7 @@ export const classFunction = {
     /**
      * 특정 슬롯에 직업/캐릭터 카드를 렌더링합니다.
      */
-    renderJobCard: (slot, jobName, searchData = null, activeIndex = 0, raidState, updateAll, saveToLocalStorage) => {
+    renderJobCard: (slot, jobName, searchData = null, activeIndex = 0, raidManager, updateAll, saveToLocalStorage) => {
         const jobInfo = jobData.find(job => job.className === jobName);
         if (!jobInfo) return;
 
@@ -187,7 +189,7 @@ export const classFunction = {
         // 5. 카드 내부 액션 (제거 버튼)
         slot.querySelector('.remove-btn').addEventListener('click', (e) => {
             const slotId = parseInt(slot.dataset.slotId);
-            raidState.slots[slotId] = null;
+            raidManager.state.slots[slotId] = null;
             saveToLocalStorage();
             updateAll();
             e.stopPropagation();
@@ -201,7 +203,7 @@ export const classFunction = {
                     const index = parseInt(e.target.dataset.index);
                     const slotId = parseInt(slot.dataset.slotId);
                     
-                    raidState.slots[slotId].activeEngravingIndex = index;
+                    raidManager.state.slots[slotId].activeEngravingIndex = index;
                     saveToLocalStorage();
                     updateAll();
                     e.stopPropagation();

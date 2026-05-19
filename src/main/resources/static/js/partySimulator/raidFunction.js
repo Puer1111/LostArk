@@ -23,8 +23,9 @@ export const raidFunction = {
     },
 
     // 레이드 종류에 따른 레이아웃 업데이트 (파티 슬롯 노출 여부 등)
-    updateRaidLayout: (elements, raidState, MAX_SLOTS) => {
-        const config = raidConfigs[raidState.selectedRaid] || raidConfigs['none'];
+    updateRaidLayout: (elements, raidManager, MAX_SLOTS) => {
+        const { state } = raidManager;
+        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
         elements.partyContainers.forEach(container => {
             const partyId = parseInt(container.dataset.partyId);
             container.style.display = (partyId <= config.partyCount) ? 'block' : 'none';
@@ -34,27 +35,32 @@ export const raidFunction = {
             section.style.display = (partyId <= config.partyCount) ? 'block' : 'none';
         });
         for (let i = 1; i <= MAX_SLOTS; i++) {
-            if (i > config.maxPlayers) raidState.slots[i] = null;
+            if (i > config.maxPlayers) state.slots[i] = null;
         }
     },
 
     // 슬롯 선택 핸들링
-    handleSlotSelection: (elements, raidState, slotId) => {
-        const config = raidConfigs[raidState.selectedRaid] || raidConfigs['none'];
+    handleSlotSelection: (elements, raidManager, slotId) => {
+        const { state } = raidManager;
+        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
         if (slotId > config.maxPlayers) return;
-        raidState.selectedSlotId = (raidState.selectedSlotId === slotId) ? null : slotId;
+
+        // 선택 상태 토글 (매니저 내부 상태 업데이트)
+        state.selectedSlotId = (state.selectedSlotId === slotId) ? null : slotId;
+
         elements.partySlots.forEach(slot => {
             const id = parseInt(slot.dataset.slotId);
-            slot.classList.toggle('selected', id === raidState.selectedSlotId);
+            slot.classList.toggle('selected', id === state.selectedSlotId);
         });
     },
 
     // 시너지 분석 및 리포트 출력
-    analyzeSynergy: (elements, raidState) => {
+    analyzeSynergy: (elements, raidManager) => {
+        const { state } = raidManager;
         const partySynergies = [{}, {}, {}]; // [공격대 전체, 1파티, 2파티]
-        const config = raidConfigs[raidState.selectedRaid] || raidConfigs['none'];
+        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
 
-        raidState.slots.forEach((data, i) => {
+        state.slots.forEach((data, i) => {
             if (!data || i > config.maxPlayers) return;
             const partyId = i <= 4 ? 1 : 2;
             
@@ -74,11 +80,10 @@ export const raidFunction = {
         });
 
         raidFunction.renderSynergyReport(elements, partySynergies);
-        raidFunction.renderRecommendations(elements, raidState, partySynergies[0]);
+        raidFunction.renderRecommendations(elements, raidManager, partySynergies[0]);
     },
 
     renderSynergyReport: (elements, partySynergies) => {
-        raidFunction.renderSection(elements.totalSummary, partySynergies[0]);
         raidFunction.renderSection(document.getElementById('synergy-party-1'), partySynergies[1]);
         raidFunction.renderSection(document.getElementById('synergy-party-2'), partySynergies[2]);
     },
@@ -103,9 +108,10 @@ export const raidFunction = {
         container.innerHTML = html;
     },
 
-    renderRecommendations: (elements, raidState, totalSynergies) => {
-        const config = raidConfigs[raidState.selectedRaid] || raidConfigs['none'];
-        const currentCount = raidState.slots.filter((s, i) => s && i <= config.maxPlayers).length;
+    renderRecommendations: (elements, raidManager, totalSynergies) => {
+        const { state } = raidManager;
+        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
+        const currentCount = state.slots.filter((s, i) => s && i <= config.maxPlayers).length;
         if (currentCount === 0) {
             elements.recommendationList.innerHTML = '<p>파티원을 추가하면 최적의 클래스를 추천해 드립니다.</p>';
             return;
@@ -128,8 +134,9 @@ export const raidFunction = {
     },
 
     // 카테고리 변경 시 레이드 목록 업데이트
-    handleCategoryChange: (e, elements, raidState, updateAll) => {
+    handleCategoryChange: (e, elements, raidManager, updateAll) => {
         const category = e.target.value;
+        const { state } = raidManager;
         elements.raidSelect.innerHTML = '<option value="none">레이드 선택</option>';
         elements.raidOptions.innerHTML = '<div class="custom-option" data-value="none">레이드 선택</div>';
         elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = '레이드 선택';
@@ -150,13 +157,14 @@ export const raidFunction = {
                 }
             });
         }
-        raidState.selectedRaid = 'none';
+        state.selectedRaid = 'none';
         updateAll();
     },
 
     // 레이드 선택 변경 시 처리
-    handleRaidChange: (e, raidState, updateRaidLayout, updateAll) => {
-        raidState.selectedRaid = e.target.value;
+    handleRaidChange: (e, raidManager, updateRaidLayout, updateAll) => {
+        const { state } = raidManager;
+        state.selectedRaid = e.target.value;
         updateRaidLayout();
         updateAll();
     },

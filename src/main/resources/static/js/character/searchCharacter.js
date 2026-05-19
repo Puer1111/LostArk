@@ -14,21 +14,93 @@ document.addEventListener("DOMContentLoaded", function () {
     // 아크 그리드 상세보기 버튼 초기화
     initArkGridDetailButtons();
 
-    // 원정대 카드 클릭 이벤트 초기화
-    initExpeditionCards();
+    // 비동기 원정대 데이터 로드 시작
+    loadExpeditionData();
 });
+
+/**
+ * 원정대 데이터를 비동기로 로드하여 렌더링함
+ */
+async function loadExpeditionData() {
+    const expeditionTab = document.getElementById('expedition');
+    if (!expeditionTab) return;
+
+    const characterName = expeditionTab.dataset.characterName;
+    const loadingDiv = document.getElementById('expedition-loading');
+    const containerDiv = document.getElementById('expedition-container');
+    const errorDiv = document.getElementById('expedition-error');
+
+    try {
+        const response = await fetch(`/character/api/expedition/${encodeURIComponent(characterName)}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const expeditions = await response.json();
+        
+        if (!expeditions || expeditions.length === 0) {
+            loadingDiv.style.display = 'none';
+            errorDiv.querySelector('p').textContent = '원정대 정보가 없습니다.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        // 데이터 렌더링
+        containerDiv.innerHTML = expeditions.map(char => createExpeditionCardHtml(char)).join('');
+        
+        // 카드 클릭 이벤트 재설정
+        initExpeditionCards();
+
+        loadingDiv.style.display = 'none';
+        containerDiv.style.display = 'flex';
+
+    } catch (error) {
+        console.error('Failed to load expedition data:', error);
+        loadingDiv.style.display = 'none';
+        errorDiv.style.display = 'block';
+    }
+}
+
+/**
+ * 원정대 카드 HTML 생성
+ */
+function createExpeditionCardHtml(char) {
+    const bgStyle = (char.characterImage) ? `style="background-image: url('${char.characterImage}');"` : '';
+    const combatPower = char.combatPower ? char.combatPower : '-';
+    const charName = char.characterName || '';
+    
+    return `
+        <div class="expedition-card" data-character-name="${charName}" ${bgStyle}>
+            <div class="card-header">
+                <div class="server-name">${char.serverName}</div>
+                ${charName ? `<a href="/character/${encodeURIComponent(charName)}"><h3 class="character-name">${charName}</h3></a>` : `<h3 class="character-name">-</h3>`}
+            </div>
+            <div class="card-body">
+                <div class="info-row">
+                    <span class="label">클래스</span>
+                    <span class="value">${char.characterClassName}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">아이템 레벨</span>
+                    <span class="value">${char.itemAvgLevel}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">전투력</span>
+                    <span class="value">${combatPower}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 function initExpeditionCards() {
     const cards = document.querySelectorAll('.expedition-card');
     cards.forEach(card => {
+        // 기존 이벤트 제거는 복잡하므로, 새로 추가된 카드들에 대해서만 동작하도록 구조적으로 보장됨 (container.innerHTML 재작성)
         card.addEventListener('click', function (event) {
-            // 클릭된 요소가 이미 a 태그이거나 a 태그의 자식인 경우 중복 이동 방지
             if (event.target.tagName === 'A' || event.target.closest('a')) return;
 
             const link = this.querySelector('.card-header a');
             if (link) {
                 const href = link.getAttribute('href');
-                // href가 유효한 캐릭터 이름을 포함하고 있는지 확인 (단순히 /character/ 인 경우 차단)
                 if (href && href !== '/character' && href !== '/character/') {
                     window.location.href = href;
                 }

@@ -1,7 +1,9 @@
 package com.lostark.lostark.service.api;
 
+import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
+import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
 
 public interface LostArkService {
     /**
@@ -19,9 +21,16 @@ public interface LostArkService {
     SearchCharacterDTO getCharacter(String characterName);
 
     /**
+     * 캐릭터 상세 프로필 조회 (캐시 적용 대상)
+     * @param characterName
+     * @return
+     */
+    CharacterProfiles getCharacterProfile(String characterName);
+
+    /**
      * 파티 시뮬레이터를 위한 간소화된 캐릭터 정보 조회 ( 캐릭터 명 )
      * @param characterName
      * @return SimplifiedCharacterDTO
      */
-    com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO getSimplifiedCharacter(String characterName);
+    SimplifiedCharacterDTO getSimplifiedCharacter(String characterName);
 }

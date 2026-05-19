@@ -190,7 +190,7 @@ public class MarketServiceImpl implements MarketService {
         body.put("CategoryCode", 210000);
         body.put("ItemTier", tier);
         body.put("ItemName", itemName);
-        body.put("Sort", "BIDSTART_PRICE");
+        body.put("Sort", "BUY_PRICE");
         body.put("SortCondition", "ASC");
         body.put("PageNo", 0);
         Object response = getAuctionItems(body);
