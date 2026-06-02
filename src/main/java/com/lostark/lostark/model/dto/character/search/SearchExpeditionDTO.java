@@ -1,5 +1,6 @@
 package com.lostark.lostark.model.dto.character.search;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.ToString;
@@ -7,15 +8,15 @@ import lombok.ToString;
 @Data
 @ToString
 public class SearchExpeditionDTO {
-    @JsonProperty("ServerName")
+    @JsonAlias("ServerName")
     private String serverName;
-    @JsonProperty("CharacterName")
+    @JsonAlias("CharacterName")
     private String characterName;
-    @JsonProperty("CharacterClassName")
+    @JsonAlias("CharacterClassName")
     private String characterClassName;
-    @JsonProperty("CharacterLevel")
+    @JsonAlias("CharacterLevel")
     private String characterLevel;
-    @JsonProperty("ItemAvgLevel")
+    @JsonAlias("ItemAvgLevel")
     private String itemAvgLevel;
 
     private String characterImage;

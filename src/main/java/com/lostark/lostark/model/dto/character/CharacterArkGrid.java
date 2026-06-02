@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lostark.lostark.model.dto.character.tooltip.Tooltip;
 import com.lostark.lostark.model.dto.character.tooltip.TooltipDeserializer;
 import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
-import com.fasterxml.jackson.databind.ObjectMapper; // Added import
+import com.fasterxml.jackson.databind.ObjectMapper; // Added ObjectMapper instance
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CharacterArkGrid {
 
         @JsonProperty("Slots")
@@ -18,9 +20,10 @@ public class CharacterArkGrid {
 
         private static final ObjectMapper objectMapper = new ObjectMapper(); // Added ObjectMapper instance
 
-        
+
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Slot {
         @JsonProperty("Index")
         private int index;
@@ -39,6 +42,7 @@ public class CharacterArkGrid {
         private List<Gem> gems;
     }
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Gem {
         @JsonProperty("Index")
         private int index;
@@ -65,7 +69,9 @@ public class CharacterArkGrid {
         }
     }
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Effect {
+
         @JsonProperty("Name")
         private String name;
         @JsonProperty("Level")

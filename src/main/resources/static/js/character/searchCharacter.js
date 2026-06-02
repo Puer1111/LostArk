@@ -14,9 +14,70 @@ document.addEventListener("DOMContentLoaded", function () {
     // 아크 그리드 상세보기 버튼 초기화
     initArkGridDetailButtons();
 
+    // 정보 갱신 버튼 초기화
+    initRefreshButton();
+
     // 비동기 원정대 데이터 로드 시작
     loadExpeditionData();
 });
+
+/**
+ * 정보 갱신 버튼 초기화 및 쿨타임 관리
+ */
+function initRefreshButton() {
+    const refreshBtn = document.getElementById('refresh-btn');
+    const cooldownText = document.getElementById('refresh-cooldown');
+    const expeditionTab = document.getElementById('expedition');
+    if (!refreshBtn || !expeditionTab) return;
+
+    const characterName = expeditionTab.dataset.characterName;
+    const cooldownKey = `refresh_cooldown_${characterName}`;
+    const COOLDOWN_MS = 60 * 1000; // 1분
+
+    // 쿨타임 상태 업데이트 함수
+    const updateCooldownStatus = () => {
+        const lastRefresh = localStorage.getItem(cooldownKey);
+        if (lastRefresh) {
+            const remaining = COOLDOWN_MS - (Date.now() - parseInt(lastRefresh));
+            if (remaining > 0) {
+                refreshBtn.disabled = true;
+                const seconds = Math.ceil(remaining / 1000);
+                cooldownText.textContent = `${seconds}초 후 다시 가능`;
+                setTimeout(updateCooldownStatus, 1000);
+                return true;
+            }
+        }
+        refreshBtn.disabled = false;
+        cooldownText.textContent = '';
+        return false;
+    };
+
+    // 초기 상태 확인
+    updateCooldownStatus();
+
+    refreshBtn.addEventListener('click', async () => {
+        if (refreshBtn.disabled) return;
+
+        try {
+            refreshBtn.disabled = true;
+            refreshBtn.textContent = '갱신 중...';
+            
+            const response = await fetch(`/character/api/refresh/${encodeURIComponent(characterName)}`);
+            if (!response.ok) throw new Error('Refresh failed');
+
+            // 쿨타임 기록
+            localStorage.setItem(cooldownKey, Date.now().toString());
+            
+            // 페이지 새로고침
+            window.location.reload();
+        } catch (error) {
+            console.error('Failed to refresh character data:', error);
+            alert('정보 갱신에 실패했습니다. 잠시 후 다시 시도해주세요.');
+            refreshBtn.disabled = false;
+            refreshBtn.innerHTML = '<span class="refresh-icon">🔄</span> 정보 갱신';
+        }
+    });
+}
 
 /**
  * 원정대 데이터를 비동기로 로드하여 렌더링함
@@ -46,11 +107,8 @@ async function loadExpeditionData() {
         // 데이터 렌더링
         containerDiv.innerHTML = expeditions.map(char => createExpeditionCardHtml(char)).join('');
         
-        // 카드 클릭 이벤트 재설정
-        initExpeditionCards();
-
         loadingDiv.style.display = 'none';
-        containerDiv.style.display = 'flex';
+        containerDiv.style.display = 'grid';
 
     } catch (error) {
         console.error('Failed to load expedition data:', error);
@@ -66,14 +124,18 @@ function createExpeditionCardHtml(char) {
     const bgStyle = (char.characterImage) ? `style="background-image: url('${char.characterImage}');"` : '';
     const combatPower = char.combatPower ? char.combatPower : '-';
     const charName = char.characterName || '';
+    const href = charName ? `/character/${encodeURIComponent(charName)}` : '#';
     
     return `
-        <div class="expedition-card" data-character-name="${charName}" ${bgStyle}>
+        <a href="${href}" class="expedition-card" data-character-name="${charName}" ${bgStyle} style="text-decoration: none;">
             <div class="card-header">
                 <div class="server-name">${char.serverName}</div>
-                ${charName ? `<a href="/character/${encodeURIComponent(charName)}"><h3 class="character-name">${charName}</h3></a>` : `<h3 class="character-name">-</h3>`}
             </div>
             <div class="card-body">
+                <div class="info-row name-row">
+                    <span class="label">이름</span>
+                    <span class="value character-name">${charName || '-'}</span>
+                </div>
                 <div class="info-row">
                     <span class="label">클래스</span>
                     <span class="value">${char.characterClassName}</span>
@@ -87,26 +149,8 @@ function createExpeditionCardHtml(char) {
                     <span class="value">${combatPower}</span>
                 </div>
             </div>
-        </div>
+        </a>
     `;
-}
-
-function initExpeditionCards() {
-    const cards = document.querySelectorAll('.expedition-card');
-    cards.forEach(card => {
-        // 기존 이벤트 제거는 복잡하므로, 새로 추가된 카드들에 대해서만 동작하도록 구조적으로 보장됨 (container.innerHTML 재작성)
-        card.addEventListener('click', function (event) {
-            if (event.target.tagName === 'A' || event.target.closest('a')) return;
-
-            const link = this.querySelector('.card-header a');
-            if (link) {
-                const href = link.getAttribute('href');
-                if (href && href !== '/character' && href !== '/character/') {
-                    window.location.href = href;
-                }
-            }
-        });
-    });
 }
 
 function initArkGridDetailButtons() {

@@ -33,4 +33,10 @@ public interface LostArkService {
      * @return SimplifiedCharacterDTO
      */
     SimplifiedCharacterDTO getSimplifiedCharacter(String characterName);
+
+    /**
+     * 캐릭터 정보 강제 갱신 (캐시 삭제)
+     * @param characterName
+     */
+    void refreshCharacter(String characterName);
 }

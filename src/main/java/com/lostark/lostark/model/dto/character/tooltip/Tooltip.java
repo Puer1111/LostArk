@@ -1,6 +1,7 @@
 package com.lostark.lostark.model.dto.character.tooltip;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,6 +21,7 @@ public class Tooltip {
         elements.put(name, value);
     }
 
+    @JsonIgnore
     public String getElementHtml(String elementKey) {
         if (elements == null || !elements.containsKey(elementKey)) {
             return "";
@@ -32,6 +34,7 @@ public class Tooltip {
         return valueToHtml(element);
     }
     // 특정 요소의 하위 내용 뽑기 ( 장신구 )
+    @JsonIgnore
     public String getNestedElementHtml(String topLevelKey, String nestedKey) {
         if (elements == null || !elements.containsKey(topLevelKey)) {
             return "";
@@ -108,6 +111,7 @@ public class Tooltip {
     }
 
     // 상급 재련 값 json 에서 출력해서 프론트로 보내는 메서드.
+    @JsonIgnore
     public String getAdvancedHoningLevel() {
         if (elements == null || !elements.containsKey("Element_005")) {
             return "";
@@ -130,6 +134,7 @@ public class Tooltip {
     }
 
     // 장비  품질 계산
+    @JsonIgnore
     public String getQualityValue() {
         TooltipElement element = elements.get("Element_001");
         if (element == null || !(element.getValue() instanceof Map)) {
@@ -148,6 +153,7 @@ public class Tooltip {
     }
 
     // 어빌리티 스톤 에서 각인 이름 추출.
+    @JsonIgnore
     public String extractEngravings() {
         // Element_007에 무작위 각인 효과가 있습니다.
         TooltipElement element = elements.get("Element_007");
@@ -203,6 +209,7 @@ public class Tooltip {
         }
     }
 
+    @JsonIgnore
     public Map<String, Integer> extractGemEffects() {
         Map<String, Integer> effects = new LinkedHashMap<>(); // Use LinkedHashMap to preserve order
 
@@ -243,6 +250,7 @@ public class Tooltip {
         private List<String> skillEffects = new ArrayList<>(); // 스킬 효과 (예: 피해 증가, 재사용 대기시간 감소)
         private List<String> additionalEffects = new ArrayList<>(); // 추가 효과 (예: 기본 공격력 증가)
     }
+    @JsonIgnore
     public GemsTooltipData getGemsTooltip() {
 
         TooltipElement element006 = elements.get("Element_006");
@@ -296,6 +304,7 @@ public class Tooltip {
 
     }
 
+    @JsonIgnore
     public List<String> getFilteredGemsTooltip() {
         GemsTooltipData rawGemsTooltipData = getGemsTooltip();
         if (rawGemsTooltipData == null || rawGemsTooltipData.getSkillEffects() == null) {
@@ -331,6 +340,7 @@ public class Tooltip {
         return filteredList;
     }
 
+    @JsonIgnore
     public String getPrimaryEffectType() {
         List<String> tips = getFilteredGemsTooltip();
         if (tips == null || tips.isEmpty()) {
@@ -350,6 +360,7 @@ public class Tooltip {
     /**
      * 보석의 효과를 확인하여 "피해" 또는 "감소"로 단순화된 이름을 반환합니다.
      */
+    @JsonIgnore
     public String getSimplifiedGemName() {
         String type = getPrimaryEffectType();
         if ("INCREASE".equals(type)) {
@@ -367,6 +378,7 @@ public class Tooltip {
     /**
      * 보석 레벨에 따라 CSS 클래스명을 반환합니다.
      */
+    @JsonIgnore
     public String getGemLevelClass(int level) {
         if (level >= 10) {
             return "gem-border-10"; // 10레벨
@@ -411,6 +423,7 @@ public class Tooltip {
      * @return 추출된 보석 이름. HTML이 유효하지 않거나 텍스트를 찾을 수 없는 경우 빈 문자열 반환.
      */
 
+    @JsonIgnore
     public String getCleanedGemName() {
 
         TooltipElement element = elements.get("Element_000");
@@ -464,6 +477,7 @@ public class Tooltip {
     /**
      * 스킬 툴팁에서 무력화, 부위파괴, 면역 정보를 추출합니다.
      */
+    @JsonIgnore
     public List<String> extractSkillAttributes() {
         Set<String> attributes = new LinkedHashSet<>();
         if (elements == null) return new ArrayList<>();

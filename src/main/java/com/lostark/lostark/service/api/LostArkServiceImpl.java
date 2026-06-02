@@ -10,7 +10,9 @@ import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
 import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -199,5 +201,17 @@ public class LostArkServiceImpl implements LostArkService {
                 .combatPower(profile.getCombatPower())
                 .itemLevel(profile.getItemAvgLevel())
                 .build();
+    }
+
+    @Override
+    @Caching(evict = {
+            @CacheEvict(value = "profileCache", key = "#characterName"),
+            @CacheEvict(value = "expeditionCache", key = "#characterName"),
+            @CacheEvict(value = "characterCache", key = "#characterName")
+    })
+    public void refreshCharacter(String characterName) {
+        log.info("Service.refreshCharacter.characterName = {}", characterName);
+        // 캐시 삭제 후, getCharacter()를 호출하여 새로운 데이터를 캐싱할 수도 있지만,
+        // 컨트롤러에서 처리를 제어하기 위해 여기서는 삭제만 수행합니다.
     }
 }

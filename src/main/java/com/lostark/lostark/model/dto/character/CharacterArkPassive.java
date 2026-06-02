@@ -1,14 +1,16 @@
 package com.lostark.lostark.model.dto.character;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lostark.lostark.model.dto.character.tooltip.Tooltip;
 import com.lostark.lostark.model.dto.character.tooltip.TooltipDeserializer;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonProperty; // Added import
 
 import java.util.List;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CharacterArkPassive {
 
     @JsonProperty("Title")
@@ -21,6 +23,7 @@ public class CharacterArkPassive {
     private List<Effect> effects;
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Point {
         @JsonProperty("Name")
         private String name;
@@ -34,6 +37,7 @@ public class CharacterArkPassive {
     }
 
     @Data
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Effect {
         @JsonProperty("Name")
         private String name;

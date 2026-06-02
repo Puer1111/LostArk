@@ -25,13 +25,13 @@ public class RedisConfig {
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
                 .entryTtl(Duration.ofMinutes(10)); // 기본 만료 시간은 10분으로 설정
 
-        // 특정 캐시에 대해 1분 만료 설정
+        // 특정 캐시에 대해 만료 설정 (캐릭터 정보는 10분 정도로 유지)
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        cacheConfigurations.put("characterCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
-        cacheConfigurations.put("expeditionCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
-        cacheConfigurations.put("profileCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
-        cacheConfigurations.put("marketCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
-        cacheConfigurations.put("gemCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
+        cacheConfigurations.put("characterCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        cacheConfigurations.put("expeditionCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        cacheConfigurations.put("profileCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+        cacheConfigurations.put("marketCache", defaultConfig.entryTtl(Duration.ofMinutes(1))); // 마켓은 변동이 잦으므로 짧게 유지
+        cacheConfigurations.put("gemCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
         cacheConfigurations.put("auctionCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
 
         return RedisCacheManager.builder(connectionFactory)

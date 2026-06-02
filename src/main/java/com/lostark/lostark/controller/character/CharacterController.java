@@ -40,6 +40,17 @@ public class CharacterController {
     }
 
     /**
+     * 캐릭터 정보 강제 갱신 API (캐시 삭제)
+     */
+    @GetMapping("/api/refresh/{characterName}")
+    @ResponseBody
+    public ResponseEntity<Void> refreshCharacter(@PathVariable String characterName) {
+        log.info("Controller.refreshCharacter.characterName: {}", characterName);
+        apiService.refreshCharacter(characterName);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
      * 원정대 정보 비동기 조회를 위한 API (JSON 반환)
      */
     @GetMapping("/api/expedition/{characterName}")

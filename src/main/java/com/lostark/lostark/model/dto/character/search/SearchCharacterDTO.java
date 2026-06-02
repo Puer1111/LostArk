@@ -3,12 +3,14 @@ package com.lostark.lostark.model.dto.character.search;
 import com.lostark.lostark.model.dto.character.*;
 import lombok.Data;
 import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List; // Import List
 
 @Data
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchCharacterDTO {
     @JsonProperty("ArmoryProfile")
     private CharacterProfiles characterProfiles;
