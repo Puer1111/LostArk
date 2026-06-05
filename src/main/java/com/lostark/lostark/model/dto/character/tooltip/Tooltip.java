@@ -133,6 +133,52 @@ public class Tooltip {
         return ""; // 값을 찾지 못한 경우
     }
 
+    /**
+     * 아크 그리드 젬 효과 조각들을 리스트로 반환 (각각 개별 태그 처리용)
+     */
+    @JsonIgnore
+    public List<String> getSimplifiedArkGridGemList(String elementKey) {
+        if (elements == null || !elements.containsKey(elementKey)) return Collections.emptyList();
+        TooltipElement element = elements.get(elementKey);
+        if (element == null) return Collections.emptyList();
+
+        String html = "";
+        Object value = element.getValue();
+        if (value instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) value;
+            if (map.containsKey("Element_001") && map.get("Element_001") instanceof String) {
+                html = (String) map.get("Element_001");
+            }
+        } else if (value instanceof String) {
+            html = (String) value;
+        }
+
+        if (html == null || html.isEmpty()) return Collections.emptyList();
+
+        List<String> results = new ArrayList<>();
+
+        // 1. 필요 의지력 추출
+        Matcher m1 = Pattern.compile("필요 의지력\\s*:\\s*<FONT[^>]*>(\\d+)</FONT>").matcher(html);
+        if (m1.find()) results.add("필요 의지력: " + m1.group(1));
+
+        // 2. 혼돈 또는 질서 포인트 추출
+        Matcher m2 = Pattern.compile("(혼돈|질서) 포인트\\s*:\\s*<FONT[^>]*>(\\d+)</FONT>").matcher(html);
+        if (m2.find()) results.add(m2.group(1) + " 포인트: " + m2.group(2));
+
+        // 3. [이름] 및 Lv.값 추출
+        Matcher m3 = Pattern.compile("\\[([^\\]]+)\\]\\s*(?:<FONT[^>]*>)?(Lv\\.\\d+)?(?:</FONT>)?").matcher(html);
+        while (m3.find()) {
+            String effect = "[" + m3.group(1) + "]";
+            if (m3.group(2) != null) {
+                effect += " " + m3.group(2);
+            }
+            results.add(effect);
+        }
+
+        return results;
+    }
+
     // 장비  품질 계산
     @JsonIgnore
     public String getQualityValue() {

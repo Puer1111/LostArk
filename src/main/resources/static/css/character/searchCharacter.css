@@ -1,139 +1,6 @@
-
-.section.arkPassive {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 20px;
-}
-
-.ark-passive-column {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.ark-passive-column h3 {
-    text-align: center;
-    border-bottom: 2px solid #444;
-    padding-bottom: 10px;
-    margin-bottom: 5px;
-    color: #ffd700;
-}
-
-
-.ark-tier-section {
-    height: 80px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-    padding: 10px 5px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.ark-tier-section:last-child {
-    border-bottom: none;
-}
-
-
-.ark-tier-section::before {
-    content: attr(data-tier) " Tier";
-    position: absolute;
-    top: 2px;
-    left: 0;
-    font-size: 0.65em;
-    color: #888;
-    text-transform: uppercase;
-}
-
-
-.ark-passive-effect-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    margin: 10px 5px 0 5px;
-    text-align: center;
-}
-
-.effect-header img {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #555;
-    padding: 2px;
-}
-
-.effect-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.effect-name {
-    font-size: 0.59rem;
-    font-weight: 600;
-}
-
-.effect-level {
-    font-size: 0.65rem;
-    opacity: 0.9;
-}
-
-.effect-description {
-    font-size: 0.75em;
-    color: #efefef;
-    line-height: 1.2;
-}
-
-
-.effect-header {
-    position: relative;
-}
-
-.ark-passive-tooltip {
-    display: none;
-    position: absolute;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
-    background-color: #1e1e1e;
-    border: 1px solid #444;
-    padding: 15px;
-    border-radius: 8px;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    color: #efefef;
-    text-align: left;
-}
-
-
-.ark-passive-effect-item:hover .ark-passive-tooltip {
-    display: block;
-}
-
-.ark-passive-tooltip .tooltip-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
-    color: #ffd700;
-}
-
-.ark-passive-tooltip .tooltip-description {
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-
-.ark-passive-tooltip font {
-    font-weight: normal;
-}
-
-
+/* ==========================================================================
+   Common Layout & Components
+   ========================================================================== */
 .container {
     max-width: 1200px;
     margin: auto;
@@ -141,6 +8,18 @@
     border-radius: 12px;
 }
 
+.layout-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.left-column {
+    flex: 1;
+}
+
+.right-column {
+    flex: 2;
+}
 
 h1, h2, h3 {
     color: #e1e1e1;
@@ -154,7 +33,32 @@ strong {
     color: #ffd700;
 }
 
+.section {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    transition: z-index 0s;
+}
 
+.section:hover {
+    z-index: 100;
+}
+
+.section p {
+    margin: 6px 0;
+    color: #ccc;
+    font-size: 0.92rem;
+}
+
+/* ==========================================================================
+   Refresh Button
+   ========================================================================== */
 .refresh-container {
     margin-bottom: 15px;
     display: flex;
@@ -186,38 +90,43 @@ strong {
     box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
 }
 
-
-.section {
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+/* ==========================================================================
+   Tabs
+   ========================================================================== */
+.info-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
 }
 
-.section p {
-    margin: 6px 0;
-    color: #ccc;
-    font-size: 0.92rem;
+.tab-btn {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    border-radius: 5px;
 }
 
-.tooltip-content {
-    font-size: 0.85rem;
-    color: #eee;
-    margin-top: 6px;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    max-width: 310px;
+.tab-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.05);
 }
 
+.tab-btn.active {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.1);
+    box-shadow: inset 0 -2px 0 #ffd700;
+}
 
+/* ==========================================================================
+   Profile Section
+   ========================================================================== */
 .section.profiles {
     position: relative;
     width: 320px;
@@ -233,13 +142,18 @@ strong {
 }
 
 .section.profiles::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0) 100%);
+    pointer-events: none;
 }
 
 .profile-info {
     position: absolute;
     bottom: 20px;
     left: 15px;
+    z-index: 2;
 }
 
 .profile-info p {
@@ -248,23 +162,17 @@ strong {
     color: #fff;
 }
 
-
-.gems-item-content {
-    gap: 8px !important;
+/* ==========================================================================
+   Equipment & Items
+   ========================================================================== */
+.equipment-columns {
+    display: flex;
+    gap: 5px;
 }
 
-.gem-wrapper {
-    position: relative;
-    display: inline-block;
+.equipment-left, .equipment-right {
+    flex: 1;
 }
-
-.gem-img {
-    width: 42px !important;
-    height: 42px !important;
-    border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
 
 .equipment-area {
     width: 100%;
@@ -303,63 +211,55 @@ strong {
     white-space: nowrap;
 }
 
-
-.info-tabs {
-    display: flex;
-    gap: 2px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 8px;
+.item-quality {
+    border: 1px solid black;
+    padding: 2px;
+    border-radius: 3px;
+    width: 35px;
+    text-align: center;
+    margin-right: 10px;
 }
 
-.tab-btn {
-    background: none;
-    border: none;
-    color: #888;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
+/* ==========================================================================
+   Gems
+   ========================================================================== */
+.gems-item-content {
+    gap: 8px !important;
+}
+
+.gem-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.gem-img {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.gem-tooltip-details {
+    display: none;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background-color: #333;
+    color: white;
+    padding: 10px;
     border-radius: 5px;
+    z-index: 100;
+    min-width: 200px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+.gem-wrapper:hover .gem-tooltip-details {
+    display: block;
 }
 
-.tab-btn.active {
-    color: #ffd700;
-    background: rgba(255, 215, 0, 0.1);
-    box-shadow: inset 0 -2px 0 #ffd700;
-}
-
-
-.arkGrid-item {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    padding: 10px 15px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-.arkGrid-item:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
-.arkGrid-gem-info {
-    flex: 1;
-    color: #efefef;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    height: 360px;
-    padding: 12px;
-}
-
-
+/* ==========================================================================
+   Engravings
+   ========================================================================== */
 .engraving-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -373,28 +273,190 @@ strong {
     border-radius: 8px;
 }
 
-
-.layout-wrapper {
+.engraving-item-content {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.engraving-info-group {
+    display: flex;
+    align-items: center;
+}
+
+.engraving-icon {
+    display: inline-block;
+    width: 25px;
+    height: 28px;
+    background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/pc/profile/img_engrave_icon.png?3e9f6d074e03983e7d45');
+    background-repeat: no-repeat;
+    vertical-align: middle;
+    border-radius: 4px;
+}
+
+.engraving-level {
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #FFD700;
+    margin-left: 5px;
+}
+
+/* ==========================================================================
+   Skills & Runes
+   ========================================================================== */
+.skill-rune {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 50px;
+}
+
+.rune-icon-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    display: block;
+    border: 2px solid #777;
+}
+
+/* ==========================================================================
+   Ark Passive
+   ========================================================================== */
+.section.arkPassive {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.ark-passive-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     gap: 15px;
 }
 
-.left-column {
-    flex: 1;
+.ark-passive-column h3 {
+    text-align: center;
+    border-bottom: 2px solid #444;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    color: #ffd700;
 }
 
-.right-column {
-    flex: 2;
+.ark-tier-section {
+    height: 80px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    padding: 10px 5px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+.ark-tier-section:last-child {
+    border-bottom: none;
+}
+
+.ark-tier-section::before {
+    content: attr(data-tier) " Tier";
+    position: absolute;
+    top: 2px;
+    left: 0;
+    font-size: 0.65em;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.ark-passive-effect-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin: 10px 5px 0 5px;
+    text-align: center;
+}
+
+.ark-passive-effect-item:hover .ark-passive-tooltip {
+    display: block;
+}
+
+.ark-passive-tooltip {
+    display: none;
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    color: #efefef;
+    text-align: left;
+}
+
+.ark-passive-tooltip .tooltip-title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 5px;
+    color: #ffd700;
+}
+
+.ark-passive-tooltip .tooltip-description {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.effect-header {
+    position: relative;
+}
+
+.effect-header img {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid #555;
+    padding: 2px;
+}
+
+.effect-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.effect-name {
+    font-size: 0.59rem;
+    font-weight: 600;
+}
+
+.effect-level {
+    font-size: 0.65rem;
+    opacity: 0.9;
+}
+
+.effect-description {
+    font-size: 0.75em;
+    color: #efefef;
+    line-height: 1.2;
+}
+
+/* Ark Passive Simple */
 .arkPassive-simple-container {
     position: relative;
 }
 
 .arkPassive-simple-content {
-    justify-content: space-between;
     display: none;
     flex-direction: column;
+    justify-content: space-between;
     position: absolute;
     top: -350%;
     left: -100%;
@@ -438,25 +500,9 @@ strong {
     display: block;
 }
 
-.equipment-columns {
-    display: flex;
-    gap: 5px;
-}
-
-.equipment-left, .equipment-right {
-    flex: 1;
-}
-
-.item-quality {
-    border: 1px solid black;
-    padding: 2px;
-    border-radius: 3px;
-    width: 35px;
-    text-align: center;
-    margin-right: 10px;
-}
-
-
+/* ==========================================================================
+   Ark Grid
+   ========================================================================== */
 .arkGrid-simple-list {
     display: flex;
     flex-wrap: wrap;
@@ -470,18 +516,15 @@ strong {
     align-items: center;
     justify-content: center;
     z-index: 1;
-    width: 30px;
-    height: 30px;
 }
 
 .arkGrid-simple-item:hover {
-    z-index: 1010;
+    z-index: 2100;
 }
 
 .arkGrid-simple-item .arkGrid-img {
-    width: 28px;
-    height: 28px;
-    margin-right: 0;
+    width: 50px;
+    height: 50px;
 }
 
 .arkGrid-simple-item:hover .arkGrid-description {
@@ -491,7 +534,7 @@ strong {
 .arkGrid-description {
     display: none;
     position: absolute;
-    top: -100px;
+    top: 0;
     left: 100%;
     margin-left: 10px;
     width: 250px;
@@ -499,8 +542,8 @@ strong {
     border: 1px solid #555;
     border-radius: 8px;
     padding: 15px;
-    z-index: 2000;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2200;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     color: white;
 }
 
@@ -513,7 +556,6 @@ strong {
     padding: 0;
     margin-top: 5px;
 }
-
 
 .arkGrid-list {
     display: flex;
@@ -529,6 +571,12 @@ strong {
     border-radius: 8px;
     gap: 15px;
     position: relative;
+    transition: all 0.2s ease;
+}
+
+.arkGrid-item:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .arkGrid-slot-box {
@@ -558,6 +606,15 @@ strong {
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     justify-content: center;
     max-height: 375px;
+}
+
+.arkGrid-gem-info {
+    flex: 1;
+    color: #efefef;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 12px;
 }
 
 .arkGrid-gem-icon img {
@@ -592,7 +649,6 @@ strong {
     width: 400px;
 }
 
-
 .arkGrid-detail-btn {
     position: absolute;
     bottom: 5px;
@@ -608,96 +664,9 @@ strong {
     z-index: 5;
 }
 
-.gem-tooltip-details {
-    display: none;
-    position: absolute;
-    left: 100%;
-    top: 0;
-    background-color: #333;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 100;
-    min-width: 200px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.gem-wrapper:hover .gem-tooltip-details {
-    display: block;
-}
-
-
-.engraving-icon {
-    display: inline-block;
-    width: 25px;
-    height: 28px;
-    background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/pc/profile/img_engrave_icon.png?3e9f6d074e03983e7d45');
-    background-repeat: no-repeat;
-    vertical-align: middle;
-    border-radius: 4px;
-}
-
-.engraving-level {
-    font-size: 0.9em;
-    font-weight: bold;
-    color: #FFD700;
-    margin-left: 5px;
-}
-
-.engraving-item-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.engraving-info-group {
-    display: flex;
-    align-items: center;
-}
-
-
-.rune-icon-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    display: block;
-    border: 2px solid #777;
-}
-
-.skill-rune {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    min-width: 50px;
-}
-
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #222;
-    min-width: 200px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    color: #efefef;
-    font-size: 0.85em;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 5px;
-}
-
-
+/* ==========================================================================
+   Expedition
+   ========================================================================== */
 .expedition-container {
     display: grid;
     grid-template-columns: repeat(4, 180px);
@@ -733,10 +702,7 @@ strong {
 .expedition-card::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.45);
     z-index: 1;
 }
@@ -796,12 +762,51 @@ strong {
     color: #efefef;
 }
 
+/* ==========================================================================
+   Tooltips & Misc
+   ========================================================================== */
+.tooltip-content {
+    font-size: 0.85rem;
+    color: #eee;
+    margin-top: 6px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    z-index: 10;
+    max-width: 310px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #222;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    color: #efefef;
+    font-size: 0.85em;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 5px;
+}
+
 .no-data {
     text-align: center;
     padding: 50px;
     color: #888;
 }
-
 
 .loading-container {
     display: flex;
@@ -823,12 +828,12 @@ strong {
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+    to { transform: rotate(360deg); }
 }
 
-
+/* ==========================================================================
+   Media Queries
+   ========================================================================== */
 @media (max-width: 1024px) {
     .expedition-container {
         grid-template-columns: repeat(3, 1fr);
