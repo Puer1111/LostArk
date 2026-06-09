@@ -2,6 +2,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // 아크 그리드 툴팁 처리 함수 호출
     processArkGridTooltips();
 
+    // 아크 그리드 등급 색상 적용
+    applyArkGridGradeColors();
+
     // 젬 효과 집계 처리 함수 호출
     processGemEffectsAggregation();
 
@@ -158,6 +161,7 @@ function initArkGridDetailButtons() {
     if (document.arkGridEventRegistered) return;
 
     document.addEventListener('click', function (event) {
+        // 1. 기존 아크 그리드 상세보기 토글
         const button = event.target.closest('.arkGrid-detail-btn');
         if (button) {
             event.preventDefault();
@@ -174,6 +178,21 @@ function initArkGridDetailButtons() {
             }
             
             console.log('Button clicked, active class toggled:', button.classList.contains('active'));
+            return;
+        }
+
+        // 2. 아크 그리드 전체 보석 합산 토글
+        const totalGemsBtn = event.target.closest('.arkGrid-total-gems-btn');
+        if (totalGemsBtn) {
+            event.preventDefault();
+            totalGemsBtn.classList.toggle('active');
+            
+            const content = totalGemsBtn.nextElementSibling;
+            if (content && content.classList.contains('arkGrid-total-gems-content')) {
+                const isVisible = totalGemsBtn.classList.contains('active');
+                content.style.display = isVisible ? 'block' : 'none';
+                totalGemsBtn.querySelector('span').innerText = isVisible ? '📊 아크 그리드 전체 보석 합산 접기' : '📊 아크 그리드 전체 보석 합산 보기';
+            }
         }
     });
 
@@ -357,3 +376,71 @@ function applyEngravingIcons() {
         }
     });
 }
+
+/**
+ * 아크 그리드 아이템, 젬, 그리고 룬의 등급에 따라 아이콘 테두리 및 배경색 적용
+ */
+function applyArkGridGradeColors() {
+    const gradeColorMap = {
+        '에스더': '#3CF2E6',
+        '고대': '#E3C7A1',
+        '유물': '#FA5D00',
+        '전설': '#F99200',
+        '영웅': '#CE43FC',
+        '희귀': '#00B5FF',
+        '고급': '#91FE02',
+        '일반': '#FFFFFF'
+    };
+
+    // 1. 아크 그리드 슬롯 아이콘 처리
+    document.querySelectorAll('.arkGrid-item').forEach(item => {
+        const gradeElement = item.querySelector('.arkGrid-grade');
+        const iconImg = item.querySelector('.arkGrid-icon-wrapper img');
+        const wrapper = item.querySelector('.arkGrid-icon-wrapper');
+        
+        if (gradeElement && iconImg) {
+            const grade = gradeElement.textContent.trim();
+            const color = gradeColorMap[grade];
+            if (color) {
+                iconImg.style.borderColor = color;
+                iconImg.style.boxShadow = `0 0 8px ${color}66`;
+                if (wrapper) {
+                    wrapper.style.background = `radial-gradient(circle, ${color}44 0%, transparent 75%)`;
+                }
+            }
+        }
+    });
+
+    // 2. 아크 그리드 젬 상세 정보 처리
+    document.querySelectorAll('.arkGrid-gem-info').forEach(info => {
+        const iconImg = info.querySelector('.arkGrid-gem-icon-img');
+        if (iconImg) {
+            const grade = iconImg.getAttribute('title');
+            const color = gradeColorMap[grade];
+            if (color) {
+                info.style.borderLeft = `4px solid ${color}`;
+                iconImg.style.borderColor = color;
+                iconImg.style.boxShadow = `0 0 5px ${color}66`;
+                info.style.background = `linear-gradient(90deg, ${color}15 0%, rgba(0,0,0,0.2) 100%)`;
+            }
+        }
+    });
+
+    // 3. 스킬 룬 아이콘 처리
+    document.querySelectorAll('.rune-icon-img').forEach(img => {
+        // classList에서 'rune-border-'로 시작하는 클래스를 찾아 등급 추출
+        const gradeClass = Array.from(img.classList).find(c => c.startsWith('rune-border-'));
+        if (gradeClass) {
+            const grade = gradeClass.replace('rune-border-', '');
+            const color = gradeColorMap[grade];
+            if (color) {
+                img.style.borderColor = color;
+                // 전설 등급 이상의 경우 광채 효과 추가
+                if (grade === '전설' || grade === '유물' || grade === '고대' || grade === '에스더') {
+                    img.style.boxShadow = `0 0 5px ${color}`;
+                }
+            }
+        }
+    });
+}
+

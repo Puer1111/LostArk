@@ -20,6 +20,40 @@ public class CharacterArkGrid {
 
         private static final ObjectMapper objectMapper = new ObjectMapper(); // Added ObjectMapper instance
 
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public List<String> getAllCombinedGemEffects() {
+            if (slots == null || slots.isEmpty()) {
+                return java.util.Collections.emptyList();
+            }
+            java.util.Map<String, Integer> effectLevels = new java.util.LinkedHashMap<>();
+            
+            for (Slot slot : slots) {
+                if (slot.getGems() == null) continue;
+                for (Gem gem : slot.getGems()) {
+                    if (gem.getTooltip() == null) continue;
+                    java.util.List<String> rawEffects = new java.util.ArrayList<>();
+                    rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_005"));
+                    rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_006"));
+                    
+                    for (String raw : rawEffects) {
+                        java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[([^\\]]+)\\]\\s*Lv\\.(\\d+)");
+                        java.util.regex.Matcher mEffect = pEffect.matcher(raw);
+                        if (mEffect.find()) {
+                            String name = mEffect.group(1);
+                            int lvl = Integer.parseInt(mEffect.group(2));
+                            effectLevels.put(name, effectLevels.getOrDefault(name, 0) + lvl);
+                        }
+                    }
+                }
+            }
+            
+            java.util.List<String> combined = new java.util.ArrayList<>();
+            for (java.util.Map.Entry<String, Integer> entry : effectLevels.entrySet()) {
+                combined.add("[" + entry.getKey() + "] Lv." + entry.getValue());
+            }
+            return combined;
+        }
+
 
 
     @Data
@@ -40,6 +74,37 @@ public class CharacterArkGrid {
         private String grade;
         @JsonProperty("Gems")
         private List<Gem> gems;
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public List<String> getCombinedGemEffects() {
+            if (gems == null || gems.isEmpty()) {
+                return java.util.Collections.emptyList();
+            }
+            java.util.Map<String, Integer> effectLevels = new java.util.LinkedHashMap<>();
+            
+            for (Gem gem : gems) {
+                if (gem.getTooltip() == null) continue;
+                java.util.List<String> rawEffects = new java.util.ArrayList<>();
+                rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_005"));
+                rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_006"));
+                
+                for (String raw : rawEffects) {
+                    java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[([^\\]]+)\\]\\s*Lv\\.(\\d+)");
+                    java.util.regex.Matcher mEffect = pEffect.matcher(raw);
+                    if (mEffect.find()) {
+                        String name = mEffect.group(1);
+                        int lvl = Integer.parseInt(mEffect.group(2));
+                        effectLevels.put(name, effectLevels.getOrDefault(name, 0) + lvl);
+                    }
+                }
+            }
+            
+            java.util.List<String> combined = new java.util.ArrayList<>();
+            for (java.util.Map.Entry<String, Integer> entry : effectLevels.entrySet()) {
+                combined.add("[" + entry.getKey() + "] Lv." + entry.getValue());
+            }
+            return combined;
+        }
     }
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
