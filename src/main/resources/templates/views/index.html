@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>LoaHub</title>
-    <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
     <div th:replace="~{layout/layout :: layout(
@@ -16,14 +15,49 @@
     </th:block>
     <th:block th:fragment="mainContent">
         <div class="main-content">
-<!--            <label for="search-Character">-->
-<!--                <input type="text" id="search-Character"><button id="search-Character-btn">검색</button>-->
-<!--            </label>-->
-<!--            <button id="btn-signUp">회원가입</button>-->
+            <h2 class="section-title">오늘의 주요 일정</h2>
+            
+            <div th:if="${eventsMap != null and !eventsMap.isEmpty()}" class="calendar-container">
+                <!-- 카테고리별 카드 (Map iteration) -->
+                <div th:each="entry : ${eventsMap}" class="calendar-card event-group-card">
+                    
+                    <div class="calendar-header">
+                        <span class="category-tag" th:text="${entry.key}">카테고리명</span>
+                    </div>
+                    
+                    <div class="calendar-body">
+                        <div th:each="item : ${entry.value}" class="island-group">
+                            <div class="island-info-main">
+                                <div class="content-icon">
+                                    <img th:src="${item.contentsIcon}" th:alt="${item.contentsName}">
+                                </div>
+                                <div class="content-info">
+                                    <h3 th:text="${item.contentsName}">콘텐츠 이름</h3>
+                                </div>
+                            </div>
+                            
+                            <!-- 보상 아이템 -->
+                            <div class="reward-container">
+                                <div th:each="rewardLevel : ${item.rewardItems}" class="reward-level">
+                                    <div th:each="reward : ${rewardLevel.items}" class="reward-item" th:title="${reward.name}">
+                                        <div class="reward-icon-wrapper">
+                                            <img th:src="${reward.icon}" th:alt="${reward.name}" th:classappend="${'grade-' + reward.grade}">
+                                        </div>
+                                        <span class="reward-name" th:text="${reward.name}">아이템 이름</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div th:if="${eventsMap == null or eventsMap.isEmpty()}" class="no-data">
+                오늘 예정된 특별 일정이 없습니다.
+            </div>
         </div>
     </th:block>
     <th:block th:fragment="pageScript">
-<!--        <script src="/js/character/character.js"></script>-->
     </th:block>
 </div>
 </body>

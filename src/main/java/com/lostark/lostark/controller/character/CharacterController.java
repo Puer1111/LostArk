@@ -23,11 +23,6 @@ public class CharacterController {
 
     private final LostArkService apiService;
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
     /**
      * 캐릭터 상세 정보 조회
      */

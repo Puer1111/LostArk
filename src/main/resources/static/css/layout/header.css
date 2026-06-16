@@ -17,16 +17,66 @@
 }
 
 /* Search Container */
-.search-container {
+.search-wrapper {
+    position: relative;
     flex-grow: 1;
-    display: flex;
-    align-items: center;
     max-width: 600px;
     margin: 0 20px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
     border: 1px solid #555;
     border-radius: 20px;
     background-color: #3a3a3a;
     padding: 0 5px 0 20px;
+}
+
+/* 최근 검색어 리스트 */
+.recent-search-list {
+    position: absolute;
+    top: 105%;
+    left: 0;
+    right: 0;
+    background-color: #2a2a2a;
+    border: 1px solid #555;
+    border-radius: 10px;
+    z-index: 1000;
+    padding: 10px 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.recent-search-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 20px;
+    cursor: pointer;
+    color: #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.recent-search-item:hover {
+    background-color: #3e3e3e;
+}
+
+.recent-search-text {
+    flex-grow: 1;
+}
+
+.delete-search-btn {
+    background: transparent;
+    border: none;
+    color: #ff6b6b;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 5px;
+    margin-left: 10px;
+}
+
+.delete-search-btn:hover {
+    text-decoration: underline;
 }
 
 .search-container input {

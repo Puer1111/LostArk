@@ -4,6 +4,9 @@ import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
 import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
+import com.lostark.lostark.model.dto.LostArkCalendar;
+
+import java.util.List;
 
 public interface LostArkService {
     /**
@@ -39,4 +42,16 @@ public interface LostArkService {
      * @param characterName
      */
     void refreshCharacter(String characterName);
+
+    /**
+     * 게임 캘린더 정보 조회
+     * @return List<LostArkCalendar>
+     */
+    List<LostArkCalendar> getCalendar();
+
+    /**
+     * 오늘 나타나는 주요 일정(모험 섬, 카오스게이트, 필드보스) 정보 조회
+     * @return List<LostArkCalendar>
+     */
+    List<LostArkCalendar> getTodayEvents();
 }

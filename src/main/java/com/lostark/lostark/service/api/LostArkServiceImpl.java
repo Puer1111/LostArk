@@ -1,8 +1,10 @@
 package com.lostark.lostark.service.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.config.aspect.LogExecutionTime;
 import com.lostark.lostark.config.headers.HeaderUtils;
+import com.lostark.lostark.model.dto.LostArkCalendar;
 import com.lostark.lostark.model.dto.character.CharacterEquipment;
 import com.lostark.lostark.model.dto.character.CharacterProfiles;
 import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
@@ -21,6 +23,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -213,5 +217,105 @@ public class LostArkServiceImpl implements LostArkService {
         log.info("Service.refreshCharacter.characterName = {}", characterName);
         // 캐시 삭제 후, getCharacter()를 호출하여 새로운 데이터를 캐싱할 수도 있지만,
         // 컨트롤러에서 처리를 제어하기 위해 여기서는 삭제만 수행합니다.
+    }
+
+    /**
+     * 오늘 나타나는 주요 일정(모험 섬, 카오스게이트, 필드보스) 필터링
+     * 로스트아크 일일 초기화 시간인 오전 6시를 기준으로 '오늘'의 범위를 정의합니다.
+     * @return
+     */
+    @Override
+    public List<LostArkCalendar> getTodayEvents() {
+        log.info(">>> [비즈니스 로직] 오전 6시 초기화 기준 오늘 일정 필터링");
+        List<LostArkCalendar> allCalendar = getCalendar();
+        
+        if (allCalendar == null || allCalendar.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // 1. 현재 '게임 기준 날짜' 계산 (6시간을 빼서 날짜 판별)
+        // 예: 16일 02시 -> 15일로 인식 / 16일 07시 -> 16일로 인식
+        LocalDate gameToday = LocalDateTime.now(java.time.ZoneId.of("Asia/Seoul"))
+                .minusHours(6)
+                .toLocalDate();
+
+        return allCalendar.stream()
+                // 1. 카테고리 필터
+                .filter(item -> item.getCategoryName() != null && 
+                               (item.getCategoryName().contains("모험 섬") || 
+                                item.getCategoryName().contains("카오스게이트") || 
+                                item.getCategoryName().contains("필드보스")))
+                // 2. 이벤트 시간들도 6시간씩 뒤로 밀어 '게임 오늘' 날짜와 일치하는 일정이 포함된 항목만 필터링
+                .filter(item -> item.getStartTimes() != null && 
+                               item.getStartTimes().stream()
+                                   .anyMatch(t -> t.minusHours(6).toLocalDate().isEqual(gameToday)))
+                .map(item -> {
+                    // ⚠️ 중요: 캐시된 원본 객체를 수정하지 않기 위해 새 객체를 생성하여 반환합니다 (Deep Copy)
+                    
+                    // '게임 오늘'에 해당하는 시작 시간만 따로 추출
+                    List<LocalDateTime> filteredTimes = item.getStartTimes().stream()
+                            .filter(t -> t.minusHours(6).toLocalDate().isEqual(gameToday))
+                            .collect(Collectors.toList());
+
+                    // '게임 오늘' 획득 가능한 보상만 따로 추출
+                    List<LostArkCalendar.RewardItemLevel> filteredRewards = Collections.emptyList();
+                    if (item.getRewardItems() != null) {
+                        filteredRewards = item.getRewardItems().stream()
+                                .map(level -> {
+                                    List<LostArkCalendar.RewardItem> items = level.getItems().stream()
+                                            .filter(reward -> reward.getStartTimes() != null && 
+                                                             reward.getStartTimes().stream()
+                                                                 .anyMatch(t -> t.minusHours(6).toLocalDate().isEqual(gameToday)))
+                                            .collect(Collectors.toList());
+                                    return new LostArkCalendar.RewardItemLevel(level.getItemLevel(), items);
+                                })
+                                .filter(level -> !level.getItems().isEmpty())
+                                .collect(Collectors.toList());
+                    }
+
+                    // 새로운 객체에 오늘 날짜 정보만 담아서 재구성
+                    return LostArkCalendar.builder()
+                            .categoryName(item.getCategoryName())
+                            .contentsName(item.getContentsName())
+                            .contentsIcon(item.getContentsIcon())
+                            .minItemLevel(item.getMinItemLevel())
+                            .location(item.getLocation())
+                            .startTimes(filteredTimes)
+                            .rewardItems(filteredRewards)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Cacheable(value = "calendarCache")
+    public List<LostArkCalendar> getCalendar() {
+        log.info(">>> [API 호출] 로스트아크 캘린더 데이터 요청 시작");
+        
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/gamecontents/calendar")
+                .build().toUri();
+        
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                // API는 배열 형태이므로 TypeReference를 사용하여 List로 파싱해야 함
+                List<LostArkCalendar> result = objectMapper.readValue(response.getBody(), new TypeReference<List<LostArkCalendar>>() {});
+                log.info(">>> [API 성공] 캘린더 데이터 수신 완료. 아이템 개수: {}", (result != null ? result.size() : 0));
+                return result != null ? result : Collections.emptyList();
+            } else {
+                log.warn(">>> [API 경고] 응답은 성공했으나 데이터가 없거나 상태가 이상함. Status: {}", response.getStatusCode());
+                return Collections.emptyList();
+            }
+
+        } catch (org.springframework.web.client.HttpClientErrorException.Unauthorized e) {
+            log.error(">>> [API 오류] 401 Unauthorized: API 키가 유효하지 않거나 설정되지 않았습니다. 환경 변수를 확인하세요.");
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error(">>> [API 오류] 캘린더 데이터 조회 중 오류 발생: {}", e.getMessage());
+            return Collections.emptyList();
+        }
     }
 }

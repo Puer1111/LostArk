@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <link rel="stylesheet" href="/css/layout/header.css">
 </head>
@@ -9,13 +9,27 @@
         <div class="logo">
             <a href="/">LoaHub</a>
         </div>
-        <div class="search-container">
-            <input type="text" placeholder="검색할 캐릭터를 입력하세요" id="search-Character">
-            <button type="submit" class="search-button" id="search-Character-btn">검색</button>
+        <div class="search-wrapper">
+            <div class="search-container">
+                <input type="text" placeholder="검색할 캐릭터를 입력하세요" id="search-Character">
+                <button type="submit" class="search-button" id="search-Character-btn">검색</button>
+            </div>
+            <!-- 최근 검색어 영역 -->
+            <div id="recent-search-list" class="recent-search-list" style="display: none;">
+                <!-- 검색어가 자바스크립트로 동적 추가됩니다 -->
+            </div>
         </div>
         <div class="login">
-            <a href="/users/login">로그인</a>
-            <a href="/users/logout">로그아웃</a>
+            <!-- 로그인하지 않은 경우 -->
+            <th:block sec:authorize="isAnonymous()">
+                <a href="/users/login">로그인</a>
+            </th:block>
+            
+            <!-- 로그인한 경우 -->
+            <th:block sec:authorize="isAuthenticated()">
+                <span class="user-info" sec:authentication="name" style="margin-right: 10px; color: #fff;">사용자</span>님
+                <a href="/users/logout">로그아웃</a>
+            </th:block>
         </div>
     </header>
 

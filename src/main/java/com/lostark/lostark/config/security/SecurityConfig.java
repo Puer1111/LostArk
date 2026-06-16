@@ -1,29 +1,39 @@
 package com.lostark.lostark.config.security;
 
+import com.lostark.lostark.config.security.jwt.JwtAuthenticationFilter;
+import com.lostark.lostark.config.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 보호 비활성화 (API 서버 등에서는 비활성화, 웹에서는 필요에 따라 설정)
+                // CSRF 보호 비활성화 (API 서버이므로 비활성화)
                 .csrf(csrf -> csrf.disable())
+                // JWT를 사용하므로 세션을 사용하지 않음
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // HTTP Basic 인증 비활성화
+                .httpBasic(httpBasic -> httpBasic.disable())
+                // Form Login 비활성화 (JWT 사용 시 일반적으로 비활성화)
+                .formLogin(form -> form.disable())
 
                 // HTTP 요청에 대한 인가 설정
-                /**
-                 * 특정 조건달린 url 은 requestMatchers , 그 외에는 anyRequest
-                 */
                 .authorizeHttpRequests(authz -> authz
                         // 홈페이지, 회원가입, CSS/JS 등 정적 리소스는 누구나 접근 가능
                         .requestMatchers("/",
@@ -51,35 +61,17 @@ public class SecurityConfig {
                         // 그 외 모든 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()
                 )
-
-                // 폼 기반 로그인 설정
-                .formLogin(form -> form
-                        // 커스텀 로그인 페이지 경로 (나중에 만들어야 함)
-                        .loginPage("/users/login")
-
-                        // 로그인 성공 시 이동할 기본 URL
-                        .defaultSuccessUrl("/", true)
-                        // 로그인 페이지는 누구나 접근 가능
-                        .permitAll()
-                );
-
-                // 로그아웃 설정
-//                .logout(logout -> logout
-//                        // 로그아웃 처리 URL
-//                        .logoutUrl("/users/logout")
-//                        // 로그아웃 성공 시 이동할 URL
-//                        .logoutSuccessUrl("/")
-//                );
+                // JWT 필터를 UsernamePasswordAuthenticationFilter 전에 추가
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     /**
-     * 비밀번호 암호화를 위한 PasswordEncoder 빈을 등록합니다.
-     * BCrypt 알고리즘을 사용합니다.
+     * AuthenticationManager 빈을 등록합니다. (로그인 컨트롤러 등에서 사용 가능)
      */
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }

@@ -45,30 +45,108 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 헤더 검색 기능 로직 ---
     const searchInput = document.getElementById('search-Character');
     const searchButton = document.getElementById('search-Character-btn');
+    const recentSearchList = document.getElementById('recent-search-list');
+
+    // 최근 검색어 관련 상수
+    const RECENT_SEARCH_KEY = 'recentSearches';
+    const MAX_RECENT_COUNT = 5;
+
+    // 최근 검색어 로드 및 렌더링
+    function renderRecentSearches() {
+        if (!recentSearchList) return;
+        
+        const searches = JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) || '[]');
+        
+        if (searches.length === 0) {
+            recentSearchList.style.display = 'none';
+            return;
+        }
+
+        recentSearchList.innerHTML = searches.map(term => `
+            <div class="recent-search-item">
+                <span class="recent-search-text">${term}</span>
+                <button class="delete-search-btn" data-term="${term}">삭제</button>
+            </div>
+        `).join('');
+
+        // 삭제 버튼 이벤트 연결
+        document.querySelectorAll('.delete-search-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                deleteRecentSearch(e.target.dataset.term);
+            });
+        });
+
+        // 항목 클릭 시 검색 실행
+        document.querySelectorAll('.recent-search-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const term = item.querySelector('.recent-search-text').textContent;
+                searchInput.value = term;
+                performHeaderSearch(term);
+            });
+        });
+
+        // 리스트 표시
+        recentSearchList.style.display = 'block';
+    }
+
+    // 최근 검색어 저장
+    function saveRecentSearch(term) {
+        if (!term.trim()) return;
+        let searches = JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) || '[]');
+        
+        // 중복 제거 후 맨 앞으로 추가
+        searches = searches.filter(s => s !== term);
+        searches.unshift(term);
+        
+        // 최대 5개 유지
+        if (searches.length > MAX_RECENT_COUNT) {
+            searches = searches.slice(0, MAX_RECENT_COUNT);
+        }
+        
+        localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(searches));
+    }
+
+    // 최근 검색어 삭제
+    function deleteRecentSearch(term) {
+        let searches = JSON.parse(localStorage.getItem(RECENT_SEARCH_KEY) || '[]');
+        searches = searches.filter(s => s !== term);
+        localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(searches));
+        renderRecentSearches();
+    }
 
     // 공통 검색 실행 함수
-    function performHeaderSearch() {
-        if (!searchInput || !searchInput.value) {
+    function performHeaderSearch(forcedTerm) {
+        const term = forcedTerm || (searchInput ? searchInput.value.trim() : "");
+        if (!term) {
             alert("검색할 캐릭터 이름을 입력해 주세요!");
             return;
         }
-        const characterName = searchInput.value;
-        // window.location.href = `/character/expedition/${characterName}`;
-        window.location.href = `/character/${characterName}`;
+        
+        saveRecentSearch(term);
+        window.location.href = `/character/${term}`;
     }
 
-    // 1. 검색 버튼 클릭 이벤트
-    if (searchButton) {
-        searchButton.addEventListener('click', performHeaderSearch);
-    }
-
-    // 2. Enter 키 입력 이벤트 (기존 로직을 공통 함수 사용으로 변경)
+    // 검색창 포커스 시 최근 검색어 표시
     if (searchInput) {
+        searchInput.addEventListener('focus', renderRecentSearches);
+        
+        // 외부 클릭 시 리스트 숨기기
+        document.addEventListener('click', (e) => {
+            if (recentSearchList && !e.target.closest('.search-wrapper')) {
+                recentSearchList.style.display = 'none';
+            }
+        });
+
         searchInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                performHeaderSearch(); // 공통 함수 호출
+                performHeaderSearch();
             }
         });
+    }
+
+    if (searchButton) {
+        searchButton.addEventListener('click', () => performHeaderSearch());
     }
 });

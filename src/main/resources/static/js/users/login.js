@@ -9,34 +9,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // 엔터키 입력 시 로그인 요청
+    [userIdInput, userPasswordInput].forEach(input => {
+        if (input) {
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    checkLogin();
+                }
+            });
+        }
+    });
+
     async function checkLogin() {
         if (!userIdInput || !userPasswordInput) return;
 
         const userData = {
-            username: userIdInput.value,
-            password: userPasswordInput.value
+            userId: userIdInput.value,
+            userPassword: userPasswordInput.value
         };
-
-        // Convert to URL-encoded form data
-        const formData = new URLSearchParams();
-        for (const key in userData) {
-            formData.append(key, userData[key]);
-        }
 
         const url = '/users/login';
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 },
-                body: formData
+                body: JSON.stringify(userData)
             });
 
             if (response.ok) {
-                window.location.href = "/"; // Redirect to home on success
+                const result = await response.json();
+                // 토큰은 서버에서 HttpOnly 쿠키로 설정했으므로 JS에서 저장할 필요 없음
+                // UI에서 사용할 수 있도록 유저 아이디만 저장
+                localStorage.setItem('userId', result.userId);
+                
+                alert("로그인에 성공했습니다!");
+                window.location.href = "/"; // 메인 페이지로 이동
             } else {
-                alert("로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.");
+                const errorMsg = await response.text();
+                alert(errorMsg || "로그인에 실패했습니다. 아이디 또는 비밀번호를 확인해주세요.");
             }
         } catch (error) {
             console.error("Login API 호출 실패", error);
