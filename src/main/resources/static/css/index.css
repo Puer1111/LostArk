@@ -158,10 +158,129 @@ body {
 .grade-희귀 { border-color: #3498db !important; }
 .grade-고급 { border-color: #2ecc71 !important; }
 
+/* ... 기존 코드 생략 ... */
 .no-data {
     text-align: center;
     padding: 50px;
     color: #888;
     background-color: #333;
     border-radius: 12px;
+}
+
+/* Ranking Section */
+.ranking-section {
+    margin-top: 60px;
+}
+
+.ranking-container {
+    background-color: #333;
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid #444;
+}
+
+.ranking-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.ranking-card {
+    background-color: #3d3d3d;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+    border: 1px solid #555;
+    transition: all 0.2s ease;
+}
+
+.ranking-card:hover {
+    background-color: #454545;
+    border-color: #4a90e2;
+    transform: scale(1.02);
+}
+
+.rank-badge {
+    width: 30px;
+    height: 30px;
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* 1, 2, 3위 특별 색상 */
+.ranking-card:nth-child(1) .rank-badge { background-color: #f1c40f; color: #000; }
+.ranking-card:nth-child(2) .rank-badge { background-color: #bdc3c7; color: #000; }
+.ranking-card:nth-child(3) .rank-badge { background-color: #e67e22; }
+
+.ranker-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-grow: 1;
+}
+
+.ranker-image {
+    width: 50px;
+    height: 50px;
+    background-color: #222;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #555;
+}
+
+.ranker-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ranker-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ranker-name a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.ranker-name a:hover {
+    color: #4a90e2;
+}
+
+.ranker-class {
+    font-size: 13px;
+    color: #aaa;
+}
+
+.ranker-power {
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ranker-power .label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.ranker-power .value {
+    font-size: 14px;
+    color: #4a90e2;
+    font-weight: bold;
 }

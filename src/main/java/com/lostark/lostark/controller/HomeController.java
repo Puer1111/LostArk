@@ -21,17 +21,19 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(Model model) {
-        log.info("HomeController.index called - Requesting Today's Events from Service");
+        log.info("HomeController.index called - Requesting Today's Events and Top Rankings");
         
         List<LostArkCalendar> todayEvents = apiService.getTodayEvents();
+        List<com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO> topRankings = apiService.getTopRankings();
 
         // 컨트롤러에서 미리 카테고리별로 그룹화 (HTML 에러 방지 및 가독성)
         Map<String, List<LostArkCalendar>> groupedEvents = todayEvents.stream()
                 .collect(Collectors.groupingBy(LostArkCalendar::getCategoryName));
 
-        log.info("Events grouped into {} categories", groupedEvents.size());
+        log.info("Events grouped into {} categories, Rankings found: {}", groupedEvents.size(), topRankings.size());
         
         model.addAttribute("eventsMap", groupedEvents);
+        model.addAttribute("topRankings", topRankings);
         return "index";
     }
 }

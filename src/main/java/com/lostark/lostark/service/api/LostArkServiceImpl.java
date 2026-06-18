@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,11 @@ public class LostArkServiceImpl implements LostArkService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final HeaderUtils headerUtils;
+    private final StringRedisTemplate redisTemplate;
     private final org.springframework.beans.factory.ObjectProvider<LostArkService> lostArkServiceProvider;
+
+    private static final String RANKING_KEY = "combat_power_ranking";
+    private static final String CHARACTER_METADATA_KEY = "character_metadata";
 
     private LostArkService getSelf() {
         return lostArkServiceProvider.getIfAvailable();
@@ -54,7 +59,13 @@ public class LostArkServiceImpl implements LostArkService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-            return objectMapper.readValue(response.getBody(), CharacterProfiles.class);
+            CharacterProfiles profile = objectMapper.readValue(response.getBody(), CharacterProfiles.class);
+            
+            if (profile != null) {
+                updateRanking(profile);
+            }
+            
+            return profile;
         } catch (Exception e) {
             log.warn("Failed to fetch profile for character: {}", characterName);
             // 429 에러 발생 시 예외를 던져 캐싱되지 않도록 함 (다음에 다시 시도할 수 있게)
@@ -63,6 +74,63 @@ public class LostArkServiceImpl implements LostArkService {
             }
             return null;
         }
+    }
+
+    /**
+     * Redis Sorted Set을 이용한 랭킹 업데이트 및 캐릭터 메타데이터 저장
+     */
+    private void updateRanking(CharacterProfiles profile) {
+        try {
+            String characterName = profile.getCharacterName();
+            if (characterName == null || profile.getCombatPower() == null) return;
+
+            String combatPowerStr = profile.getCombatPower().replace(",", "");
+            double combatPower = Double.parseDouble(combatPowerStr);
+
+            // 1. Sorted Set에 전투력 업데이트 (ZSet: 점수 기반 정렬)
+            redisTemplate.opsForZSet().add(RANKING_KEY, characterName, combatPower);
+
+            // 2. 캐릭터 메타데이터(이미지, 클래스 등) Hash에 저장 (랭킹 출력용 JSON)
+            SimplifiedCharacterDTO metadata = SimplifiedCharacterDTO.builder()
+                    .characterName(characterName)
+                    .characterImage(profile.getCharacterImage())
+                    .characterClassName(profile.getCharacterClassName())
+                    .combatPower(profile.getCombatPower())
+                    .itemLevel(profile.getItemAvgLevel())
+                    .build();
+
+            redisTemplate.opsForHash().put(CHARACTER_METADATA_KEY, characterName, objectMapper.writeValueAsString(metadata));
+            log.debug("Ranking updated for character: {}, CombatPower: {}", characterName, combatPower);
+        } catch (Exception e) {
+            log.warn("Failed to update ranking for character: {}", profile.getCharacterName());
+        }
+    }
+
+    @Override
+    public List<SimplifiedCharacterDTO> getTopRankings() {
+        log.info(">>> [비즈니스 로직] 전투력 Top 10 랭킹 조회");
+        
+        // Redis Sorted Set에서 상위 10명 가져오기 (전투력 높은 순)
+        Set<String> topCharacterNames = redisTemplate.opsForZSet().reverseRange(RANKING_KEY, 0, 9);
+        
+        if (topCharacterNames == null || topCharacterNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return topCharacterNames.stream()
+                .map(name -> {
+                    try {
+                        String json = (String) redisTemplate.opsForHash().get(CHARACTER_METADATA_KEY, name);
+                        if (json != null) {
+                            return objectMapper.readValue(json, SimplifiedCharacterDTO.class);
+                        }
+                    } catch (Exception e) {
+                        log.warn("Failed to parse metadata for character: {}", name);
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -129,7 +197,10 @@ public class LostArkServiceImpl implements LostArkService {
                 return new SearchCharacterDTO();
             }
             
-            // 원정대 정보는 이제 클라이언트에서 비동기로 별도 호출하므로 여기서 제거
+            // 프로필 정보가 포함되어 있다면 랭킹 업데이트
+            if (dto.getCharacterProfiles() != null) {
+                updateRanking(dto.getCharacterProfiles());
+            }
 
             sortGems(dto);
             filterAndSortEquipment(dto);
@@ -211,12 +282,11 @@ public class LostArkServiceImpl implements LostArkService {
     @Caching(evict = {
             @CacheEvict(value = "profileCache", key = "#characterName"),
             @CacheEvict(value = "expeditionCache", key = "#characterName"),
-            @CacheEvict(value = "characterCache", key = "#characterName")
+            @CacheEvict(value = "characterCache", key = "#characterName"),
+            @CacheEvict(value = "rankingCache", allEntries = true) // 데이터 갱신 시 랭킹 캐시도 초기화
     })
     public void refreshCharacter(String characterName) {
         log.info("Service.refreshCharacter.characterName = {}", characterName);
-        // 캐시 삭제 후, getCharacter()를 호출하여 새로운 데이터를 캐싱할 수도 있지만,
-        // 컨트롤러에서 처리를 제어하기 위해 여기서는 삭제만 수행합니다.
     }
 
     /**
@@ -273,10 +343,16 @@ public class LostArkServiceImpl implements LostArkService {
                                 .collect(Collectors.toList());
                     }
 
+                    // 카오스게이트의 경우 지역명이 포함된 이름을 정규화 (예: "일렁이는 악마군단 (베른 북부)" -> "일렁이는 악마군단")
+                    String normalizedContentsName = item.getContentsName();
+                    if (item.getCategoryName() != null && item.getCategoryName().contains("카오스게이트") && normalizedContentsName != null) {
+                        normalizedContentsName = normalizedContentsName.replaceAll("\\s*\\(.*?\\)", "").trim();
+                    }
+
                     // 새로운 객체에 오늘 날짜 정보만 담아서 재구성
                     return LostArkCalendar.builder()
                             .categoryName(item.getCategoryName())
-                            .contentsName(item.getContentsName())
+                            .contentsName(normalizedContentsName)
                             .contentsIcon(item.getContentsIcon())
                             .minItemLevel(item.getMinItemLevel())
                             .location(item.getLocation())
@@ -284,7 +360,16 @@ public class LostArkServiceImpl implements LostArkService {
                             .rewardItems(filteredRewards)
                             .build();
                 })
-                .collect(Collectors.toList());
+                // 중복 제거: 카테고리와 정규화된 이름이 같은 경우 하나만 남김 (LinkedHashMap으로 순서 유지)
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toMap(
+                                item -> item.getCategoryName() + "|" + item.getContentsName(),
+                                item -> item,
+                                (existing, replacement) -> existing,
+                                LinkedHashMap::new
+                        ),
+                        map -> new ArrayList<>(map.values())
+                ));
     }
 
     @Override

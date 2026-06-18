@@ -54,4 +54,10 @@ public interface LostArkService {
      * @return List<LostArkCalendar>
      */
     List<LostArkCalendar> getTodayEvents();
+
+    /**
+     * 전투력 Top 10 랭킹 정보 조회
+     * @return List<SimplifiedCharacterDTO>
+     */
+    List<SimplifiedCharacterDTO> getTopRankings();
 }
