@@ -27,7 +27,8 @@ public class JwtTokenProvider {
     @Value("${jwt.secret:defaultSecretKeyForLostArkProjectThatIsLongEnoughToBeSecure}")
     private String secretKey;
 
-    private final long tokenValidityInMilliseconds = 1000L * 60 * 60 * 24; // 24시간
+    private final long accessTokenValidityInMilliseconds = 1000L * 60 * 30; // 30분
+    private final long refreshTokenValidityInMilliseconds = 1000L * 60 * 60 * 24 * 7; // 7일
 
     private SecretKey key;
 
@@ -36,15 +37,29 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    // JWT 토큰 생성
-    public String createToken(String userId, String role) {
+    // Access Token 생성
+    public String createAccessToken(String userId, String role) {
         Claims claims = Jwts.claims().subject(userId).build();
         Date now = new Date();
-        Date validity = new Date(now.getTime() + tokenValidityInMilliseconds);
+        Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
 
         return Jwts.builder()
                 .claims(claims)
                 .claim("role", role)
+                .issuedAt(now)
+                .expiration(validity)
+                .signWith(key)
+                .compact();
+    }
+
+    // Refresh Token 생성
+    public String createRefreshToken(String userId) {
+        Claims claims = Jwts.claims().subject(userId).build();
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+
+        return Jwts.builder()
+                .claims(claims)
                 .issuedAt(now)
                 .expiration(validity)
                 .signWith(key)
@@ -75,5 +90,25 @@ public class JwtTokenProvider {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // 토큰의 남은 유효 시간 계산 (밀리초 단위, 블랙리스트 TTL용)
+    public long getRemainingTime(String token) {
+        try {
+            Date expiration = Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+            long now = new Date().getTime();
+            return Math.max(0, expiration.getTime() - now);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public long getRefreshTokenValidityInMilliseconds() {
+        return this.refreshTokenValidityInMilliseconds;
     }
 }

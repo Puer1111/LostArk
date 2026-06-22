@@ -1,6 +1,7 @@
 package com.lostark.lostark.service.market;
 
 import com.lostark.lostark.config.headers.HeaderUtils;
+import com.lostark.lostark.model.entity.market.MarketPriceHistory;
 import com.lostark.lostark.model.entity.market.MarketPriceSummary;
 import com.lostark.lostark.model.market.MarketPriceHistoryRepository;
 import com.lostark.lostark.model.market.MarketPriceSummaryRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -30,6 +32,10 @@ public class MarketServiceImpl implements MarketService {
     @Override
     @Cacheable(value = "marketCache", key = "#category")
     public Object getMarketItems(String category) {
+        return getMarketItemsInternal(category);
+    }
+
+    public Object getMarketItemsInternal(String category) {
         String url = "https://developer-lostark.game.onstove.com/markets/items";
         List<Integer> categoryCodes = getCategoryCodes(category);
 
@@ -156,6 +162,10 @@ public class MarketServiceImpl implements MarketService {
     @Override
     @Cacheable(value = "gemCache")
     public Object getGems() {
+        return getGemsInternal();
+    }
+
+    public Object getGemsInternal() {
         String[] types = {"겁화", "작열", "멸화", "홍염"};
         int[] tiers = {4, 4, 3, 3};
         List<Map<String, Object>> result = IntStream.range(0, 4).boxed()
@@ -264,6 +274,132 @@ public class MarketServiceImpl implements MarketService {
             case "Engravings": return List.of(40000);
             case "Enhancement": return List.of(50010,50020,51100,230000);
             default: return List.of(0);
+        }
+    }
+
+    @Override
+    public void collectMarketPrices() {
+        log.info("Starting market price collection (Non-transactional API calls)...");
+        LocalDateTime collectedAt = LocalDateTime.now();
+
+        // 1. 일반 아이템 수집 (Life, Engravings, Enhancement)
+        List<String> categories = List.of("Life", "Engravings", "Enhancement");
+        for (String category : categories) {
+            try {
+                Object resultObj = getMarketItemsInternal(category);
+                if (resultObj instanceof Map) {
+                    Map<String, Object> resultMap = (Map<String, Object>) resultObj;
+                    List<Object> items = (List<Object>) resultMap.get("Items");
+                    if (items != null) {
+                        List<MarketPriceHistory> histories = new ArrayList<>();
+                        for (Object itemObj : items) {
+                            if (itemObj instanceof Map) {
+                                Map<String, Object> itemMap = (Map<String, Object>) itemObj;
+                                String name = (String) itemMap.get("Name");
+                                Integer price = ((Number) itemMap.get("CurrentMinPrice")).intValue();
+                                histories.add(MarketPriceHistory.builder()
+                                        .itemName(name)
+                                        .itemPrice(price)
+                                        .itemCategory(category.toUpperCase())
+                                        .collectedAt(collectedAt)
+                                        .build());
+                            }
+                        }
+                        if (!histories.isEmpty()) {
+                            // saveAll은 SimpleJpaRepository 내부에서 @Transactional 처리됨
+                            historyRepository.saveAll(histories);
+                            log.info("Saved {} price history records for category {}", histories.size(), category);
+                        }
+                    }
+                }
+                // API Rate Limit 방지
+                Thread.sleep(500);
+            } catch (Exception e) {
+                log.error("Error collecting prices for category {}: {}", category, e.getMessage(), e);
+            }
+        }
+
+        // 2. 보석 아이템 수집 (Gems)
+        try {
+            Object gemsObj = getGemsInternal();
+            if (gemsObj instanceof Map) {
+                Map<String, Object> gemsMap = (Map<String, Object>) gemsObj;
+                List<Object> items = (List<Object>) gemsMap.get("Items");
+                if (items != null) {
+                    List<MarketPriceHistory> histories = new ArrayList<>();
+                    for (Object itemObj : items) {
+                        if (itemObj instanceof Map) {
+                            Map<String, Object> itemMap = (Map<String, Object>) itemObj;
+                            String name = (String) itemMap.get("Name");
+                            Map<String, Object> auctionInfo = (Map<String, Object>) itemMap.get("AuctionInfo");
+                            if (auctionInfo != null && auctionInfo.get("BuyPrice") != null) {
+                                Integer price = ((Number) auctionInfo.get("BuyPrice")).intValue();
+                                histories.add(MarketPriceHistory.builder()
+                                        .itemName(name)
+                                        .itemPrice(price)
+                                        .itemCategory("GEMS")
+                                        .collectedAt(collectedAt)
+                                        .build());
+                            }
+                        }
+                    }
+                    if (!histories.isEmpty()) {
+                        historyRepository.saveAll(histories);
+                        log.info("Saved {} price history records for category GEMS", histories.size());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error collecting prices for GEMS: {}", e.getMessage(), e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void calculateDailySummary() {
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDateTime start = yesterday.atStartOfDay();
+        LocalDateTime end = yesterday.atTime(23, 59, 59);
+
+        log.info("Starting daily summary calculation for {} ({} ~ {})", yesterday, start, end);
+
+        List<Map<String, Object>> dailyAverages = historyRepository.getDailyAverages(start, end);
+        if (dailyAverages == null || dailyAverages.isEmpty()) {
+            log.warn("No price history records found for daily summary on {}", yesterday);
+            return;
+        }
+
+        // 중복 체크 및 조회 쿼리 N+1 방지를 위해 어제 날짜에 등록된 요약 정보를 한 번에 읽음
+        List<MarketPriceSummary> existingSummaries = summaryRepository.findBySummaryDate(yesterday);
+        Set<String> existingItemNames = existingSummaries.stream()
+                .map(MarketPriceSummary::getItemName)
+                .collect(Collectors.toSet());
+
+        List<MarketPriceSummary> summariesToSave = new ArrayList<>();
+        for (Map<String, Object> avgMap : dailyAverages) {
+            String itemName = (String) avgMap.get("itemName");
+            Double avgPrice = (Double) avgMap.get("avgPrice");
+            String category = (String) avgMap.get("category");
+
+            if (itemName == null || avgPrice == null) continue;
+
+            // 메모리 상에서 이미 집계된 아이템인지 확인 (N+1 쿼리 최적화)
+            if (existingItemNames.contains(itemName)) {
+                log.info("Summary already exists for item: {} on {}", itemName, yesterday);
+                continue;
+            }
+
+            summariesToSave.add(MarketPriceSummary.builder()
+                    .itemName(itemName)
+                    .avgPrice(avgPrice)
+                    .summaryDate(yesterday)
+                    .itemCategory(category)
+                    .build());
+        }
+
+        if (!summariesToSave.isEmpty()) {
+            summaryRepository.saveAll(summariesToSave);
+            log.info("Saved {} new daily summary records for {}", summariesToSave.size(), yesterday);
         }
     }
 }

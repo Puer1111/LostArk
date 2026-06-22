@@ -110,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void processKakaoUser(HashMap<String, Object> userInfo, HttpSession session) {
+    public User processKakaoUser(HashMap<String, Object> userInfo) {
         long kakaoId = Long.parseLong(userInfo.get("id").toString());
         User user = userRepository.findByKakaoId(kakaoId).orElse(null);
 
@@ -158,7 +158,6 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
 
-        // Store user info in session
-        session.setAttribute("user", user);
+        return user;
     }
 }

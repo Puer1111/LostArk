@@ -1,6 +1,7 @@
 package com.lostark.lostark.service.users;
 
 import com.lostark.lostark.model.dto.users.SignupUser;
+import com.lostark.lostark.model.entity.users.User;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -39,7 +40,7 @@ public interface UserService extends UserDetailsService {
     /**
      * 카카오 간편 로그인
      * @param userInfo
-     * @param session
+     * @return User 엔티티
      */
-    void processKakaoUser(HashMap<String, Object> userInfo, HttpSession session);
+    User processKakaoUser(HashMap<String, Object> userInfo);
 }
