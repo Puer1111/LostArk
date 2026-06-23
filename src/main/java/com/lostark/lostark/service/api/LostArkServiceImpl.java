@@ -27,6 +27,9 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -157,21 +160,26 @@ public class LostArkServiceImpl implements LostArkService {
                     } catch (Exception e) { return 0; }
                 });
 
-                // 전체 조회를 시도하되, 429 에러 발생 시 즉시 중단하여 부분 데이터만 반환
-                for (SearchExpeditionDTO sibling : siblingList) {
-                    try {
-                        // getSelf()를 통해 프록시를 거쳐 호출함으로써 캐시가 작동하도록 함
-                        CharacterProfiles profile = getSelf().getCharacterProfile(sibling.getCharacterName());
-                        if (profile != null) {
-                            sibling.setCharacterImage(profile.getCharacterImage());
-                            sibling.setCombatPower(profile.getCombatPower());
-                        }
-                    } catch (Exception e) {
-                        if (e.getMessage() != null && (e.getMessage().contains("429") || e.getMessage().contains("409"))) {
-                            log.error("Stop fetching expedition profiles due to API limit/conflict");
-                            break; // 에러 발생 시 루프 탈출
-                        }
-                    }
+                // Java 21 가상 스레드 Executor를 사용하여 캐릭터 프로필 정보를 동시에 비동기 병렬로 조회
+                try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+                    List<CompletableFuture<Void>> futures = siblingList.stream()
+                            .map(sibling -> CompletableFuture.runAsync(() -> {
+                                try {
+                                    // getSelf()를 통해 프록시를 거쳐 호출함으로써 캐시가 작동하도록 함
+                                    CharacterProfiles profile = getSelf().getCharacterProfile(sibling.getCharacterName());
+                                    if (profile != null) {
+                                        sibling.setCharacterImage(profile.getCharacterImage());
+                                        sibling.setCombatPower(profile.getCombatPower());
+                                    }
+                                } catch (Exception e) {
+                                    log.warn("Failed to fetch profile in parallel for character: {}, error: {}",
+                                            sibling.getCharacterName(), e.getMessage());
+                                }
+                            }, executor))
+                            .collect(Collectors.toList());
+
+                    // 모든 병렬 작업이 완료될 때까지 대기
+                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
                 }
             }
             return siblings;
