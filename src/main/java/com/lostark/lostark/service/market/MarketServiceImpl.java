@@ -12,6 +12,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,8 +33,15 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     @Cacheable(value = "marketCache", key = "#category")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetMarketItems")
+    @RateLimiter(name = "lostArkRateLimiter")
     public Object getMarketItems(String category) {
         return getMarketItemsInternal(category);
+    }
+
+    public Object fallbackGetMarketItems(String category, Throwable t) {
+        log.error("Fallback getMarketItems activated for category: {}, reason: {}", category, t.getMessage());
+        return null;
     }
 
     public Object getMarketItemsInternal(String category) {
@@ -148,6 +157,8 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetAuctionItems")
+    @RateLimiter(name = "lostArkRateLimiter")
     public Object getAuctionItems(Map<String, Object> body) {
         String url = "https://developer-lostark.game.onstove.com/auctions/items";
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headerUtils.createHeaders());
@@ -159,10 +170,22 @@ public class MarketServiceImpl implements MarketService {
         }
     }
 
+    public Object fallbackGetAuctionItems(Map<String, Object> body, Throwable t) {
+        log.error("Fallback getAuctionItems activated, reason: {}", t.getMessage());
+        return null;
+    }
+
     @Override
     @Cacheable(value = "gemCache")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetGems")
+    @RateLimiter(name = "lostArkRateLimiter")
     public Object getGems() {
         return getGemsInternal();
+    }
+
+    public Object fallbackGetGems(Throwable t) {
+        log.error("Fallback getGems activated, reason: {}", t.getMessage());
+        return null;
     }
 
     public Object getGemsInternal() {

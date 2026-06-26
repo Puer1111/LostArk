@@ -31,6 +31,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 
 @Service
 @Slf4j
@@ -54,10 +56,12 @@ public class LostArkServiceImpl implements LostArkService {
      */
     @Override
     @Cacheable(value = "profileCache", key = "#characterName")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetCharacterProfile")
+    @RateLimiter(name = "lostArkRateLimiter")
     public CharacterProfiles getCharacterProfile(String characterName) {
         log.info("Service.getCharacterProfile.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
-                .path("{characterName}/profiles").encode().buildAndExpand(characterName).toUri();
+                 .path("{characterName}/profiles").encode().buildAndExpand(characterName).toUri();
         HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
 
         try {
@@ -77,6 +81,11 @@ public class LostArkServiceImpl implements LostArkService {
             }
             return null;
         }
+    }
+
+    public CharacterProfiles fallbackGetCharacterProfile(String characterName, Throwable t) {
+        log.error("Fallback getCharacterProfile activated for character: {}, reason: {}", characterName, t.getMessage());
+        return null;
     }
 
     /**
@@ -139,6 +148,8 @@ public class LostArkServiceImpl implements LostArkService {
     @Override
     @LogExecutionTime
     @Cacheable(value = "expeditionCache", key = "#characterName")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetExpedition")
+    @RateLimiter(name = "lostArkRateLimiter")
     public SearchExpeditionDTO[] getExpedition(String characterName) {
         log.info("Service.getExpedition.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/characters/")
@@ -189,9 +200,16 @@ public class LostArkServiceImpl implements LostArkService {
         }
     }
 
+    public SearchExpeditionDTO[] fallbackGetExpedition(String characterName, Throwable t) {
+        log.error("Fallback getExpedition activated for character: {}, reason: {}", characterName, t.getMessage());
+        return new SearchExpeditionDTO[0];
+    }
+
     @Override
     @LogExecutionTime
     @Cacheable(value = "characterCache", key = "#characterName")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetCharacter")
+    @RateLimiter(name = "lostArkRateLimiter")
     public SearchCharacterDTO getCharacter(String characterName) {
         log.info("Service.getCharacter.characterName = {}", characterName);
         URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/armories/characters/")
@@ -218,6 +236,11 @@ public class LostArkServiceImpl implements LostArkService {
             log.error("Error fetching or parsing character data for: {}", characterName, e);
             throw new RuntimeException("캐릭터 데이터 조회 중 오류 발생", e);
         }
+    }
+
+    public SearchCharacterDTO fallbackGetCharacter(String characterName, Throwable t) {
+        log.error("Fallback getCharacter activated for character: {}, reason: {}", characterName, t.getMessage());
+        return new SearchCharacterDTO();
     }
 
     private void sortGems(SearchCharacterDTO dto) {
@@ -382,6 +405,8 @@ public class LostArkServiceImpl implements LostArkService {
 
     @Override
     @Cacheable(value = "calendarCache")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetCalendar")
+    @RateLimiter(name = "lostArkRateLimiter")
     public List<LostArkCalendar> getCalendar() {
         log.info(">>> [API 호출] 로스트아크 캘린더 데이터 요청 시작");
         
@@ -410,5 +435,10 @@ public class LostArkServiceImpl implements LostArkService {
             log.error(">>> [API 오류] 캘린더 데이터 조회 중 오류 발생: {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    public List<LostArkCalendar> fallbackGetCalendar(Throwable t) {
+        log.error("Fallback getCalendar activated, reason: {}", t.getMessage());
+        return Collections.emptyList();
     }
 }
