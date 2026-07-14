@@ -55,32 +55,107 @@
                 </div>
             </section>
 
-            <!-- 전투력 Top 10 랭킹 섹션 -->
+            <!-- 공지사항 및 이벤트 섹션 -->
+            <div class="news-and-events-container">
+                <!-- 공지사항 섹션 -->
+                <section class="news-section">
+                    <h2 class="section-title">공지사항</h2>
+                    <div class="news-list" th:if="${notices != null and !notices.isEmpty()}">
+                        <a th:each="notice : ${notices}" th:href="${notice.link}" target="_blank" class="news-item-link">
+                            <div class="news-item">
+                                <span class="news-type-tag" th:text="${notice.type}">[점검]</span>
+                                <span class="news-title" th:text="${notice.title}">공지 제목</span>
+                                <span class="news-date" th:text="${#temporals.format(notice.date, 'yyyy-MM-dd')}">2026-07-14</span>
+                            </div>
+                        </a>
+                    </div>
+                    <div th:if="${notices == null or notices.isEmpty()}" class="no-data">
+                        등록된 공지사항이 없습니다.
+                    </div>
+                </section>
+
+                <!-- 이벤트 섹션 -->
+                <section class="events-list-section">
+                    <h2 class="section-title">진행중인 이벤트</h2>
+                    <div class="events-grid" th:if="${events != null and !events.isEmpty()}">
+                        <a th:each="event : ${events}" th:href="${event.link}" target="_blank" class="event-card-link">
+                            <div class="event-card">
+                                <div class="event-thumbnail">
+                                    <img th:src="${event.thumbnail}" th:alt="${event.title}">
+                                </div>
+                                <div class="event-info">
+                                    <h4 class="event-title" th:text="${event.title}">이벤트 제목</h4>
+                                    <p class="event-duration">
+                                        <span th:text="${#temporals.format(event.startDate, 'yyyy-MM-dd')}">시작일</span>
+                                        ~
+                                        <span th:text="${#temporals.format(event.endDate, 'yyyy-MM-dd')}">종료일</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div th:if="${events == null or events.isEmpty()}" class="no-data">
+                        진행 중인 이벤트를 찾을 수 없습니다.
+                    </div>
+                </section>
+            </div>
+
+            <!-- 최근 검색한 캐릭터 섹션 -->
             <section class="ranking-section">
-                <h2 class="section-title">전투력 Top 10</h2>
+                <h2 class="section-title">최근 검색한 캐릭터</h2>
                 <div class="ranking-container">
-                    <div th:if="${topRankings != null and !topRankings.isEmpty()}" class="ranking-list">
-                        <div th:each="ranker, stat : ${topRankings}" class="ranking-card">
+                    <div th:if="${recentCharacters != null and !recentCharacters.isEmpty()}" class="ranking-list">
+                        <div th:each="character, stat : ${recentCharacters}" class="ranking-card">
                             <div class="rank-badge" th:text="${stat.count}">1</div>
                             <div class="ranker-info">
                                 <div class="ranker-image">
-                                    <img th:src="${ranker.characterImage}" th:alt="${ranker.characterName}">
+                                    <img th:src="${character.characterImage}" th:alt="${character.characterName}">
                                 </div>
                                 <div class="ranker-details">
                                     <div class="ranker-name">
-                                        <a th:href="@{'/character/' + ${ranker.characterName}}" th:text="${ranker.characterName}">닉네임</a>
+                                        <a th:href="@{'/character/' + ${character.characterName}}" th:text="${character.characterName}">닉네임</a>
                                     </div>
-                                    <div class="ranker-class" th:text="${ranker.characterClassName}">클래스</div>
+                                    <div class="ranker-class" th:text="${character.characterClassName}">클래스</div>
                                     <div class="ranker-power">
                                         <span class="label">전투력</span>
-                                        <span class="value" th:text="${ranker.combatPower}">0</span>
+                                        <span class="value" th:text="${character.combatPower}">0</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div th:if="${topRankings == null or topRankings.isEmpty()}" class="no-data">
-                        수집된 랭킹 정보가 없습니다. 캐릭터를 검색해 보세요!
+                    <div th:if="${recentCharacters == null or recentCharacters.isEmpty()}" class="no-data">
+                        최근 검색한 캐릭터 정보가 없습니다. 캐릭터를 검색해 보세요!
+                    </div>
+                </div>
+            </section>
+
+            <!-- 치지직 실시간 로스트아크 방송 섹션 -->
+            <section class="chzzk-section">
+                <h2 class="section-title">치지직 실시간 방송</h2>
+                <div class="chzzk-container">
+                    <div th:if="${chzzkLives != null and !chzzkLives.isEmpty()}" class="chzzk-list">
+                        <a th:each="live : ${chzzkLives}" th:href="@{'https://chzzk.naver.com/live/' + ${live.channel.channelId}}" target="_blank" class="chzzk-card-link">
+                            <div class="chzzk-card">
+                                <div class="chzzk-thumbnail-wrapper">
+                                    <img th:src="${live.getFormattedImageUrl()}" th:alt="${live.liveTitle}" class="chzzk-thumbnail">
+                                    <span class="chzzk-viewer-badge">
+                                        <span class="chzzk-dot">●</span>
+                                        <span th:text="${#numbers.formatInteger(live.concurrentUserCount, 0, 'COMMA')} + '명'">0명</span>
+                                    </span>
+                                </div>
+                                <div class="chzzk-info">
+                                    <div class="chzzk-streamer">
+                                        <img th:src="${live.channel.channelImageUrl}" th:alt="${live.channel.channelName}" class="chzzk-profile-img">
+                                        <span class="chzzk-name" th:text="${live.channel.channelName}">스트리머 이름</span>
+                                    </div>
+                                    <div class="chzzk-title" th:text="${live.liveTitle}">방송 제목</div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div th:if="${chzzkLives == null or chzzkLives.isEmpty()}" class="no-data">
+                        현재 치지직에 생방송 중인 로스트아크 채널이 없습니다.
                     </div>
                 </div>
             </section>

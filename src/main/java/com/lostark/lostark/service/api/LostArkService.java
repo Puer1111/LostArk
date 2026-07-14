@@ -6,6 +6,9 @@ import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
 import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
 import com.lostark.lostark.model.dto.LostArkCalendar;
 
+import com.lostark.lostark.model.dto.LostArkNewsDto;
+import com.lostark.lostark.model.dto.LostArkEventDto;
+
 import java.util.List;
 
 public interface LostArkService {
@@ -56,8 +59,20 @@ public interface LostArkService {
     List<LostArkCalendar> getTodayEvents();
 
     /**
-     * 전투력 Top 10 랭킹 정보 조회
+     * 최근 검색한 캐릭터 정보 조회
      * @return List<SimplifiedCharacterDTO>
      */
-    List<SimplifiedCharacterDTO> getTopRankings();
+    List<SimplifiedCharacterDTO> getRecentCharacters();
+
+    /**
+     * 로스트아크 공지사항 조회
+     * @return List<LostArkNewsDto>
+     */
+    List<LostArkNewsDto> getNewsNotices();
+
+    /**
+     * 로스트아크 이벤트 조회
+     * @return List<LostArkEventDto>
+     */
+    List<LostArkEventDto> getNewsEvents();
 }

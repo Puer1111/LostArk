@@ -1,5 +1,7 @@
 package com.lostark.lostark.service.api;
 
+import com.lostark.lostark.model.dto.LostArkNewsDto;
+import com.lostark.lostark.model.dto.LostArkEventDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.config.aspect.LogExecutionTime;
@@ -44,7 +46,7 @@ public class LostArkServiceImpl implements LostArkService {
     private final StringRedisTemplate redisTemplate;
     private final org.springframework.beans.factory.ObjectProvider<LostArkService> lostArkServiceProvider;
 
-    private static final String RANKING_KEY = "combat_power_ranking";
+    private static final String RECENT_SEARCH_KEY = "recent_search_characters";
     private static final String CHARACTER_METADATA_KEY = "character_metadata";
 
     private LostArkService getSelf() {
@@ -66,13 +68,7 @@ public class LostArkServiceImpl implements LostArkService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
-            CharacterProfiles profile = objectMapper.readValue(response.getBody(), CharacterProfiles.class);
-            
-            if (profile != null) {
-                updateRanking(profile);
-            }
-            
-            return profile;
+            return objectMapper.readValue(response.getBody(), CharacterProfiles.class);
         } catch (Exception e) {
             log.warn("Failed to fetch profile for character: {}", characterName);
             // 429 에러 발생 시 예외를 던져 캐싱되지 않도록 함 (다음에 다시 시도할 수 있게)
@@ -89,20 +85,18 @@ public class LostArkServiceImpl implements LostArkService {
     }
 
     /**
-     * Redis Sorted Set을 이용한 랭킹 업데이트 및 캐릭터 메타데이터 저장
+     * Redis Sorted Set을 이용한 최근 검색 기록 추가 및 캐릭터 메타데이터 저장
      */
-    private void updateRanking(CharacterProfiles profile) {
+    private void saveRecentSearch(CharacterProfiles profile) {
         try {
             String characterName = profile.getCharacterName();
-            if (characterName == null || profile.getCombatPower() == null) return;
+            if (characterName == null) return;
 
-            String combatPowerStr = profile.getCombatPower().replace(",", "");
-            double combatPower = Double.parseDouble(combatPowerStr);
+            // 1. Sorted Set에 최근 검색 시간 업데이트 (ZSet: 타임스탬프 기반 정렬)
+            double timestamp = System.currentTimeMillis();
+            redisTemplate.opsForZSet().add(RECENT_SEARCH_KEY, characterName, timestamp);
 
-            // 1. Sorted Set에 전투력 업데이트 (ZSet: 점수 기반 정렬)
-            redisTemplate.opsForZSet().add(RANKING_KEY, characterName, combatPower);
-
-            // 2. 캐릭터 메타데이터(이미지, 클래스 등) Hash에 저장 (랭킹 출력용 JSON)
+            // 2. 캐릭터 메타데이터(이미지, 클래스 등) Hash에 저장
             SimplifiedCharacterDTO metadata = SimplifiedCharacterDTO.builder()
                     .characterName(characterName)
                     .characterImage(profile.getCharacterImage())
@@ -112,24 +106,24 @@ public class LostArkServiceImpl implements LostArkService {
                     .build();
 
             redisTemplate.opsForHash().put(CHARACTER_METADATA_KEY, characterName, objectMapper.writeValueAsString(metadata));
-            log.debug("Ranking updated for character: {}, CombatPower: {}", characterName, combatPower);
+            log.debug("Recent search saved for character: {}, Timestamp: {}", characterName, timestamp);
         } catch (Exception e) {
-            log.warn("Failed to update ranking for character: {}", profile.getCharacterName());
+            log.warn("Failed to save recent search for character: {}", profile.getCharacterName());
         }
     }
 
     @Override
-    public List<SimplifiedCharacterDTO> getTopRankings() {
-        log.info(">>> [비즈니스 로직] 전투력 Top 10 랭킹 조회");
+    public List<SimplifiedCharacterDTO> getRecentCharacters() {
+        log.info(">>> [비즈니스 로직] 최근 검색 캐릭터 Top 10 조회");
         
-        // Redis Sorted Set에서 상위 10명 가져오기 (전투력 높은 순)
-        Set<String> topCharacterNames = redisTemplate.opsForZSet().reverseRange(RANKING_KEY, 0, 9);
+        // Redis Sorted Set에서 상위 10명 가져오기 (최근 검색 시간 순)
+        Set<String> recentCharacterNames = redisTemplate.opsForZSet().reverseRange(RECENT_SEARCH_KEY, 0, 9);
         
-        if (topCharacterNames == null || topCharacterNames.isEmpty()) {
+        if (recentCharacterNames == null || recentCharacterNames.isEmpty()) {
             return Collections.emptyList();
         }
 
-        return topCharacterNames.stream()
+        return recentCharacterNames.stream()
                 .map(name -> {
                     try {
                         String json = (String) redisTemplate.opsForHash().get(CHARACTER_METADATA_KEY, name);
@@ -223,9 +217,9 @@ public class LostArkServiceImpl implements LostArkService {
                 return new SearchCharacterDTO();
             }
             
-            // 프로필 정보가 포함되어 있다면 랭킹 업데이트
+            // 프로필 정보가 포함되어 있다면 최근 검색 기록 업데이트
             if (dto.getCharacterProfiles() != null) {
-                updateRanking(dto.getCharacterProfiles());
+                saveRecentSearch(dto.getCharacterProfiles());
             }
 
             sortGems(dto);
@@ -439,6 +433,64 @@ public class LostArkServiceImpl implements LostArkService {
 
     public List<LostArkCalendar> fallbackGetCalendar(Throwable t) {
         log.error("Fallback getCalendar activated, reason: {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @Override
+    @Cacheable(value = "newsNoticesCache")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetNewsNotices")
+    @RateLimiter(name = "lostArkRateLimiter")
+    public List<LostArkNewsDto> getNewsNotices() {
+        log.info(">>> [API 호출] 로스트아크 공지사항 데이터 요청 시작");
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/news/notices")
+                .build().toUri();
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<LostArkNewsDto> result = objectMapper.readValue(response.getBody(), new TypeReference<List<LostArkNewsDto>>() {});
+                log.info(">>> [API 성공] 공지사항 데이터 수신 완료. 개수: {}", (result != null ? result.size() : 0));
+                return result != null ? result : Collections.emptyList();
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error(">>> [API 오류] 공지사항 조회 중 오류 발생: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<LostArkNewsDto> fallbackGetNewsNotices(Throwable t) {
+        log.error("Fallback getNewsNotices activated, reason: {}", t.getMessage());
+        return Collections.emptyList();
+    }
+
+    @Override
+    @Cacheable(value = "newsEventsCache")
+    @CircuitBreaker(name = "lostArkCircuitBreaker", fallbackMethod = "fallbackGetNewsEvents")
+    @RateLimiter(name = "lostArkRateLimiter")
+    public List<LostArkEventDto> getNewsEvents() {
+        log.info(">>> [API 호출] 로스트아크 이벤트 데이터 요청 시작");
+        URI uri = UriComponentsBuilder.fromUriString("https://developer-lostark.game.onstove.com/news/events")
+                .build().toUri();
+        HttpEntity<String> entity = new HttpEntity<>(headerUtils.createHeaders());
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<LostArkEventDto> result = objectMapper.readValue(response.getBody(), new TypeReference<List<LostArkEventDto>>() {});
+                log.info(">>> [API 성공] 이벤트 데이터 수신 완료. 개수: {}", (result != null ? result.size() : 0));
+                return result != null ? result : Collections.emptyList();
+            }
+            return Collections.emptyList();
+        } catch (Exception e) {
+            log.error(">>> [API 오류] 이벤트 조회 중 오류 발생: {}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public List<LostArkEventDto> fallbackGetNewsEvents(Throwable t) {
+        log.error("Fallback getNewsEvents activated, reason: {}", t.getMessage());
         return Collections.emptyList();
     }
 }
