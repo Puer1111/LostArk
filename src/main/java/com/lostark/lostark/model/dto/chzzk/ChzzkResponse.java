@@ -86,6 +86,7 @@ public static class Page {
         private Channel channel;
 
         // 뷰 템플릿 호환성을 위해 포맷팅 이미지 URL 제공
+        @com.fasterxml.jackson.annotation.JsonIgnore
         public String getFormattedImageUrl() {
             String url = (liveImageUrl != null) ? liveImageUrl : defaultThumbnailImageUrl;
             if (url != null && url.contains("{type}")) {

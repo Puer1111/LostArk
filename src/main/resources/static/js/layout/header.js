@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         recentSearchList.innerHTML = searches.map(term => `
             <div class="recent-search-item">
                 <span class="recent-search-text">${term}</span>
-                <button class="delete-search-btn" data-term="${term}">삭제</button>
+                <button class="delete-search-btn" data-term="${term}">x</button>
             </div>
         `).join('');
 

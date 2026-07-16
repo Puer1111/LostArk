@@ -17,7 +17,7 @@
         <div class="main-content">
             <!-- 오늘의 주요 일정 섹션 -->
             <section class="events-section">
-                <h2 class="section-title">오늘의 주요 일정</h2>
+<!--                <h2 class="section-title">오늘의 주요 일정</h2>-->
                 
                 <div th:if="${eventsMap != null and !eventsMap.isEmpty()}" class="calendar-container">
                     <!-- 카테고리별 카드 (Map iteration) -->
@@ -27,12 +27,13 @@
                         </div>
                         <div class="calendar-body">
                             <div th:each="item : ${entry.value}" class="island-group">
-                                <div class="island-info-main">
+                                <div class="island-info-main" th:data-start-times="${#strings.listJoin(item.startTimes, ',')}">
                                     <div class="content-icon">
                                         <img th:src="${item.contentsIcon}" th:alt="${item.contentsName}">
                                     </div>
                                     <div class="content-info">
                                         <h3 th:text="${item.contentsName}">콘텐츠 이름</h3>
+                                        <div class="timer-display">남은시간 계산 중...</div>
                                     </div>
                                 </div>
                                 <!-- 보상 아이템 -->
@@ -100,35 +101,35 @@
                 </section>
             </div>
 
-            <!-- 최근 검색한 캐릭터 섹션 -->
-            <section class="ranking-section">
-                <h2 class="section-title">최근 검색한 캐릭터</h2>
-                <div class="ranking-container">
-                    <div th:if="${recentCharacters != null and !recentCharacters.isEmpty()}" class="ranking-list">
-                        <div th:each="character, stat : ${recentCharacters}" class="ranking-card">
-                            <div class="rank-badge" th:text="${stat.count}">1</div>
-                            <div class="ranker-info">
-                                <div class="ranker-image">
-                                    <img th:src="${character.characterImage}" th:alt="${character.characterName}">
-                                </div>
-                                <div class="ranker-details">
-                                    <div class="ranker-name">
-                                        <a th:href="@{'/character/' + ${character.characterName}}" th:text="${character.characterName}">닉네임</a>
-                                    </div>
-                                    <div class="ranker-class" th:text="${character.characterClassName}">클래스</div>
-                                    <div class="ranker-power">
-                                        <span class="label">전투력</span>
-                                        <span class="value" th:text="${character.combatPower}">0</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div th:if="${recentCharacters == null or recentCharacters.isEmpty()}" class="no-data">
-                        최근 검색한 캐릭터 정보가 없습니다. 캐릭터를 검색해 보세요!
-                    </div>
-                </div>
-            </section>
+<!--            &lt;!&ndash; 최근 검색한 캐릭터 섹션 &ndash;&gt;-->
+<!--            <section class="ranking-section">-->
+<!--                <h2 class="section-title">최근 검색한 캐릭터</h2>-->
+<!--                <div class="ranking-container">-->
+<!--                    <div th:if="${recentCharacters != null and !recentCharacters.isEmpty()}" class="ranking-list">-->
+<!--                        <div th:each="character, stat : ${recentCharacters}" class="ranking-card">-->
+<!--                            <div class="rank-badge" th:text="${stat.count}">1</div>-->
+<!--                            <div class="ranker-info">-->
+<!--                                <div class="ranker-image">-->
+<!--                                    <img th:src="${character.characterImage}" th:alt="${character.characterName}">-->
+<!--                                </div>-->
+<!--                                <div class="ranker-details">-->
+<!--                                    <div class="ranker-name">-->
+<!--                                        <a th:href="@{'/character/' + ${character.characterName}}" th:text="${character.characterName}">닉네임</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="ranker-class" th:text="${character.characterClassName}">클래스</div>-->
+<!--                                    <div class="ranker-power">-->
+<!--                                        <span class="label">전투력</span>-->
+<!--                                        <span class="value" th:text="${character.combatPower}">0</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div th:if="${recentCharacters == null or recentCharacters.isEmpty()}" class="no-data">-->
+<!--                        최근 검색한 캐릭터 정보가 없습니다. 캐릭터를 검색해 보세요!-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </section>-->
 
             <!-- 치지직 실시간 로스트아크 방송 섹션 -->
             <section class="chzzk-section">
@@ -162,6 +163,7 @@
         </div>
     </th:block>
     <th:block th:fragment="pageScript">
+        <script defer src="/js/index.js"></script>
     </th:block>
 </div>
 </body>

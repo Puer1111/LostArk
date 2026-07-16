@@ -3,80 +3,107 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 60px;
-    padding: 0 30px;
-    /* background-color: #1e1e1e; -- Removed */
-    /* border-bottom: 1px solid #444; -- Removed */
+    height: 70px;
+    padding: 0 40px;
+    background-color: #ffffff;
 }
 
 .logo a {
     text-decoration: none;
-    color: #f0f0f0;
-    font-size: 24px;
-    font-weight: bold;
+    color: #111111;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
 }
 
 /* Search Container */
 .search-wrapper {
     position: relative;
     flex-grow: 1;
-    max-width: 600px;
-    margin: 0 20px;
+    max-width: 500px;
+    margin: 0 40px;
 }
 
 .search-container {
     display: flex;
     align-items: center;
-    border: 1px solid #555;
-    border-radius: 20px;
-    background-color: #3a3a3a;
-    padding: 0 5px 0 20px;
+    border: 1.5px solid #eaeaea;
+    border-radius: 12px;
+    background-color: #ffffff;
+    padding: 0 8px 0 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-container:focus-within {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
 /* 최근 검색어 리스트 */
 .recent-search-list {
     position: absolute;
-    top: 105%;
+    top: 110%;
     left: 0;
     right: 0;
-    background-color: #2a2a2a;
-    border: 1px solid #555;
-    border-radius: 10px;
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
     z-index: 1000;
-    padding: 10px 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    padding: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* 이미지에 나온 형태와 동일하게 최근 검색 배치 */
+.recent-search-list::before {
+    content: " 최근 검색";
+    display: block;
+    font-size: 13px;
+    color: #888888;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+/* 최근 검색 키워드 뱃지 컨테이너 형태로 가로 배열 */
+.recent-search-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .recent-search-item {
-    display: flex;
-    justify-content: space-between;
+    display: inline-flex;
     align-items: center;
-    padding: 8px 20px;
+    background-color: #f1f3f5;
+    padding: 6px 12px;
+    border-radius: 20px;
     cursor: pointer;
-    color: #f0f0f0;
+    font-size: 13px;
+    color: #495057;
     transition: background-color 0.2s;
 }
 
 .recent-search-item:hover {
-    background-color: #3e3e3e;
+    background-color: #e9ecef;
 }
 
 .recent-search-text {
-    flex-grow: 1;
+    margin-right: 6px;
 }
 
 .delete-search-btn {
     background: transparent;
     border: none;
-    color: #ff6b6b;
+    color: #adb5bd;
     cursor: pointer;
-    font-size: 14px;
-    padding: 0 5px;
-    margin-left: 10px;
+    font-size: 12px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .delete-search-btn:hover {
-    text-decoration: underline;
+    color: #fa5252;
 }
 
 .search-container input {
@@ -84,57 +111,58 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #f0f0f0;
-    font-size: 16px;
-    height: 40px;
+    color: #111111;
+    font-size: 15px;
+    height: 44px;
+    font-weight: 500;
 }
 
 .search-container input::placeholder {
-    color: #aaa;
+    color: #999999;
 }
 
 .search-button {
-    background: transparent;
+    background: #f1f3f5;
     border: none;
-    color: #aaa;
-    font-size: 16px;
-    font-weight: bold;
+    color: #495057;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    padding: 0 15px;
-    transition: color 0.3s;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 .search-button:hover {
-    color: #f0f0f0;
+    background-color: #e9ecef;
+    color: #111111;
 }
 
 .login a {
     text-decoration: none;
-    color: #f0f0f0;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 5px 20px;
-    border: 1px solid #555;
-    border-radius: 5px;
+    color: #495057;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 8px;
     transition: background-color 0.3s, color 0.3s;
 }
 
 .login a:hover {
-    background-color: #f0f0f0;
-    color: #1e1e1e;
+    background-color: #f1f3f5;
+    color: #111111;
 }
 
 /* Unified Header Area */
 .unified-header-area {
-    background-color: #363738; /* Unified dark background - matched body */
-    border-bottom: 1px solid #555; /* Border for the entire header block */
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea;
 }
 
 /* Main Navigation Bar Styles */
 .nav-bar {
-    /* background-color: #1e1e1e; -- Removed */
-    padding: 0 30px;
-    /* border-bottom: 1px solid #555; -- Removed */
+    padding: 0 40px;
+    background-color: #ffffff;
 }
 
 .nav-bar ul {
@@ -142,47 +170,59 @@
     margin: 0;
     padding: 0;
     display: flex;
+    gap: 10px;
 }
 
 .nav-bar li a {
     display: block;
-    padding: 15px 20px;
-    color: #f0f0f0;
+    padding: 12px 18px;
+    color: #666666;
     text-decoration: none;
-    transition: background-color 0.3s;
+    font-weight: 600;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.nav-bar li a:hover {
+    color: #111111;
 }
 
 /* Active style for main navigation */
 .nav-bar li.active-nav > a {
-    border-bottom: 3px solid #4a90e2;
-    padding-bottom: 12px;
-    color: #ffffff;
+    border-bottom: 2px solid #111111;
+    color: #111111;
 }
 
 /* Secondary Navigation Styles */
+.secondary-nav-container {
+    background-color: #f8f9fa;
+    border-top: 1px solid #eaeaea;
+}
 
 .secondary-nav {
     display: none; /* Hidden by default, shown by JS */
-    justify-content: center;
-    padding: 5px 0;
+    justify-content: flex-start;
+    padding: 8px 40px;
 }
 
 .secondary-nav a {
-    padding: 8px 15px;
-    margin: 0 10px;
+    padding: 6px 12px;
+    margin-right: 15px;
     text-decoration: none;
-    color: #f0f0f0;
-    font-weight: 500;
-    border-radius: 5px;
-    transition: background-color 0.2s;
+    color: #666666;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
 }
 
 .secondary-nav a:hover {
     background-color: #e9ecef;
+    color: #111111;
 }
 
 /* Active style for secondary navigation link */
 .secondary-nav a.active-sub-nav {
-    color: #0056b3;
-    background-color: #e7f1ff;
+    color: #4a90e2;
+    background-color: rgba(74, 144, 226, 0.08);
 }

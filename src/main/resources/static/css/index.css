@@ -1,139 +1,188 @@
 /* General Body Styles */
 body {
-    font-family: "Helvetica Neue", sans-serif;
+    font-family: 'Spoqa Han Sans Neo', "Helvetica Neue", sans-serif;
     margin: 0;
-    background-color: #2c2c2c; /* Dark background */
-    color: #f0f0f0; /* Light text */
+    background-color: #f7f7f8;
+    color: #333333;
 }
 
 .main-content {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 40px auto;
-    padding: 0 20px;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 30px;
+}
+
+/* 2컬럼 레이아웃을 위해 개별 섹션 그리드 배치 */
+.events-section {
+    grid-column: 1;
+}
+
+.news-and-events-container {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    margin-top: 0;
+}
+
+.ranking-section {
+    grid-column: 1 / span 2;
+    margin-top: 40px;
+}
+
+.chzzk-section {
+    grid-column: 1 / span 2;
+    margin-top: 40px;
+}
+
+/* 모바일/태블릿 대응 */
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+    .events-section, .news-and-events-container, .ranking-section, .chzzk-section {
+        grid-column: 1;
+    }
 }
 
 .section-title {
-    font-size: 24px;
-    margin-bottom: 30px;
-    border-left: 5px solid #4a90e2;
-    padding-left: 15px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #111111;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Calendar Container */
+.section-title::before {
+    content: "☒";
+    font-weight: normal;
+    color: #666;
+    font-size: 22px;
+}
+
+/* Calendar Container (왼쪽: 카오스 게이트 등 일정 영역) */
 .calendar-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 20px;
 }
 
 .calendar-card {
-    background-color: #3a3a3a;
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #444;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-}
-
-/* 모험 섬 전용 카드 스타일: 영역을 넓게 사용 */
-.adventure-islands-card {
-    width: 100%; /* 전체 너비 사용 */
-    max-width: 250px;
-    margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .calendar-card:hover {
-    transform: translateY(-5px);
-    border-color: #4a90e2;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
 }
 
 .calendar-header {
-    margin-bottom: 20px;
-    border-bottom: 1px solid #555;
-    padding-bottom: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f1f3f5;
 }
 
 .category-tag {
-    background-color: #e67e22; /* 모험 섬은 오렌지색 계열로 강조 */
-    color: white;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-weight: bold;
-    font-size: 14px;
+    font-size: 15px;
+    color: #495057;
+    font-weight: 700;
 }
 
-/* 섬 그룹 스타일 */
+/* 섬/콘텐츠 그룹 스타일 */
 .island-group {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    padding: 20px 0;
-    border-bottom: 1px dashed #555;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f1f3f5;
 }
 
 .island-group:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
+/* 이미지 요구사항 스타일을 맞추기 위해 검색/타이머 컨테이너를 가로 형태 바 디자인으로 변경 */
 .island-info-main {
     display: flex;
     align-items: center;
-    gap: 15px;
+    width: 100%;
+    padding: 16px 20px;
+    background-color: #ffffff;
+    border: 1.5px solid #eaeaea;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.island-info-main:hover {
+    border-color: #ced4da;
 }
 
 .content-icon {
-    width: 60px;
-    height: 60px;
-    background-color: #222;
-    border-radius: 8px;
-    padding: 5px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-right: 12px;
 }
 
 .content-icon img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .content-info h3 {
     margin: 0;
-    font-size: 18px;
-    color: #fff;
-    font-weight: 600;
+    font-size: 15px;
+    color: #495057;
+    font-weight: 500;
 }
 
 /* 보상 아이템 컨테이너 */
 .reward-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 5px;
-    padding-left: 75px; /* 아이콘 너비 + gap 만큼 들여쓰기 */
+    gap: 12px;
+    padding: 16px 20px;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
 }
 
 .reward-level {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 12px;
 }
 
 .reward-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    width: 60px;
-    gap: 5px;
+    gap: 8px;
+    background-color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
 }
 
 .reward-icon-wrapper {
-    width: 45px;
-    height: 45px;
-    background-color: #222;
-    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
     overflow: hidden;
-    border: 2px solid #444;
 }
 
 .reward-icon-wrapper img {
@@ -143,84 +192,71 @@ body {
 }
 
 .reward-name {
-    font-size: 10px;
-    color: #ccc;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
+    font-size: 13px;
+    color: #495057;
+    font-weight: 500;
 }
 
 /* 아이템 등급별 테두리 색상 */
-.grade-전설 { border-color: #f1c40f !important; }
-.grade-영웅 { border-color: #9b59b6 !important; }
-.grade-희귀 { border-color: #3498db !important; }
-.grade-고급 { border-color: #2ecc71 !important; }
+.grade-전설 { border-color: #ffd43b !important; }
+.grade-영웅 { border-color: #da77f2 !important; }
+.grade-희귀 { border-color: #74c0fc !important; }
+.grade-고급 { border-color: #63e6be !important; }
 
-/* ... 기존 코드 생략 ... */
 .no-data {
     text-align: center;
-    padding: 50px;
-    color: #888;
-    background-color: #333;
-    border-radius: 12px;
+    padding: 40px;
+    color: #868e96;
+    background-color: #ffffff;
+    border: 1px solid #eaeaea;
+    border-radius: 16px;
+    font-size: 14px;
 }
 
-/* Ranking Section */
-.ranking-section {
-    margin-top: 60px;
-}
-
+/* 최근 검색한 캐릭터 섹션 */
 .ranking-container {
-    background-color: #333;
-    border-radius: 15px;
-    padding: 25px;
-    border: 1px solid #444;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 .ranking-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 15px;
+    gap: 16px;
 }
 
 .ranking-card {
-    background-color: #3d3d3d;
-    border-radius: 10px;
-    padding: 15px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    position: relative;
-    border: 1px solid #555;
-    transition: all 0.2s ease;
+    gap: 16px;
+    border: 1.5px solid #eaeaea;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .ranking-card:hover {
-    background-color: #454545;
-    border-color: #4a90e2;
-    transform: scale(1.02);
+    border-color: #ced4da;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
 }
 
 .rank-badge {
-    width: 30px;
-    height: 30px;
-    background-color: #4a90e2;
-    color: white;
+    width: 28px;
+    height: 28px;
+    background-color: #f1f3f5;
+    color: #495057;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 14px;
     flex-shrink: 0;
 }
-
-/* 1, 2, 3위 특별 색상 */
-.ranking-card:nth-child(1) .rank-badge { background-color: #f1c40f; color: #000; }
-.ranking-card:nth-child(2) .rank-badge { background-color: #bdc3c7; color: #000; }
-.ranking-card:nth-child(3) .rank-badge { background-color: #e67e22; }
 
 .ranker-info {
     display: flex;
@@ -230,12 +266,12 @@ body {
 }
 
 .ranker-image {
-    width: 50px;
-    height: 50px;
-    background-color: #222;
+    width: 44px;
+    height: 44px;
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #555;
+    background-color: #f8f9fa;
+    border: 1px solid #eaeaea;
 }
 
 .ranker-image img {
@@ -251,10 +287,10 @@ body {
 }
 
 .ranker-name a {
-    color: #fff;
+    color: #212529;
     text-decoration: none;
-    font-weight: bold;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 15px;
 }
 
 .ranker-name a:hover {
@@ -262,92 +298,74 @@ body {
 }
 
 .ranker-class {
-    font-size: 13px;
-    color: #aaa;
+    font-size: 12px;
+    color: #868e96;
 }
 
 .ranker-power {
-    margin-top: 4px;
+    margin-top: 2px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
 }
 
 .ranker-power .label {
     font-size: 11px;
-    color: #888;
-    text-transform: uppercase;
+    color: #adb5bd;
 }
 
 .ranker-power .value {
-    font-size: 14px;
+    font-size: 13px;
     color: #4a90e2;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-/* News and Events Grid Layout */
-.news-and-events-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin-top: 60px;
-}
-
-@media (max-width: 900px) {
-    .news-and-events-container {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* News Section */
+/* News Section (공지사항) */
 .news-section {
-    background-color: #333;
-    border-radius: 15px;
-    padding: 25px;
-    border: 1px solid #444;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 .news-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
 }
 
 .news-item-link {
     text-decoration: none;
     color: inherit;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.news-item-link:last-child {
+    border-bottom: none;
 }
 
 .news-item {
-    background-color: #3d3d3d;
-    border-radius: 8px;
-    padding: 15px;
+    padding: 16px 8px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    border: 1px solid #555;
-    transition: all 0.2s ease;
+    justify-content: space-between;
+    transition: background-color 0.2s;
 }
 
 .news-item:hover {
-    background-color: #454545;
-    border-color: #4a90e2;
-    transform: translateX(5px);
+    background-color: #f8f9fa;
 }
 
 .news-type-tag {
     font-size: 12px;
-    background-color: #4a90e2;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: bold;
+    color: #868e96;
+    margin-right: 12px;
     flex-shrink: 0;
 }
 
 .news-title {
     font-size: 14px;
-    color: #fff;
+    color: #495057;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -356,22 +374,24 @@ body {
 
 .news-date {
     font-size: 12px;
-    color: #888;
+    color: #adb5bd;
+    margin-left: 12px;
     flex-shrink: 0;
 }
 
-/* Events List Section */
+/* Events List Section (진행중인 이벤트) */
 .events-list-section {
-    background-color: #333;
-    border-radius: 15px;
-    padding: 25px;
-    border: 1px solid #444;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 .events-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
 }
 
 .event-card-link {
@@ -380,25 +400,24 @@ body {
 }
 
 .event-card {
-    background-color: #3d3d3d;
-    border-radius: 10px;
+    background-color: #ffffff;
+    border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #555;
-    transition: all 0.2s ease;
+    border: 1.5px solid #eaeaea;
+    transition: border-color 0.2s;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .event-card:hover {
-    border-color: #e67e22;
-    transform: translateY(-5px);
+    border-color: #ced4da;
 }
 
 .event-thumbnail {
     width: 100%;
-    height: 120px;
-    background-color: #222;
+    height: 90px;
+    background-color: #f8f9fa;
     overflow: hidden;
 }
 
@@ -409,7 +428,7 @@ body {
 }
 
 .event-info {
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -417,39 +436,35 @@ body {
 }
 
 .event-title {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: #fff;
+    margin: 0 0 4px 0;
+    font-size: 13px;
+    color: #495057;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.4;
-    height: 38px;
+    height: 36px;
 }
 
 .event-duration {
     margin: 0;
     font-size: 11px;
-    color: #e67e22;
-    font-weight: bold;
+    color: #adb5bd;
 }
 
 /* Chzzk Section */
-.chzzk-section {
-    margin-top: 60px;
-}
-
 .chzzk-container {
-    background-color: #333;
-    border-radius: 15px;
-    padding: 25px;
-    border: 1px solid #444;
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
 }
 
 .chzzk-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     gap: 20px;
 }
 
@@ -459,27 +474,26 @@ body {
 }
 
 .chzzk-card {
-    background-color: #3d3d3d;
+    background-color: #ffffff;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid #555;
-    transition: all 0.2s ease;
+    border: 1.5px solid #eaeaea;
+    transition: border-color 0.2s, box-shadow 0.2s;
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
 .chzzk-card:hover {
-    border-color: #00ffa3; /* 치지직 시그니처 형광민트 색상 */
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 255, 163, 0.2);
+    border-color: #ced4da;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.04);
 }
 
 .chzzk-thumbnail-wrapper {
     position: relative;
     width: 100%;
-    height: 125px;
-    background-color: #222;
+    height: 145px;
+    background-color: #f8f9fa;
     overflow: hidden;
 }
 
@@ -493,7 +507,7 @@ body {
     position: absolute;
     bottom: 8px;
     left: 8px;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.6);
     color: #fff;
     padding: 3px 8px;
     border-radius: 4px;
@@ -505,7 +519,7 @@ body {
 }
 
 .chzzk-dot {
-    color: #00ffa3; /* 치지직 시그니처 민트색 */
+    color: #00ffa3;
     font-size: 8px;
 }
 
@@ -528,18 +542,18 @@ body {
     height: 24px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid #555;
+    border: 1px solid #eaeaea;
 }
 
 .chzzk-name {
     font-size: 13px;
-    color: #bbb;
+    color: #495057;
     font-weight: 600;
 }
 
 .chzzk-title {
     font-size: 13px;
-    color: #fff;
+    color: #212529;
     font-weight: 500;
     line-height: 1.4;
     display: -webkit-box;
