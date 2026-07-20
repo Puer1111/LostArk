@@ -36,6 +36,6 @@ body {
 .content {
     padding: 30px 20px;
     margin: 0 auto; /* 가운데 정렬 */
-    max-width: 1400px; /* 고해상도 모니터 대응을 위해 너비 약간 확장 */
+    max-width: 1400px;
     box-sizing: border-box;
 }

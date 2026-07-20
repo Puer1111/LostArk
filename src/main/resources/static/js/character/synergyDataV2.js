@@ -762,8 +762,16 @@ export const jobData = [
                             {skillName: '터닝 슬래쉬', tripodName: '약점 노출', tripodRate: '4%'}
                         ]
                     },
-                    {name: '공격속도 증가', priority: 'main',sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]},
-                    {name: '이동속도 증가', priority: 'main',sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]},
+                    {
+                        name: '공격속도 증가',
+                        priority: 'main',
+                        sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]
+                    },
+                    {
+                        name: '이동속도 증가',
+                        priority: 'main',
+                        sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]
+                    },
                     {
                         name: '백/헤드어택 피해 증가', priority: 'main', sources: [
                             {skillName: '스핀 커터', tripodName: '약점 노출', tripodRate: '5%'},
@@ -784,10 +792,18 @@ export const jobData = [
                             {skillName: '터닝 슬래쉬', tripodName: '약점 노출', tripodRate: '4%'}
                         ]
                     },
-                    {name: '공격속도 증가',priority: 'main',sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]},
-                    {name: '이동속도 증가', priority: 'main',sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]},
                     {
-                        name: '백/헤드어택 피해 증가', priority: 'main',sources: [
+                        name: '공격속도 증가',
+                        priority: 'main',
+                        sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]
+                    },
+                    {
+                        name: '이동속도 증가',
+                        priority: 'main',
+                        sources: [{skillName: '마엘스톰', tripodName: '다크 오더', tripodRate: '12.8%'}]
+                    },
+                    {
+                        name: '백/헤드어택 피해 증가', priority: 'main', sources: [
                             {skillName: '스핀 커터', tripodName: '약점 노출', tripodRate: '5%'},
                             {skillName: '서프라이즈 어택', tripodName: '약점 노출', tripodRate: '5%'},
                             {skillName: '터닝 슬래쉬', tripodName: '약점 노출', tripodRate: '5%'}
@@ -1048,5 +1064,94 @@ export const jobData = [
                 ]
             }
         ]
-    }
+    },
+    {
+        className: '가디언나이트',
+        classEngravings: [
+            {
+                engravingName: '업화의 계승자',
+                role: '화신 스킬 및 아이덴티티 수급 강화',
+                skills: [
+                    {
+                        name: '받는 피해 증가', priority: 'main', sources: [
+                            {skillName: '클리브', tripodName: '피해 증폭', tripodRate: '6%'},
+                            {skillName: '쓰러스트', tripodName: '피해 증폭', tripodRate: '6%'}
+                        ]
+                    }
+                ]
+            },
+            {
+                engravingName: '드레드 로어',
+                role: '일반 스킬 및 가디언 피어 강화',
+                skills: [
+                    {
+                        name: '받는 피해 증가', priority: 'main', sources: [
+                            {skillName: '클리브', tripodName: '피해 증폭', tripodRate: '6%'},
+                            {skillName: '쓰러스트', tripodName: '피해 증폭', tripodRate: '6%'},
+                            {skillName: '가디언 피어', tripodName: '피해 증폭', tripodRate: '6%'}
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        className: '차원술사',
+        classEngravings: [
+            {
+                engravingName: '시간 관리자',
+                role: '파티 시너지',
+                skills: [
+                    {
+                        name: '방어력 감소',
+                        priority: 'main',
+                        sources: [
+                            {
+                                skillName: '일침',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            },
+                            {
+                                skillName: '전방 찌르기',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            },
+                            {
+                                skillName: '예고',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                engravingName: '공간 검사',
+                role: '파티 시너지',
+                skills: [
+                    {
+                        name: '방어력 감소',
+                        priority: 'main',
+                        sources: [
+                            {
+                                skillName: '일침',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            },
+                            {
+                                skillName: '전방 찌르기',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            },
+                            {
+                                skillName: '예고',
+                                tripodName: '갑옷 파괴',
+                                tripodRate: '12%'
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
 ];

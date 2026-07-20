@@ -1,14 +1,26 @@
 :root {
     --color-dps: #d0021b;
-    --color-supporter: #4caf50;
-    --bg-dark-1: #121212;
-    --bg-dark-2: #1e1e1e;
-    --bg-dark-3: #2a2a2a;
-    --text-1: #e0e0e0;
-    --text-2: #a0a0a0;
-    --border: #333;
-    --accent: #3498db;
+    --color-supporter: #27ae60;
+    
+    /* 1. 사이드바 및 헤더 (밝은 컨셉) */
+    --bg-page: #f7f7f8;        /* 시뮬레이터 전체 컨테이너 배경 */
+    --bg-card: #ffffff;        /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
+    --bg-card-hover: #f1f3f5;  /* 직업 아이템 등 마우스 호버/대비용 배경 */
+    --bg-input: #f8f9fa;       /* 검색창, 드롭다운 등 인풋 배경 */
+    --text-main: #333333;      /* 메인 어두운 텍스트 */
+    --text-muted: #666666;     /* 흐린 텍스트 */
+    --border-color: #eaeaea;   /* 연한 구분선 */
+    --accent: #4a90e2;         /* 로아허브 메인 포인트 블루 */
+    
+    /* 2. 중앙 레이드 보드 (자연스러운 톤의 상대적으로 어두운 보드) */
+    --bg-board: #eef2f6;       /* 1/2파티 보드 영역의 부드러운 그레이블루 배경 */
+    --bg-board-slot: #ffffff;  /* 빈 파티 슬롯 배경 (흰색으로 보드와 대비) */
+    --text-board-light: #2c3e50; /* 보드 내 타이틀 텍스트 */
+    --text-board-muted: #718096; /* 보드 내 슬롯 안내 텍스트 */
+    --border-board: #cbd5e0;   /* 보드 영역 내부 경계선 */
+    
     --radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 효과 */
 }
 
 /* 레이아웃 공통 */
@@ -16,8 +28,8 @@
     display: flex;
     gap: 20px;
     padding: 20px;
-    background-color: var(--bg-dark-1);
-    color: var(--text-1);
+    background-color: var(--bg-page);
+    color: var(--text-main);
     min-height: calc(100vh - 100px);
 }
 
@@ -25,10 +37,11 @@
 #class-selection {
     width: 280px;
     flex-shrink: 0;
-    background-color: var(--bg-dark-2);
+    background-color: var(--bg-card);
     border-radius: var(--radius);
     padding: 20px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -38,18 +51,19 @@
     font-size: 1.1rem;
     margin-bottom: 12px;
     padding-left: 10px;
+    color: var(--text-main);
 }
 
 .search-section h2 { border-left: 4px solid var(--accent); }
-.class-list-section h2 { border-left: 4px solid var(--text-2); }
+.class-list-section h2 { border-left: 4px solid var(--text-muted); }
 
 .search-box { display: flex; gap: 8px; }
 
 #character-search-input {
     flex-grow: 1;
-    background-color: var(--bg-dark-3);
-    border: 1px solid var(--border);
-    color: var(--text-1);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
     padding: 8px 12px;
     border-radius: 4px;
     outline: none;
@@ -67,7 +81,8 @@
 
 .class-group h3 {
     cursor: pointer;
-    background-color: var(--bg-dark-3);
+    background-color: var(--bg-input);
+    color: var(--text-main);
     padding: 10px;
     border-radius: 4px;
     margin: 5px 0;
@@ -76,7 +91,8 @@
 
 .job-list { display: flex; flex-direction: column; gap: 5px; padding: 10px; }
 .job-item {
-    background-color: #333;
+    background-color: var(--bg-card-hover);
+    color: var(--text-main);
     padding: 8px 15px;
     border-radius: 4px;
     font-size: 0.85rem;
@@ -92,10 +108,11 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: var(--bg-dark-2);
+    background-color: var(--bg-card);
     padding: 12px 20px;
     border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
 
 .selection-group { display: flex; align-items: center; gap: 12px; }
@@ -104,11 +121,12 @@
 .custom-select-box {
     position: relative;
     width: 150px;
-    background-color: var(--bg-dark-3);
-    border: 1px solid var(--border);
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.9rem;
+    color: var(--text-main);
 }
 
 .custom-select-trigger {
@@ -123,7 +141,7 @@
     content: '▼';
     font-size: 0.7rem;
     margin-left: 8px;
-    color: var(--text-2);
+    color: var(--text-muted);
 }
 
 .custom-options {
@@ -131,8 +149,8 @@
     top: 100%;
     left: -1px;
     right: -1px;
-    background-color: var(--bg-dark-2);
-    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     display: none;
     z-index: 1000;
     max-height: 250px;
@@ -145,10 +163,11 @@
     padding: 10px;
     display: flex;
     justify-content: center;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
 }
 
-.custom-option:hover { background-color: var(--accent); }
+.custom-option:hover { background-color: var(--accent); color: white; }
 
 .action-group button {
     padding: 8px 15px;
@@ -164,13 +183,20 @@
 
 /* 레이드 보드 및 슬롯 */
 .raid-board { display: flex; flex-direction: column; gap: 20px; }
-.party-container { background-color: var(--bg-dark-2); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); }
+.party-container { background-color: var(--bg-board); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border-board); box-shadow: var(--shadow); }
 .party-slots { display: flex; gap: 10px; }
+
+.party-container h3 {
+    color: var(--text-board-light);
+    margin-top: 0;
+    margin-bottom: 15px;
+}
 
 .party-slot {
     flex: 1;
     height: 300px;
-    border: 2px dashed #444;
+    border: 2px dashed var(--border-board);
+    background-color: var(--bg-board-slot);
     border-radius: 6px;
     display: flex;
     flex-direction: column;
@@ -184,14 +210,18 @@
     background-repeat: no-repeat;
 }
 
+.party-slot span {
+    color: var(--text-board-muted);
+}
+
 /* 캐릭터가 있을 때 이미지를 더 밝고 선명하게 */
 .party-slot.has-character {
     border-style: solid;
     filter: brightness(1.15) contrast(1.05);
 }
 
-.party-slot.drag-over { background-color: rgba(52, 152, 219, 0.1); border-color: var(--accent); }
-.party-slot.selected { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(52, 152, 219, 0.4); }
+.party-slot.drag-over { background-color: rgba(74, 144, 226, 0.15); border-color: var(--accent); }
+.party-slot.selected { border: 2px solid var(--accent); box-shadow: 0 0 15px rgba(74, 144, 226, 0.4); }
 
 /* 슬롯 내부 오버레이 및 정보 */
 .character-card {
@@ -299,8 +329,8 @@
 .fixed-engraving {
     font-size: 0.7rem;
     color: #fff;
-    background: rgba(52, 152, 219, 0.4);
-    border: 1px solid rgba(52, 152, 219, 0.6);
+    background: rgba(72, 144, 226, 0.4);
+    border: 1px solid rgba(72, 144, 226, 0.6);
     padding: 2px 8px;
     border-radius: 4px;
     font-weight: bold;
@@ -321,8 +351,8 @@
 .effect-tag {
     font-size: 0.65rem;
     padding: 1px 6px;
-    background: rgba(52, 152, 219, 0.25);
-    border: 1px solid rgba(52, 152, 219, 0.5);
+    background: rgba(72, 144, 226, 0.25);
+    border: 1px solid rgba(72, 144, 226, 0.5);
     color: #ffffff;
     border-radius: 4px;
     white-space: nowrap;
@@ -342,40 +372,44 @@
     justify-content: space-between;
     align-items: center;
     padding: 6px 10px;
-    background: var(--bg-dark-1);
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     font-size: 0.85rem;
 }
 
 .synergy-item.duplicate { border-left: 3px solid #e74c3c; }
-.s-type { color: var(--text-2); }
-.s-value { color: #fff; font-weight: bold; }
+.s-type { color: var(--text-muted); }
+.s-value { color: var(--text-main); font-weight: bold; }
 .warn-icon { color: #e74c3c; margin-left: 5px; }
 
 /* 우측 상세 패널 */
 .synergy-details-area {
     width: 320px;
     flex-shrink: 0;
-    background-color: var(--bg-dark-2);
+    background-color: var(--bg-card);
     border-radius: var(--radius);
     padding: 20px;
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
     display: flex; flex-direction: column; gap: 15px;
+    color: var(--text-main);
 }
 
-.synergy-details-area h2 { font-size: 1.2rem; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+.synergy-details-area h2 { font-size: 1.2rem; border-bottom: 2px solid var(--accent); padding-bottom: 8px; margin-top: 0; }
 
 .party-detail-section { margin-top: 10px; }
 .p-header { font-size: 0.9rem; font-weight: bold; color: var(--accent); margin-bottom: 8px; }
-.p-content { background-color: var(--bg-dark-3); padding: 12px; border-radius: 6px; min-height: 40px; }
-.empty-msg { color: var(--text-2); font-size: 0.85rem; text-align: center; }
+.p-content { background-color: var(--bg-input); padding: 12px; border-radius: 6px; min-height: 40px; }
+.empty-msg { color: var(--text-muted); font-size: 0.85rem; text-align: center; }
 
 #recommendation-area {
-    background-color: var(--bg-dark-2);
+    background-color: var(--bg-card);
     padding: 20px;
     border-radius: var(--radius);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
 #recommendation-area h3 { margin-top: 0; font-size: 1.1rem; color: var(--accent); }
-#recommendation-list { font-size: 0.9rem; color: var(--text-1); }
+#recommendation-list { font-size: 0.9rem; color: var(--text-main); }
 #recommendation-list ul { padding-left: 20px; margin: 10px 0; }

@@ -1,41 +1,92 @@
+:root {
+    --color-dps: #d0021b;
+    --color-supporter: #27ae60;
+    
+    /* 1. 사이드바 및 헤더 (밝은 컨셉) */
+    --bg-page: #f7f7f8;        /* 시뮬레이터 전체 컨테이너 배경 */
+    --bg-card: #ffffff;        /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
+    --bg-card-hover: #f1f3f5;  /* 직업 아이템 등 마우스 호버/대비용 배경 */
+    --bg-input: #f8f9fa;       /* 검색창, 드롭다운 등 인풋 배경 */
+    --text-main: #333333;      /* 메인 어두운 텍스트 */
+    --text-muted: #666666;     /* 흐린 텍스트 */
+    --border-color: #eaeaea;   /* 연한 구분선 */
+    --accent: #4a90e2;         /* 메인 포인트 블루 */
+    
+    /* 2. 중앙 보드 및 시너지 카드 */
+    --bg-board: #eef2f6;       
+    --bg-board-slot: #ffffff;  
+    --text-board-light: #2c3e50; 
+    --text-board-muted: #718096; 
+    --border-board: #cbd5e0;   
+    
+    --radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 효과 */
+}
+
 .character-class-container {
     display: flex;
-    color: #fff;
+    gap: 20px;
+    padding: 20px;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    min-height: 400px;
 }
 
 .character-class-container a {
     text-decoration: none;
-    color: #fff;
+    color: var(--text-main);
 }
 
 .class-sidebar {
     width: 200px;
-    border-right: 1px solid #ccc;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
 
 .class-sidebar ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .class-sidebar li {
-    padding: 10px;
+    padding: 10px 15px;
+    border-radius: 4px;
     cursor: pointer;
+    background-color: var(--bg-card);
+    transition: 0.2s;
+}
+
+.class-sidebar li:hover {
+    background-color: var(--bg-card-hover);
 }
 
 .class-sidebar li.active {
-    background-color: #333;
-    color: #fff;
+    background-color: var(--accent);
 }
 
 .class-sidebar li.active a {
     color: #fff;
+    font-weight: bold;
+}
+
+.class-sidebar li a {
+    color: var(--text-main);
 }
 
 .class-details {
-    padding-left: 20px;
     flex-grow: 1;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
     width: calc(100% - 220px);
 }
 
@@ -46,35 +97,51 @@
 .class-group.active {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px;
+    gap: 12px;
 }
 
 .class-name {
-    width: 200px;
+    width: 160px;
     text-align: center;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--bg-input);
+    transition: 0.2s;
+}
+
+.class-name:hover {
+    background-color: var(--accent);
+    border-color: var(--accent);
+}
+
+.class-name:hover span {
+    color: #fff;
 }
 
 .class-name span {
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-main);
 }
 
 .synergy-details-container {
-    margin-top: 30px;
+    margin-top: 20px;
     padding: 20px;
-    background-color: #2b2b2b;
-    border-radius: 8px;
-    border: 1px solid #444;
-    color: #fff;
+    background-color: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    color: var(--text-main);
 }
 
 .synergy-details-container h3 {
-    color: #d4a373;
-    font-size: 1.8em;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #d4a373;
+    color: var(--accent);
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--accent);
     padding-bottom: 10px;
 }
 
@@ -83,49 +150,51 @@
 }
 
 .synergy-group .synergy-name {
-    color: #c0b6a7;
-    font-size: 1.4em;
+    color: var(--text-board-light);
+    font-size: 1.2em;
     margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .synergy-sources {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .synergy-item {
-    display: block; /* 하위 상세정보 div를 위해 block으로 변경 */
-    background-color: #3c3c3c;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    border-left: 4px solid #d4a373;
+    display: block;
+    background-color: var(--bg-input);
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--accent);
     transition: background-color 0.2s;
 }
 
 .synergy-item:hover {
-    background-color: #4a4a4a;
+    background-color: var(--bg-card-hover);
 }
 
-/* 아이템이 활성화(클릭)되었을 때의 스타일 */
 .synergy-item.active {
-    background-color: #454545;
+    background-color: var(--bg-card-hover);
 }
 
 .synergy-item-header {
     display: flex;
     align-items: center;
-    cursor: pointer; /* 클릭 가능함을 알려줌 */
+    cursor: pointer;
 }
 
 .synergy-item-details {
     padding: 15px;
     margin-top: 10px;
-    background-color: #2b2b2b;
-    border-top: 1px solid #444;
+    background-color: var(--bg-card);
+    border-top: 1px solid var(--border-color);
     border-radius: 0 0 4px 4px;
 }
 
@@ -138,9 +207,9 @@
 }
 
 .section-title {
-    font-size: 0.9em;
+    font-size: 0.85em;
     font-weight: bold;
-    color: #d4a373;
+    color: var(--accent);
     margin-bottom: 8px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -152,14 +221,14 @@
     content: '';
     flex-grow: 1;
     height: 1px;
-    background: #444;
+    background: var(--border-color);
     margin-left: 10px;
 }
 
 .section-description {
-    font-size: 0.9em;
+    font-size: 0.85em;
     line-height: 1.5;
-    color: #ccc;
+    color: var(--text-muted);
     margin: 0;
 }
 
@@ -167,21 +236,22 @@
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    background-color: #333;
+    background-color: var(--bg-input);
     padding: 10px;
     border-radius: 4px;
+    border: 1px solid var(--border-color);
 }
 
 .tripod-icon {
     width: 28px;
     height: 28px;
     border-radius: 4px;
-    border: 1px solid #555;
+    border: 1px solid var(--border-color);
     flex-shrink: 0;
 }
 
 .tripod-rate {
-    color: #4a90e2;
+    color: var(--accent);
     margin-left: 5px;
 }
 
@@ -190,19 +260,19 @@
     height: 32px;
     margin-right: 12px;
     border-radius: 4px;
-    border: 1px solid #555;
+    border: 1px solid var(--border-color);
 }
 
 .skill-name {
     font-weight: bold;
-    color: #e0e0e0;
-    font-size: 1.05em;
+    color: var(--text-main);
+    font-size: 0.95em;
 }
 
 .rate-info {
     margin-left: auto;
-    color: #b0b0b0;
-    font-size: 0.9em;
+    color: var(--text-muted);
+    font-size: 0.85em;
     text-align: right;
     white-space: pre-wrap;
 }

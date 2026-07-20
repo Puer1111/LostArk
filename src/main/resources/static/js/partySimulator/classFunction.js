@@ -1,7 +1,7 @@
 /**
  * 사이드바 클래스 선택 및 드래그 기능 관련 모듈
  */
-import {jobData} from "../character/synergyDataV2.js";
+import {jobData} from "../character/synergyDataV3.js";
 import {commonFunction} from "../common/commonFunction.js";
 
 export const classFunction = {
@@ -134,8 +134,7 @@ export const classFunction = {
             slot.style.backgroundImage = 'none';
         }
 
-        const currentEngraving = jobInfo.classEngravings[activeIndex || 0];
-        const mainSynergies = currentEngraving.skills.filter(s => s.priority === 'main');
+        const mainSynergies = jobInfo.skills ? jobInfo.skills.filter(s => s.priority === 'main') : [];
 
         slot.classList.add('has-character');
         
@@ -159,7 +158,7 @@ export const classFunction = {
         if (searchData) {
             html += `
                 <div class="engraving-selector">
-                    <span class="fixed-engraving">${currentEngraving.engravingName}</span>
+                    <span class="fixed-engraving">${jobInfo.classEngravings[activeIndex || 0].engravingName}</span>
                 </div>
             `;
         } else {

@@ -1,17 +1,44 @@
+:root {
+    --color-dps: #d0021b;
+    --color-supporter: #27ae60;
+
+    /* 1. 사이드바 및 헤더 (밝은 컨셉) */
+    --bg-page: #f7f7f8; /* 시뮬레이터 전체 컨테이너 배경 */
+    --bg-card: #ffffff; /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
+    --bg-card-hover: #f1f3f5; /* 직업 아이템 등 마우스 호버/대비용 배경 */
+    --bg-input: #f8f9fa; /* 검색창, 드롭다운 등 인풋 배경 */
+    --text-main: #333333; /* 메인 어두운 텍스트 */
+    --text-muted: #666666; /* 흐린 텍스트 */
+    --border-color: #eaeaea; /* 연한 구분선 */
+    --accent: #4a90e2; /* 메인 포인트 블루 */
+
+    /* 2. 중앙 보드 및 시너지 카드 */
+    --bg-board: #eef2f6;
+    --bg-board-slot: #ffffff;
+    --text-board-light: #2c3e50;
+    --text-board-muted: #718096;
+    --border-board: #cbd5e0;
+
+    --radius: 8px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 효과 */
+}
+
 /* 스크롤바 유무에 따른 화면 흔들림 방지 */
 html {
     scrollbar-gutter: stable;
 }
 
+.market-container {
+    zoom: 0.9;
+}
 /* 거래소 메인 네비게이션 스타일 */
 .market-nav {
-    background-color: #1c1c1e;
+    background-color: var(--bg-card);
     padding: 15px 20px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    transform: scale(0.85);
-    transform-origin: top center;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
 }
 
 .nav-list {
@@ -25,41 +52,40 @@ html {
 
 .nav-item {
     text-decoration: none;
-    color: #b0b0b0;
+    color: var(--text-muted);
     font-size: 1.1rem;
-    font-weight: 500;
+    font-weight: bold;
     padding: 8px 12px;
     transition: all 0.3s ease;
     border-bottom: 2px solid transparent;
 }
 
 .nav-item:hover {
-    color: #ffffff;
+    color: var(--accent);
 }
 
 /* 현재 선택된 카테고리 강조 */
 .nav-item.active {
-    color: #e2bb59; /* 로아 골드 톤 */
-    border-bottom: 2px solid #e2bb59;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
 /* 거래소 컨테이너 */
 .market-container {
-    background-color: #242426;
+    background-color: var(--bg-card);
     padding: 30px;
-    border-radius: 8px;
+    border-radius: var(--radius);
     min-height: 500px;
-    color: #ffffff;
-    /*margin: 0 auto;*/
-    transform: scale(0.85);
-    transform-origin: top center;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
 }
 
 .market-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #3a3a3c;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 15px;
     margin-bottom: 20px;
     gap: 20px;
@@ -67,7 +93,8 @@ html {
 
 .market-container h1 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 1.7rem;
+    color: var(--text-main);
     border-bottom: none;
     padding-bottom: 0;
     white-space: nowrap;
@@ -81,9 +108,9 @@ html {
 }
 
 .filter-btn {
-    background-color: #2c2c2e;
-    color: #b0b0b0;
-    border: 1px solid #3a3a3c;
+    background-color: var(--bg-input);
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
     padding: 6px 15px;
     border-radius: 20px;
     cursor: pointer;
@@ -92,14 +119,14 @@ html {
 }
 
 .filter-btn:hover {
-    color: #ffffff;
-    border-color: #e2bb59;
+    color: var(--text-main);
+    border-color: var(--accent);
 }
 
 .filter-btn.active {
-    background-color: #e2bb59;
-    color: #1c1c1e;
-    border-color: #e2bb59;
+    background-color: var(--accent);
+    color: white;
+    border-color: var(--accent);
     font-weight: bold;
 }
 
@@ -109,9 +136,9 @@ html {
 }
 
 .sort-select {
-    background-color: #1c1c1e;
-    color: #ffffff;
-    border: 1px solid #3a3a3c;
+    background-color: var(--bg-input);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
     padding: 8px 12px;
     border-radius: 4px;
     cursor: pointer;
@@ -120,7 +147,7 @@ html {
 }
 
 .sort-select:hover {
-    border-color: #e2bb59;
+    border-color: var(--accent);
 }
 
 .market-items-grid {
@@ -132,30 +159,58 @@ html {
 
 /* 등급별 색상 변수 정의 */
 .market-item-card {
-    --grade-color: #efefef;
-    --grade-bg: rgba(239, 239, 239, 0.05);
+    --grade-color: #333333;
+    --grade-bg: rgba(0, 0, 0, 0.02);
 }
-.market-item-card.에스더 { --grade-color: #3CF2E6; --grade-bg: rgba(60, 242, 230, 0.1); }
-.market-item-card.고대 { --grade-color: rgb(227, 199, 161); --grade-bg: rgba(227, 199, 161, 0.1); }
-.market-item-card.유물 { --grade-color: rgb(250, 93, 0); --grade-bg: rgba(250, 93, 0, 0.1); }
-.market-item-card.전설 { --grade-color: rgb(249, 146, 0); --grade-bg: rgba(249, 146, 0, 0.1); }
-.market-item-card.영웅 { --grade-color: rgb(206, 67, 252); --grade-bg: rgba(206, 67, 252, 0.1); }
-.market-item-card.희귀 { --grade-color: rgb(0, 181, 255); --grade-bg: rgba(0, 181, 255, 0.1); }
-.market-item-card.고급 { --grade-color: rgb(145, 254, 2); --grade-bg: rgba(145, 254, 2, 0.1); }
+
+.market-item-card.에스더 {
+    --grade-color: #00b4d8;
+    --grade-bg: rgba(0, 180, 216, 0.05);
+}
+
+.market-item-card.고대 {
+    --grade-color: #e59866;
+    --grade-bg: rgba(229, 152, 102, 0.05);
+}
+
+.market-item-card.유물 {
+    --grade-color: #e67e22;
+    --grade-bg: rgba(230, 126, 34, 0.05);
+}
+
+.market-item-card.전설 {
+    --grade-color: #f1c40f;
+    --grade-bg: rgba(241, 196, 15, 0.05);
+}
+
+.market-item-card.영웅 {
+    --grade-color: #9b59b6;
+    --grade-bg: rgba(155, 89, 182, 0.05);
+}
+
+.market-item-card.희귀 {
+    --grade-color: #3498db;
+    --grade-bg: rgba(52, 152, 219, 0.05);
+}
+
+.market-item-card.고급 {
+    --grade-color: #2ecc71;
+    --grade-bg: rgba(46, 204, 113, 0.05);
+}
 
 .market-item-card {
-    background: linear-gradient(90deg, #2c2c2e 0%, #242426 100%);
+    background: var(--bg-input);
     padding: 12px 25px;
-    border-radius: 8px;
+    border-radius: 6px;
     display: grid;
     grid-template-columns: 50px 1fr;
     align-items: center;
     gap: 20px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
     border-left: 4px solid var(--grade-color);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
 }
 
@@ -172,9 +227,8 @@ html {
 }
 
 .market-item-card:hover {
-    background-color: #323235;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 
-                0 0 15px var(--grade-bg);
+    background-color: var(--bg-card-hover);
+    box-shadow: var(--shadow);
 }
 
 .market-item-card:hover::before {
@@ -187,10 +241,10 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(255, 255, 255, 0.8);
     padding: 2px;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
     width: 50px;
     height: 50px;
 }
@@ -214,8 +268,7 @@ html {
     font-weight: 700;
     font-size: 1.05rem;
     letter-spacing: -0.5px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    color: var(--grade-color);
+    color: var(--text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -226,8 +279,8 @@ html {
     text-align: center;
     padding: 2px 8px;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--grade-color);
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-muted);
 }
 
 /* 시세 변동 시그널 배지 */
@@ -247,21 +300,21 @@ html {
 }
 
 .signal-up {
-    color: #ff4d4d;
-    background: rgba(255, 77, 77, 0.15);
-    border: 1px solid rgba(255, 77, 77, 0.3);
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.2);
 }
 
 .signal-down {
-    color: #4d94ff;
-    background: rgba(77, 148, 255, 0.15);
-    border: 1px solid rgba(77, 148, 255, 0.3);
+    color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+    border: 1px solid rgba(52, 152, 219, 0.2);
 }
 
 .signal-stable {
-    color: #a0a0a0;
-    background: rgba(160, 160, 160, 0.1);
-    border: 1px solid rgba(160, 160, 160, 0.2);
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
 }
 
 .item-price {
@@ -273,13 +326,13 @@ html {
 
 .price-value {
     font-size: 1.25rem;
-    color: #e2bb59;
+    color: #d4ac0d; /* 조금 더 선명한 다크 옐로우/골드 */
     font-weight: 700;
     font-family: 'Inter', sans-serif;
 }
 
 .price-label {
     font-size: 0.75rem;
-    color: #a0a0a0;
+    color: var(--text-muted);
     font-weight: 400;
 }

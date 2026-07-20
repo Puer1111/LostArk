@@ -1,5 +1,5 @@
 import {raidConfigs} from '../character/raidConfigs.js';
-import {jobData} from '../character/synergyDataV2.js';
+import {jobData} from '../character/synergyDataV3.js';
 
 export const raidFunction = {
     // 레이드 선택 옵션 초기화
@@ -67,13 +67,16 @@ export const raidFunction = {
             const jobInfo = jobData.find(j => j.className === data.jobName);
             if (!jobInfo) return;
 
-            const engraving = jobInfo.classEngravings[data.activeEngravingIndex || 0];
+            const skills = jobInfo.skills || [];
 
             [partyId, 0].forEach(pIdx => {
-                engraving.skills.forEach(skill => {
+                skills.forEach(skill => {
                     if (skill.priority === 'main') {
                         if (!partySynergies[pIdx][skill.name]) partySynergies[pIdx][skill.name] = [];
-                        partySynergies[pIdx][skill.name].push({jobName: data.jobName});
+                        partySynergies[pIdx][skill.name].push({
+                            jobName: data.jobName,
+                            characterName: data.searchData ? data.searchData.characterName : null
+                        });
                     }
                 });
             });
@@ -97,9 +100,15 @@ export const raidFunction = {
         let html = '<div class="synergy-list">';
         Object.entries(synergies).forEach(([type, items]) => {
             const isDuplicate = items.length > 1;
+            const providers = items.map(item => {
+                return item.characterName ? `${item.jobName}(${item.characterName})` : item.jobName;
+            }).join(', ');
             html += `
                 <div class="synergy-item ${isDuplicate ? 'duplicate' : ''}">
-                    <span class="s-type">${type}</span>
+                    <div class="synergy-info">
+                        <span class="s-type">${type}</span>
+                        <span class="s-providers" style="font-size: 0.75rem; color: var(--accent); margin-left: 8px;">[${providers}]</span>
+                    </div>
                     ${isDuplicate ? `<span class="warn-icon">⚠️ 중복</span>` : ''}
                 </div>
             `;
