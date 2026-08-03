@@ -167,12 +167,9 @@ public class Tooltip {
         if (m2.find()) results.add(m2.group(1) + " 포인트: " + m2.group(2));
 
         // 3. [이름] 및 Lv.값 추출
-        Matcher m3 = Pattern.compile("\\[([^\\]]+)\\]\\s*(?:<FONT[^>]*>)?(Lv\\.\\d+)?(?:</FONT>)?").matcher(html);
+        Matcher m3 = Pattern.compile("\\[?([^\\[\\]<\\s]+(?:\\s+[^\\[\\]<\\s]+)*)\\]?\\s*(?:<FONT[^>]*>)?(Lv\\.\\d+)(?:</FONT>)?").matcher(html);
         while (m3.find()) {
-            String effect = "[" + m3.group(1) + "]";
-            if (m3.group(2) != null) {
-                effect += " " + m3.group(2);
-            }
+            String effect = "[" + m3.group(1).trim() + "] " + m3.group(2);
             results.add(effect);
         }
 

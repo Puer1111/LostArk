@@ -36,10 +36,10 @@ public class CharacterArkGrid {
                     rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_006"));
                     
                     for (String raw : rawEffects) {
-                        java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[([^\\]]+)\\]\\s*Lv\\.(\\d+)");
+                        java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[?([^\\]\\s]+(?:\\s+[^\\]\\s]+)*)\\]?\\s*Lv\\.?\\s*(\\d+)");
                         java.util.regex.Matcher mEffect = pEffect.matcher(raw);
                         if (mEffect.find()) {
-                            String name = mEffect.group(1);
+                            String name = mEffect.group(1).trim();
                             int lvl = Integer.parseInt(mEffect.group(2));
                             effectLevels.put(name, effectLevels.getOrDefault(name, 0) + lvl);
                         }
@@ -53,6 +53,24 @@ public class CharacterArkGrid {
             }
             return combined;
         }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public int getAllCombinedGemLevelSum() {
+            List<String> combined = getAllCombinedGemEffects();
+            if (combined == null || combined.isEmpty()) {
+                return 0;
+            }
+            int sum = 0;
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("Lv\\.(\\d+)");
+            for (String effect : combined) {
+                java.util.regex.Matcher matcher = pattern.matcher(effect);
+                if (matcher.find()) {
+                    sum += Integer.parseInt(matcher.group(1));
+                }
+            }
+            return sum;
+        }
+
 
 
 
