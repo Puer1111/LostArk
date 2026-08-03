@@ -1,6 +1,9 @@
 /* ==========================================================================
    Common Layout & Components
    ========================================================================== */
+li{
+    list-style-type: none;
+}
 .container {
     max-width: 1200px;
     margin: auto;
@@ -22,7 +25,7 @@
 }
 
 h1, h2, h3 {
-    color: #e1e1e1;
+    /*color: #e1e1e1;*/
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 12px;
@@ -104,18 +107,13 @@ strong {
 .tab-btn {
     background: none;
     border: none;
-    color: #888;
+    /*color: #888;*/
     padding: 8px 16px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
     transition: all 0.2s ease;
     border-radius: 5px;
-}
-
-.tab-btn:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .tab-btn.active {
@@ -129,37 +127,96 @@ strong {
    ========================================================================== */
 .section.profiles {
     position: relative;
-    width: 320px;
-    height: 350px;
-    padding: 20px;
-    color: white;
-    background-color: #1a1a1a;
-    border-radius: 14px;
-    overflow: hidden;
+    /*width: 320px;*/
+    padding: 24px;
+    color: #333333;
+    background-color: #ffffff;
+    border-radius: 18px;
+    border: 2px solid #f1d594;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+.profile-top-flex {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     background-size: cover;
-    background-position: center right;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-position: center;
+    border: 2px solid #f1d594;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
 }
 
-.section.profiles::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.3) 60%, rgba(0, 0, 0, 0) 100%);
-    pointer-events: none;
+.profile-header-new {
+    margin-bottom: 0;
 }
 
-.profile-info {
-    position: absolute;
-    bottom: 20px;
-    left: 15px;
-    z-index: 2;
+.profile-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
 }
 
-.profile-info p {
-    margin: 3px 0;
+.profile-name-new {
+    font-size: 1.55rem;
+    font-weight: 800;
+    color: #111111;
+    letter-spacing: -0.03em;
+}
+
+.profile-level-badge {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #b28530;
+    background-color: #fdf6e2;
+    border: 1.5px solid #f1d594;
+    padding: 3px 12px;
+    border-radius: 20px;
+    line-height: 1.2;
+}
+
+.profile-class-new {
     font-size: 0.95rem;
-    color: #fff;
+    color: #666666;
+    font-weight: 500;
+}
+
+.profile-grid-new {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.profile-grid-item {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.01);
+}
+
+.grid-item-label {
+    font-size: 0.75rem;
+    color: #888888;
+    font-weight: 500;
+}
+
+.grid-item-value {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #111111;
 }
 
 /* ==========================================================================
@@ -175,12 +232,17 @@ strong {
 }
 
 .equipment-area {
-    width: 100%;
+    /*width: 100%;*/
     min-height: 54px;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 4px 0;
+    padding: 8px 12px;
+    /*background-color: #ffffff;*/
+    /*border: 1px solid #eaeaea;*/
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+    margin-bottom: 5px;
 }
 
 .item-img {
@@ -207,7 +269,7 @@ strong {
 
 .item-description span {
     font-size: 0.85rem;
-    color: #efefef;
+    color: #2c3e50;
     white-space: nowrap;
 }
 
@@ -227,11 +289,12 @@ strong {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: #ffffff;
+    border: 1px solid #eaeaea;
     border-radius: 8px;
     padding: 12px;
     margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
 .gem-wrapper {
@@ -524,6 +587,7 @@ strong {
 
 .arkGrid-description .tooltip-content {
     color: #efefef;
+
     background: none;
     border: none;
     box-shadow: none;
@@ -757,9 +821,9 @@ strong {
    ========================================================================== */
 .tooltip-content {
     font-size: 0.85rem;
-    color: #eee;
     margin-top: 6px;
-    background: rgba(0, 0, 0, 0.7);
+    /*background: rgba(0, 0, 0, 0.7);*/
+    background-color: #f5f6fa;
     border: 1px solid rgba(255, 255, 255, 0.15);
     padding: 10px;
     border-radius: 8px;
@@ -846,3 +910,21 @@ strong {
         max-width: 320px;
     }
 }
+
+/* ==========================================================================
+   Ark Passive & Grid Bottom Row Layout
+   ========================================================================== */
+.ark-bottom-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.ark-bottom-row .section.arkPassive,
+.ark-bottom-row .section.arkGrid {
+    flex: 1;
+    margin-bottom: 0;
+    min-width: 0;
+}
+

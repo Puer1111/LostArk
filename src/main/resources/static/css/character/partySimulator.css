@@ -210,10 +210,6 @@
     background-repeat: no-repeat;
 }
 
-.party-slot span {
-    color: var(--text-board-muted);
-}
-
 /* 캐릭터가 있을 때 이미지를 더 밝고 선명하게 */
 .party-slot.has-character {
     border-style: solid;
