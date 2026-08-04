@@ -36,7 +36,7 @@ public class CharacterArkGrid {
                     rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_006"));
                     
                     for (String raw : rawEffects) {
-                        java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[?([^\\]\\s]+(?:\\s+[^\\]\\s]+)*)\\]?\\s*Lv\\.?\\s*(\\d+)");
+                        java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[?([^\\]\\s]+(?:\\s+[^\\]\\s]+)*)\\]?\\s*[lL][vV]\\.?\\s*(\\d+)");
                         java.util.regex.Matcher mEffect = pEffect.matcher(raw);
                         if (mEffect.find()) {
                             String name = mEffect.group(1).trim();
@@ -107,10 +107,10 @@ public class CharacterArkGrid {
                 rawEffects.addAll(gem.getTooltip().getSimplifiedArkGridGemList("Element_006"));
                 
                 for (String raw : rawEffects) {
-                    java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[([^\\]]+)\\]\\s*Lv\\.(\\d+)");
+                    java.util.regex.Pattern pEffect = java.util.regex.Pattern.compile("\\[?([^\\]\\s]+(?:\\s+[^\\]\\s]+)*)\\]?\\s*[lL][vV]\\.?\\s*(\\d+)");
                     java.util.regex.Matcher mEffect = pEffect.matcher(raw);
                     if (mEffect.find()) {
-                        String name = mEffect.group(1);
+                        String name = mEffect.group(1).trim();
                         int lvl = Integer.parseInt(mEffect.group(2));
                         effectLevels.put(name, effectLevels.getOrDefault(name, 0) + lvl);
                     }

@@ -178,7 +178,7 @@
                             <div class="section arkPassive-simple" th:if="${characterData.characterArkPassive != null}"
                                  style="flex: 1; margin-bottom: 0; cursor: pointer;"
                                  onclick="document.querySelector('[data-target=\'ark-passive\']').click();">
-                                <h3>아크 패시브</h3>
+                                <h3>[아크 패시브]</h3>
                                 <div th:if="${characterData.characterArkPassive.points != null and !characterData.characterArkPassive.points.empty}"
                                      style="display: flex; flex-direction: column; gap: 12px;">
                                     <div th:each="point : ${characterData.characterArkPassive.points}"
@@ -186,7 +186,7 @@
                                          style="display: flex; flex-direction: column; gap: 6px;">
                                         <!-- 대분류 명칭 (진화, 깨달음, 도약) -->
                                         <div style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 2px;">
-                                            <span th:text="${point.name}"
+                                            <span th:text="'[' + ${point.name} + ']'"
                                                   style="color: #ffd700; font-weight: bold; font-size: 1.1em;"></span>
                                         </div>
                                         <!-- 세로형(column) 리스트 출력 -->
@@ -216,11 +216,7 @@
                             <div class="section arkGrid-simple" th:if="${characterData.characterArkGrid != null}"
                                  style="flex: 1; margin-bottom: 0; cursor: pointer;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <h3 style="margin: 0;">아크 그리드</h3>
-                                    <span style="font-size: 0.85em; color: #ffd700; font-weight: bold;"
-                                          th:with="totalPoints=${characterData.characterArkGrid.slots != null ? #aggregates.sum(characterData.characterArkGrid.slots.![point]) : 0}">
-                                        활성화P: <span th:text="${totalPoints}"></span>
-                                    </span>
+                                    <h3 style="margin: 0;">[아크 그리드]</h3>
                                 </div>
                                 <div id="arkGrid-simple-container"
                                      th:if="${characterData.characterArkGrid.slots != null and !characterData.characterArkGrid.slots.empty}">
@@ -233,7 +229,7 @@
                                             <span style="display: inline-flex; align-items: center; gap: 6px;">
                                                 <img th:src="${slot.icon}" alt="슬롯 아이콘" class="arkGrid-img"
                                                      style="width: 16px; height: 16px; border-radius: 3px; background: rgba(0,0,0,0.3); border: 1px solid #555;"/>
-                                                <span th:text="${slot.name}" style="color: #efefef;"></span>
+                                                <span th:text="${slot.name}"></span>
                                             </span>
                                             <span th:text="${slot.point} + 'P'"
                                                   style="color: #ccc; font-weight: bold;"></span>
@@ -245,16 +241,17 @@
                                 </div>
                                 <div id="arkGrid-gems-simple-container"
                                      th:with="combinedGems=${characterData.characterArkGrid.getAllCombinedGemEffects()}"
-                                     th:if="${combinedGems != null and !combinedGems.empty}"
                                      style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 12px; padding-top: 10px;">
-                                    <div style="margin-bottom: 6px;">
-                                        <span style="color: #ffd700; font-weight: bold; font-size: 0.95em;">아크 그리드 Gems 효과 합계</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 6px;">
-                                        <div th:each="effectStr : ${combinedGems}"
-                                             style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85em;">
-                                            <!-- [효과이름] Lv.X 형태로 노출 -->
-                                            <span th:text="${effectStr}" style="color: #efefef;"></span>
+                                    <div th:if="${combinedGems != null and !combinedGems.empty}">
+                                        <div style="margin-bottom: 6px;">
+                                            <span style="color: #ffd700; font-weight: bold; font-size: 0.95em;">[효과]</span>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 6px;">
+                                            <div th:each="effectStr : ${combinedGems}"
+                                                 style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85em;">
+                                                <!-- [효과이름] Lv.X 형태로 노출 -->
+                                                <span th:text="${effectStr}"></span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

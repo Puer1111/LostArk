@@ -212,6 +212,19 @@ public class LostArkServiceImpl implements LostArkService {
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+            
+            // Temporary debugging log to check ArkGrid JSON structure
+            try {
+                com.fasterxml.jackson.databind.JsonNode rootNode = objectMapper.readTree(response.getBody());
+                if (rootNode.has("ArkGrid")) {
+                    log.info("====== [디버깅] ArkGrid API 응답 구조 ======\n{}", rootNode.get("ArkGrid").toPrettyString());
+                } else {
+                    log.warn("====== [디버깅] API 응답에 ArkGrid 필드가 존재하지 않습니다! ======");
+                }
+            } catch (Exception ex) {
+                log.error("====== [디버깅] ArkGrid 로그 출력 실패 ======", ex);
+            }
+
             SearchCharacterDTO dto = objectMapper.readValue(response.getBody(), SearchCharacterDTO.class);
             if (dto == null) {
                 return new SearchCharacterDTO();

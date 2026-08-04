@@ -166,10 +166,10 @@ public class Tooltip {
         Matcher m2 = Pattern.compile("(혼돈|질서) 포인트\\s*:\\s*<FONT[^>]*>(\\d+)</FONT>").matcher(html);
         if (m2.find()) results.add(m2.group(1) + " 포인트: " + m2.group(2));
 
-        // 3. [이름] 및 Lv.값 추출
-        Matcher m3 = Pattern.compile("\\[?([^\\[\\]<\\s]+(?:\\s+[^\\[\\]<\\s]+)*)\\]?\\s*(?:<FONT[^>]*>)?(Lv\\.\\d+)(?:</FONT>)?").matcher(html);
+        // 3. [이름] 및 Lv.값 추출 (대소문자 무관, 공백 유연하게 매칭)
+        Matcher m3 = Pattern.compile("\\[?([^\\[\\]<\\s]+(?:\\s+[^\\[\\]<\\s]+)*)\\]?\\s*(?:<FONT[^>]*>)?([lL][vV]\\.?\\s*\\d+)(?:</FONT>)?").matcher(html);
         while (m3.find()) {
-            String effect = "[" + m3.group(1).trim() + "] " + m3.group(2);
+            String effect = "[" + m3.group(1).trim() + "] " + m3.group(2).replaceAll("\\s+", "");
             results.add(effect);
         }
 
