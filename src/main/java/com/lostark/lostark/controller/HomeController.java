@@ -8,6 +8,7 @@ import com.lostark.lostark.model.dto.LostArkNewsDto;
 import com.lostark.lostark.model.dto.LostArkEventDto;
 import com.lostark.lostark.service.api.chzzk.ChzzkService;
 import com.lostark.lostark.model.dto.chzzk.ChzzkResponse;
+import com.lostark.lostark.model.dto.character.SimplifiedCharacterDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class HomeController {
         log.info("HomeController.index called - Requesting Today's Events, Recent Searches, News, Events, and Chzzk Lives");
         
         List<LostArkCalendar> todayEvents = apiService.getTodayEvents();
-        List<com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO> recentCharacters = apiService.getRecentCharacters();
+        List<SimplifiedCharacterDTO> recentCharacters = apiService.getRecentCharacters();
         List<LostArkNewsDto> notices = apiService.getNewsNotices();
         List<LostArkEventDto> events = apiService.getNewsEvents();
         List<ChzzkResponse.LiveDetail> chzzkLives = chzzkService.getLostArkLives();

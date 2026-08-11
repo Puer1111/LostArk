@@ -1,9 +1,9 @@
 package com.lostark.lostark.controller.character;
 
 
-import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
-import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
-import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchExpeditionDTO;
+import com.lostark.lostark.model.dto.character.SimplifiedCharacterDTO;
 import com.lostark.lostark.service.api.LostArkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

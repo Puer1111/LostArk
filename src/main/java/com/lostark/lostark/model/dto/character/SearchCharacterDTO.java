@@ -1,12 +1,11 @@
-package com.lostark.lostark.model.dto.character.search;
+package com.lostark.lostark.model.dto.character;
 
-import com.lostark.lostark.model.dto.character.*;
 import lombok.Data;
 import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List; // Import List
+import java.util.List;
 
 @Data
 @ToString
@@ -25,7 +24,7 @@ public class SearchCharacterDTO {
     @JsonProperty("ArmoryCard")
     private CharacterCards characterCards;
     @JsonProperty("ArmoryGem")
-    private CharacterGems  characterGems;
+    private CharacterGems characterGems;
     @JsonProperty("ColosseumInfo")
     private CharacterColosseum characterColosseum;
     @JsonProperty("Collectibles")
@@ -36,4 +35,23 @@ public class SearchCharacterDTO {
     private CharacterArkGrid characterArkGrid;
 
     private List<SearchExpeditionDTO> expeditions;
+
+    public void applyDealerStatusToGrid() {
+        if (characterArkGrid == null) {
+            return;
+        }
+        
+        boolean isDealer = true;
+        if (characterArkPassive != null && characterArkPassive.getTitle() != null) {
+            String title = characterArkPassive.getTitle();
+            if (title.contains("만개") || 
+                title.contains("절실한 구원") || 
+                title.contains("해방자") || 
+                title.contains("축복의 오라")) {
+                isDealer = false;
+            }
+        }
+        
+        characterArkGrid.setDealer(isDealer);
+    }
 }

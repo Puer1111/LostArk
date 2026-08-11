@@ -9,9 +9,9 @@ import com.lostark.lostark.config.headers.HeaderUtils;
 import com.lostark.lostark.model.dto.LostArkCalendar;
 import com.lostark.lostark.model.dto.character.CharacterEquipment;
 import com.lostark.lostark.model.dto.character.CharacterProfiles;
-import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
-import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
-import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchExpeditionDTO;
+import com.lostark.lostark.model.dto.character.SimplifiedCharacterDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -237,6 +237,7 @@ public class LostArkServiceImpl implements LostArkService {
 
             sortGems(dto);
             filterAndSortEquipment(dto);
+            dto.applyDealerStatusToGrid();
             return dto;
 
         } catch (Exception e) {

@@ -1,9 +1,9 @@
 package com.lostark.lostark.service.api;
 
 import com.lostark.lostark.model.dto.character.CharacterProfiles;
-import com.lostark.lostark.model.dto.character.search.SearchCharacterDTO;
-import com.lostark.lostark.model.dto.character.search.SearchExpeditionDTO;
-import com.lostark.lostark.model.dto.character.search.SimplifiedCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchCharacterDTO;
+import com.lostark.lostark.model.dto.character.SearchExpeditionDTO;
+import com.lostark.lostark.model.dto.character.SimplifiedCharacterDTO;
 import com.lostark.lostark.model.dto.LostArkCalendar;
 
 import com.lostark.lostark.model.dto.LostArkNewsDto;

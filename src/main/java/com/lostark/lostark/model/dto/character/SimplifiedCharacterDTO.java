@@ -1,4 +1,4 @@
-package com.lostark.lostark.model.dto.character.search;
+package com.lostark.lostark.model.dto.character;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

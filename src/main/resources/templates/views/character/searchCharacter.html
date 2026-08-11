@@ -66,7 +66,7 @@
                     </div>
 
                     <!-- Engravings -->
-                    <div class="section Engravings">
+                    <div class="section Engravings" th:if="${characterData.characterEngravings != null and characterData.characterEngravings.arkPassiveEffects != null}">
                         <h2>각인 효과</h2>
                         <div class="engraving-container">
                             <div class="engraving-item"
@@ -91,6 +91,7 @@
                     <!-- Tabs Menu -->
                     <div class="info-tabs">
                         <button type="button" class="tab-btn active" data-target="equipment">장비</button>
+                        <button type="button" class="tab-btn" data-target="avatar">아바타</button>
                         <button type="button" class="tab-btn" data-target="skills">스킬</button>
                         <button type="button" class="tab-btn" data-target="ark-grid">아크 그리드</button>
                         <button type="button" class="tab-btn" data-target="ark-passive">아크 패시브</button>
@@ -256,6 +257,35 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 1.5. 아바타 탭 -->
+                    <div id="avatar" class="tab-content" style="display: none;">
+                        <div class="section avatar"
+                             th:if="${characterData.characterAvatars != null and !characterData.characterAvatars.empty}">
+                            <div class="avatar-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+                                <div class="avatar-item" th:each="avatar : ${characterData.characterAvatars}"
+                                     style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 15px;">
+                                    <div class="avatar-img-wrapper" style="position: relative; width: 50px; height: 50px; flex-shrink: 0; background: rgba(0, 0, 0, 0.5); border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.15);">
+                                        <img th:src="${avatar.icon}" alt="아바타 아이콘" style="width: 42px; height: 42px; object-fit: contain;"/>
+                                        <span th:if="${avatar.isInner}" style="position: absolute; top: -5px; right: -5px; background: #e03131; color: white; font-size: 0.65em; padding: 1px 4px; border-radius: 3px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.2);">덧입기</span>
+                                    </div>
+                                    <div class="avatar-info" style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                                        <span th:text="${avatar.type}" style="font-size: 0.75em; color: #868e96; font-weight: bold; letter-spacing: 0.5px;"></span>
+                                        <span th:text="${avatar.name}" style="font-size: 0.9em; color: #f8f9fa; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></span>
+                                        <div style="display: flex; gap: 6px; align-items: center; font-size: 0.7em;">
+                                            <span th:text="${avatar.grade}" style="font-weight: bold;"
+                                                  th:style="'color: ' + (${avatar.grade == '전설'} ? '#ffd700' : (${avatar.grade == '영웅'} ? '#ce55ff' : '#4dabf7'))"></span>
+                                            <span th:if="${avatar.isSet}" style="color: #4dabf7; font-weight: 500;">(세트 적용)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="no-data" th:if="${characterData.characterAvatars == null or characterData.characterAvatars.empty}"
+                             style="text-align: center; padding: 40px 20px; color: #868e96;">
+                            <p>장착 중인 아바타가 없습니다.</p>
                         </div>
                     </div>
 
