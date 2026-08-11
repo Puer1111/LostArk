@@ -279,6 +279,24 @@
                                                   th:style="'color: ' + (${avatar.grade == '전설'} ? '#ffd700' : (${avatar.grade == '영웅'} ? '#ce55ff' : '#4dabf7'))"></span>
                                             <span th:if="${avatar.isSet}" style="color: #4dabf7; font-weight: 500;">(세트 적용)</span>
                                         </div>
+                                        <!-- 아바타 염색 정보 (ItemTintGroup) 목록 표시 -->
+                                        <div class="avatar-dyes" th:if="${avatar.getDyeInfoList() != null and !avatar.getDyeInfoList().empty}" style="margin-top: 6px; display: flex; flex-direction: column; gap: 3px; font-size: 0.75em; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 4px;">
+                                            <div th:each="dye : ${avatar.getDyeInfoList()}" style="display: flex; align-items: center; gap: 6px; color: #adb5bd;">
+                                                <span th:if="${dye.iconPath != null and !dye.iconPath.isEmpty() and dye.iconPath != 'null'}" style="display: inline-flex; align-items: center;">
+                                                    <img th:src="${dye.iconPath}" alt="패턴" style="width: 14px; height: 14px; object-fit: contain; background: rgba(0,0,0,0.3); border-radius: 2px;"/>
+                                                </span>
+                                                <span th:text="${dye.part} + ':'" style="font-weight: 500; color: #868e96;"></span>
+                                                <span th:if="${dye.baseColor != null and !dye.baseColor.isEmpty() and dye.baseColor != 'null' and dye.baseColor != 'undefined'}" style="display: inline-flex; align-items: center; gap: 4px;">
+                                                    <span th:style="'display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.baseColor}"></span>
+                                                    <span th:text="${dye.baseColor}"></span>
+                                                </span>
+                                                <span th:if="${dye.glossValue != null and !dye.glossValue.isEmpty() and dye.glossValue != 'null'}" th:text="'광택 ' + ${dye.glossValue}"></span>
+                                                <span th:if="${dye.patternColor != null and !dye.patternColor.isEmpty() and dye.patternColor != 'null' and dye.patternColor != 'undefined'}" style="display: inline-flex; align-items: center; gap: 4px;">
+                                                    <span th:style="'display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.patternColor}"></span>
+                                                    <span th:text="'패턴#' + ${dye.patternColor}"></span>
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
