@@ -64,26 +64,14 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Engravings -->
-                    <div class="section Engravings" th:if="${characterData.characterEngravings != null and characterData.characterEngravings.arkPassiveEffects != null}">
-                        <h2>각인 효과</h2>
-                        <div class="engraving-container">
-                            <div class="engraving-item"
-                                 th:each="effect : ${characterData.characterEngravings.arkPassiveEffects}">
-                                <div class="engraving-details" th:if="${effect.grade != null}">
-                                    <div>
-                                        <div class="engraving-item-content"
-                                             th:data-grade="${effect.grade}" th:data-level="${effect.level}">
-                                            <span class="engraving-name" th:text="${effect.name}"></span>
-                                            <div class="engraving-info-group">
-                                                <em class="engraving-icon" th:data-engraving-name="${effect.name}"></em>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <!-- 캐릭터 전신 이미지 카드 (아바타 탭 클릭 시에만 표시됨) -->
+                    <div id="left-character-image-card" class="character-image-card"
+                         th:if="${characterData.characterProfiles != null and characterData.characterProfiles.characterImage != null and
+                      #strings.isEmpty(characterData.characterProfiles.characterImage) == false}"
+                         style="display: none; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 20px; align-items: center; justify-content: center; min-height: 450px; margin-top: 15px;">
+                        <img th:src="${characterData.characterProfiles.characterImage}" alt="캐릭터 전신 이미지"
+                             style="max-height: 500px; object-fit: contain; max-width: 100%;"/>
                     </div>
                 </div>
 
@@ -256,6 +244,36 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Engravings -->
+                                <div class="section Engravings"
+                                     th:if="${characterData.characterEngravings != null and characterData.characterEngravings.arkPassiveEffects != null}">
+                                    <h3 style="margin:0;">[각인 효과]</h3>
+                                    <div class="engraving-container">
+                                        <div class="engraving-item"
+                                             th:each="effect : ${characterData.characterEngravings.arkPassiveEffects}">
+                                            <div class="engraving-details" th:if="${effect.grade != null}">
+                                                <div>
+                                                    <div class="engraving-item-content"
+                                                         th:data-grade="${effect.grade}"
+                                                         th:data-level="${effect.level}"
+                                                         style="display: flex; align-items: center; gap: 8px;">
+                                                        <img th:src="@{/img/engravings/{name}.webp(name=${effect.name})}"
+                                                             th:alt="${effect.name}"
+                                                             class="engraving-img-icon"
+                                                             onerror="this.style.display='none';"
+                                                             style="width: 25px; height: 28px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />
+                                                        <span class="engraving-name" th:text="${effect.name}" style="flex-grow: 1;"></span>
+                                                        <div class="engraving-info-group">
+                                                            <em class="engraving-icon"
+                                                                th:data-engraving-name="${effect.name}"></em>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -264,290 +282,209 @@
                     <div id="avatar" class="tab-content" style="display: none;">
                         <div class="section avatar"
                              th:if="${characterData.characterAvatars != null and !characterData.characterAvatars.empty}">
-                            <div class="avatar-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
-                                <div class="avatar-item" th:each="avatar : ${characterData.characterAvatars}"
-                                     style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-img-wrapper" style="position: relative; width: 50px; height: 50px; flex-shrink: 0; background: rgba(0, 0, 0, 0.5); border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.15);">
-                                        <img th:src="${avatar.icon}" alt="아바타 아이콘" style="width: 42px; height: 42px; object-fit: contain;"/>
-                                        <span th:if="${avatar.isInner}" style="position: absolute; top: -5px; right: -5px; background: #e03131; color: white; font-size: 0.65em; padding: 1px 4px; border-radius: 3px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.2);">덧입기</span>
-                                    </div>
-                                    <div class="avatar-info" style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
-                                        <span th:text="${avatar.type}" style="font-size: 0.75em; color: #868e96; font-weight: bold; letter-spacing: 0.5px;"></span>
-                                        <span th:text="${avatar.name}" style="font-size: 0.9em; color: #f8f9fa; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></span>
-                                        <div style="display: flex; gap: 6px; align-items: center; font-size: 0.7em;">
-                                            <span th:text="${avatar.grade}" style="font-weight: bold;"
-                                                  th:style="'color: ' + (${avatar.grade == '전설'} ? '#ffd700' : (${avatar.grade == '영웅'} ? '#ce55ff' : '#4dabf7'))"></span>
-                                            <span th:if="${avatar.isSet}" style="color: #4dabf7; font-weight: 500;">(세트 적용)</span>
+                            <div class="avatar-layout-wrapper">
+                                <!-- 아바타 목록 (2열 Grid) -->
+                                <div class="avatar-grid"
+                                     style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                                    <div class="avatar-item" th:each="avatar : ${characterData.characterAvatars}"
+                                         style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 15px;">
+                                        <div class="avatar-img-wrapper"
+                                             style="position: relative; width: 50px; height: 50px; flex-shrink: 0; background: rgba(0, 0, 0, 0.5); border-radius: 6px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.15);">
+                                            <img th:src="${avatar.icon}" alt="아바타 아이콘"
+                                                 style="width: 42px; height: 42px; object-fit: contain;"/>
+                                            <span th:if="${avatar.isInner}"
+                                                  style="position: absolute; top: -5px; right: -5px; background: #e03131; color: white; font-size: 0.65em; padding: 1px 4px; border-radius: 3px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.2);">덧입기</span>
                                         </div>
-                                        <!-- 아바타 염색 정보 (ItemTintGroup) 목록 표시 -->
-                                        <div class="avatar-dyes" th:if="${avatar.getDyeInfoList() != null and !avatar.getDyeInfoList().empty}" style="margin-top: 6px; display: flex; flex-direction: column; gap: 3px; font-size: 0.75em; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 4px;">
-                                            <div th:each="dye : ${avatar.getDyeInfoList()}" style="display: flex; align-items: center; gap: 6px; color: #adb5bd;">
-                                                <span th:if="${dye.iconPath != null and !dye.iconPath.isEmpty() and dye.iconPath != 'null'}" style="display: inline-flex; align-items: center;">
-                                                    <img th:src="${dye.iconPath}" alt="패턴" style="width: 14px; height: 14px; object-fit: contain; background: rgba(0,0,0,0.3); border-radius: 2px;"/>
-                                                </span>
-                                                <span th:text="${dye.part} + ':'" style="font-weight: 500; color: #868e96;"></span>
-                                                <span th:if="${dye.baseColor != null and !dye.baseColor.isEmpty() and dye.baseColor != 'null' and dye.baseColor != 'undefined'}" style="display: inline-flex; align-items: center; gap: 4px;">
-                                                    <span th:style="'display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.baseColor}"></span>
-                                                    <span th:text="${dye.baseColor}"></span>
-                                                </span>
-                                                <span th:if="${dye.glossValue != null and !dye.glossValue.isEmpty() and dye.glossValue != 'null'}" th:text="'광택 ' + ${dye.glossValue}"></span>
-                                                <span th:if="${dye.patternColor != null and !dye.patternColor.isEmpty() and dye.patternColor != 'null' and dye.patternColor != 'undefined'}" style="display: inline-flex; align-items: center; gap: 4px;">
-                                                    <span th:style="'display: inline-block; width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.patternColor}"></span>
-                                                    <span th:text="'패턴#' + ${dye.patternColor}"></span>
-                                                </span>
+                                        <div class="avatar-info"
+                                             style="display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                                            <span th:text="${avatar.type}"
+                                                  style="font-size: 0.75em; color: #868e96; font-weight: bold; letter-spacing: 0.5px;"></span>
+                                            <span th:text="${avatar.name}"
+                                                  style="font-size: 0.9em; color: #f8f9fa; font-weight: 500; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></span>
+                                            <div style="display: flex; gap: 6px; align-items: center; font-size: 0.7em;">
+                                                <span th:text="${avatar.grade}" style="font-weight: bold;"
+                                                      th:style="'color: ' + (${avatar.grade == '전설'} ? '#ffd700' : (${avatar.grade == '영웅'} ? '#ce55ff' : '#4dabf7'))"></span>
+                                                <span th:if="${avatar.isSet}" style="color: #4dabf7; font-weight: 500;">(세트 적용)</span>
+                                            </div>
+                                            <!-- 아바타 염색 정보 (ItemTintGroup) 목록 표시 -->
+                                            <div class="avatar-dyes"
+                                                 th:if="${avatar.getDyeInfoList() != null and !avatar.getDyeInfoList().empty}"
+                                                 style="margin-top: 6px; display: flex; flex-direction: row; flex-wrap: wrap; gap: 4px; font-size: 0.72em; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 6px;">
+                                                <div th:each="dye : ${avatar.getDyeInfoList()}"
+                                                     style="display: flex; align-items: center; gap: 4px; color: #adb5bd; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 4px; line-height: 1.2;">
+                                                    <span th:if="${dye.iconPath != null and !dye.iconPath.isEmpty() and dye.iconPath != 'null'}"
+                                                          style="display: inline-flex; align-items: center;">
+                                                        <img th:src="${dye.iconPath}" alt="패턴"
+                                                             style="width: 12px; height: 12px; object-fit: contain; background: rgba(0,0,0,0.3); border-radius: 2px;"/>
+                                                    </span>
+                                                    <span th:text="${dye.part} + ':'"
+                                                          style="font-weight: 500; color: #868e96;"></span>
+                                                    <span th:if="${dye.baseColor != null and !dye.baseColor.isEmpty() and dye.baseColor != 'null' and dye.baseColor != 'undefined'}"
+                                                          style="display: inline-flex; align-items: center; gap: 3px;">
+                                                        <span th:style="'display: inline-block; width: 8px; height: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.baseColor}"></span>
+                                                        <span th:text="${dye.baseColor}"></span>
+                                                    </span>
+                                                    <span th:if="${dye.glossValue != null and !dye.glossValue.isEmpty() and dye.glossValue != 'null'}"
+                                                          th:text="'광택 ' + ${dye.glossValue}"></span>
+                                                    <span th:if="${dye.patternColor != null and !dye.patternColor.isEmpty() and dye.patternColor != 'null' and dye.patternColor != 'undefined'}"
+                                                          style="display: inline-flex; align-items: center; gap: 3px;">
+                                                        <span th:style="'display: inline-block; width: 8px; height: 8px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.2); background-color: ' + ${dye.patternColor}"></span>
+                                                        <span th:text="'패턴#' + ${dye.patternColor}"></span>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="no-data" th:if="${characterData.characterAvatars == null or characterData.characterAvatars.empty}"
+                        <div class="no-data"
+                             th:if="${characterData.characterAvatars == null or characterData.characterAvatars.empty}"
                              style="text-align: center; padding: 40px 20px; color: #868e96;">
                             <p>장착 중인 아바타가 없습니다.</p>
                         </div>
                     </div>
 
-                    <!-- 2. 스킬 탭 -->
-                    <div id="skills" class="tab-content" style="display: none;">
-                        <div class="section skills">
-                            <h2>전투 스킬</h2>
-                            <ul class="skill-list"
-                                style="display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0;">
-                                <li th:each="skill : ${characterData.characterCombatSkill}" th:if="${skill.level > 1}"
-                                    class="skill-item"
-                                    style="display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; gap: 15px;">
-                                    <!-- 스킬 기본 정보 (왼쪽) -->
-                                    <img th:src="${skill.icon}" alt="Skill Icon"
-                                         style="width: 40px; height: 40px; border-radius: 4px;"/>
-                                    <div class="skill-info">
-                                        <div class="skill-name-area"
-                                             style="display: flex; align-items: center; gap: 10px;">
-                                            <strong th:text="${skill.name}"
-                                                    style="font-size: 1.1em; color: #fff;"></strong>
-                                            <!-- 스킬 속성 (무력화, 부위파괴, 면역) 표시 -->
-                                            <div class="skill-attributes" th:if="${skill.tooltip != null}"
-                                                 style="display: flex; gap: 5px;">
+                <!-- 2. 스킬 탭 -->
+                <div id="skills" class="tab-content" style="display: none;">
+                    <div class="section skills">
+                        <h2>전투 스킬</h2>
+                        <ul class="skill-list"
+                            style="display: flex; flex-direction: column; gap: 10px; list-style: none; padding: 0;">
+                            <li th:each="skill : ${characterData.characterCombatSkill}" th:if="${skill.level > 1}"
+                                class="skill-item"
+                                style="display: flex; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; gap: 15px;">
+                                <!-- 스킬 기본 정보 (왼쪽) -->
+                                <img th:src="${skill.icon}" alt="Skill Icon"
+                                     style="width: 40px; height: 40px; border-radius: 4px;"/>
+                                <div class="skill-info">
+                                    <div class="skill-name-area"
+                                         style="display: flex; align-items: center; gap: 10px;">
+                                        <strong th:text="${skill.name}"
+                                                style="font-size: 1.1em; color: #fff;"></strong>
+                                        <!-- 스킬 속성 (무력화, 부위파괴, 면역) 표시 -->
+                                        <div class="skill-attributes" th:if="${skill.tooltip != null}"
+                                             style="display: flex; gap: 5px;">
                                                 <span th:each="attr : ${skill.tooltip.extractSkillAttributes()}"
                                                       th:text="${attr}"
                                                       style="font-size: 0.75em; background: rgba(255,255,255,0.15); color: #FFD700; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(255,215,0,0.3); white-space: nowrap;">
                                                 </span>
-                                            </div>
                                         </div>
-                                        <p style="margin: 0; font-size: 0.9em; color: #ccc;">Lv.<span
-                                                th:text="${skill.level}"></span></p>
                                     </div>
+                                    <p style="margin: 0; font-size: 0.9em; color: #ccc;">Lv.<span
+                                            th:text="${skill.level}"></span></p>
+                                </div>
 
-                                    <!-- 룬 및 트라이포드 (오른쪽 정렬) -->
-                                    <div class="skill-extras"
-                                         style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
-                                        <!-- 보석 정보 (진짜 보석 아이콘 및 이름 표시) -->
-                                        <div class="skill-gems"
-                                             th:if="${characterData.characterGems != null and characterData.characterGems.gems != null}"
-                                             style="display: flex; gap: 8px;">
-                                            <th:block th:each="gemSkill : ${characterData.characterGems.effects.skills}"
-                                                      th:if="${gemSkill.name == skill.name}">
-                                                <!-- gemSkill.gemSlot과 일치하는 실제 보석(Gem)을 찾아서 출력 -->
-                                                <th:block th:each="actualGem : ${characterData.characterGems.gems}"
-                                                          th:if="${actualGem.slot == gemSkill.gemSlot}">
-                                                    <div class="gem-mini-display"
-                                                         style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
-                                                        <div class="gem-icon-wrapper"
-                                                             th:classappend="${actualGem.tooltip.getGemLevelClass(actualGem.level)}"
-                                                             style="position: relative; display: inline-block;">
-                                                            <img th:src="${actualGem.icon}"
-                                                                 style="width: 30px; height: 30px; border-radius: 4px; background: rgba(0,0,0,0.5); display: block;"
-                                                                 th:title="${actualGem.tooltip.getCleanedGemName() + ' : ' + gemSkill.option}"/>
-                                                            <span th:text="${actualGem.level}"
-                                                                  style="position: absolute; bottom: -2px; right: -2px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.65em; font-weight: bold; padding: 0 3px; border-radius: 3px; line-height: 1.2; text-shadow: 1px 1px 1px #000;"></span>
-                                                        </div>
-                                                        <span th:text="${actualGem.tooltip.getSimplifiedGemName()}"
-                                                              style="font-size: 0.6em; color: #A9D0F5; white-space: nowrap; max-width: 50px; overflow: hidden; text-overflow: ellipsis; text-align: center;"></span>
+                                <!-- 룬 및 트라이포드 (오른쪽 정렬) -->
+                                <div class="skill-extras"
+                                     style="margin-left: auto; display: flex; align-items: center; gap: 20px;">
+                                    <!-- 보석 정보 (진짜 보석 아이콘 및 이름 표시) -->
+                                    <div class="skill-gems"
+                                         th:if="${characterData.characterGems != null and characterData.characterGems.gems != null}"
+                                         style="display: flex; gap: 8px;">
+                                        <th:block th:each="gemSkill : ${characterData.characterGems.effects.skills}"
+                                                  th:if="${gemSkill.name == skill.name}">
+                                            <!-- gemSkill.gemSlot과 일치하는 실제 보석(Gem)을 찾아서 출력 -->
+                                            <th:block th:each="actualGem : ${characterData.characterGems.gems}"
+                                                      th:if="${actualGem.slot == gemSkill.gemSlot}">
+                                                <div class="gem-mini-display"
+                                                     style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                                    <div class="gem-icon-wrapper"
+                                                         th:classappend="${actualGem.tooltip.getGemLevelClass(actualGem.level)}"
+                                                         style="position: relative; display: inline-block;">
+                                                        <img th:src="${actualGem.icon}"
+                                                             style="width: 30px; height: 30px; border-radius: 4px; background: rgba(0,0,0,0.5); display: block;"
+                                                             th:title="${actualGem.tooltip.getCleanedGemName() + ' : ' + gemSkill.option}"/>
+                                                        <span th:text="${actualGem.level}"
+                                                              style="position: absolute; bottom: -2px; right: -2px; background: rgba(0,0,0,0.8); color: #fff; font-size: 0.65em; font-weight: bold; padding: 0 3px; border-radius: 3px; line-height: 1.2; text-shadow: 1px 1px 1px #000;"></span>
                                                     </div>
-                                                </th:block>
-                                            </th:block>
-                                        </div>
-
-                                        <!-- 룬 정보 -->
-                                        <div th:if="${skill.rune != null}" class="skill-rune"
-                                             style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 50px;">
-                                            <img th:src="${skill.rune.icon}" th:title="${skill.rune.name}"
-                                                 class="rune-icon-img"
-                                                 th:classappend="'rune-border-' + ${skill.rune.grade}"/>
-                                            <span th:text="${skill.rune.name}"
-                                                  style="font-size: 0.75em;white-space: nowrap; text-align: center;"></span>
-                                        </div>
-
-                                        <!-- 트라이포드 -->
-                                        <div class="skill-tripods" style="display: flex; gap: 8px; min-width: 108px;">
-                                            <th:block th:each="tripod : ${skill.tripods}" th:if="${tripod.isSelected}">
-                                                <div class="tripod-wrapper"
-                                                     style="position: relative; display: inline-block;">
-                                                    <img th:src="${tripod.icon}" th:title="${tripod.name}"
-                                                         style="width: 28px; height: 28px; border-radius: 50%; border: 1px solid #555; display: block;"/>
-                                                    <span th:text="${tripod.slot}"
-                                                          style="position: absolute; bottom: -2px; right: -2px; background: rgba(0,0,0,0.8); color: #FFD700; font-size: 0.65em; font-weight: bold; padding: 0 3px; border-radius: 3px; line-height: 1.2; text-shadow: 1px 1px 1px #000;"></span>
+                                                    <span th:text="${actualGem.tooltip.getSimplifiedGemName()}"
+                                                          style="font-size: 0.6em; color: #A9D0F5; white-space: nowrap; max-width: 50px; overflow: hidden; text-overflow: ellipsis; text-align: center;"></span>
                                                 </div>
                                             </th:block>
-                                        </div>
+                                        </th:block>
                                     </div>
-                                </li>
-                            </ul>
-                        </div>
+
+                                    <!-- 룬 정보 -->
+                                    <div th:if="${skill.rune != null}" class="skill-rune"
+                                         style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 50px;">
+                                        <img th:src="${skill.rune.icon}" th:title="${skill.rune.name}"
+                                             class="rune-icon-img"
+                                             th:classappend="'rune-border-' + ${skill.rune.grade}"/>
+                                        <span th:text="${skill.rune.name}"
+                                              style="font-size: 0.75em;white-space: nowrap; text-align: center;"></span>
+                                    </div>
+
+                                    <!-- 트라이포드 -->
+                                    <div class="skill-tripods" style="display: flex; gap: 8px; min-width: 108px;">
+                                        <th:block th:each="tripod : ${skill.tripods}" th:if="${tripod.isSelected}">
+                                            <div class="tripod-wrapper"
+                                                 style="position: relative; display: inline-block;">
+                                                <img th:src="${tripod.icon}" th:title="${tripod.name}"
+                                                     style="width: 28px; height: 28px; border-radius: 50%; border: 1px solid #555; display: block;"/>
+                                                <span th:text="${tripod.slot}"
+                                                      style="position: absolute; bottom: -2px; right: -2px; background: rgba(0,0,0,0.8); color: #FFD700; font-size: 0.65em; font-weight: bold; padding: 0 3px; border-radius: 3px; line-height: 1.2; text-shadow: 1px 1px 1px #000;"></span>
+                                            </div>
+                                        </th:block>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
+                </div>
 
-                    <!-- 3. 아크 그리드 탭 -->
-                    <div id="ark-grid" class="tab-content" style="display: none;">
-                        <div class="section arkGrid" th:if="${characterData.characterArkGrid != null}">
-                            <div class="arkGrid-list">
-                                <div class="arkGrid-slot-box" th:each="slot : ${characterData.characterArkGrid.slots}">
-                                    <div class="arkGrid-item">
-                                        <div class="arkGrid-icon-wrapper">
-                                            <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"/>
-                                        </div>
-                                        <div class="arkGrid-info">
-                                            <div class="arkGrid-name-area">
-                                                <strong th:text="${slot.name}"></strong>
-                                            </div>
-                                            <p th:text="${slot.grade}" class="arkGrid-grade"></p>
-                                        </div>
-                                        <!-- 상세보기 화살표 (우측 하단 고정) -->
-                                        <button class="arkGrid-detail-btn" type="button">
-                                            <span class="arrow" style="font-size:small;">∨ 잼 상세보기</span>
-                                        </button>
-
-                                        <!-- 슬롯 코어 효과 (즉시 노출) -->
-                                        <div class="arkGrid-extras" th:if="${slot.tooltip != null}">
-                                            <div class="core-effect-display">
-                                                <div th:if="${#strings.contains(slot.name, '질서의')}"
-                                                     class="ark-grid-tooltip"
-                                                     th:attr="data-total-points=${slot.point}"
-                                                     th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
-                                                <div th:if="${#strings.contains(slot.name, '혼돈의')}"
-                                                     class="ark-grid-tooltip"
-                                                     th:attr="data-total-points=${slot.point}"
-                                                     th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
-                                            </div>
-                                        </div>
+                <!-- 3. 아크 그리드 탭 -->
+                <div id="ark-grid" class="tab-content" style="display: none;">
+                    <div class="section arkGrid" th:if="${characterData.characterArkGrid != null}">
+                        <div class="arkGrid-list">
+                            <div class="arkGrid-slot-box" th:each="slot : ${characterData.characterArkGrid.slots}">
+                                <div class="arkGrid-item">
+                                    <div class="arkGrid-icon-wrapper">
+                                        <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"/>
                                     </div>
-                                    <!-- 상세보기 패널 (기본 숨김) -->
-                                    <div class="arkGrid-detail-panel" style="display: none;">
-                                        <div class="arkGrid-gems-detail"
-                                             th:if="${slot.gems != null and !slot.gems.empty}">
-                                            <div th:each="gem : ${slot.gems}" class="arkGrid-gem-item">
-                                                <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
-                                                    <img th:src="${gem.icon}" th:title="${gem.grade}"
-                                                         class="arkGrid-gem-icon-img"/>
-                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
+                                    <div class="arkGrid-info">
+                                        <div class="arkGrid-name-area">
+                                            <strong th:text="${slot.name}"></strong>
+                                        </div>
+                                        <p th:text="${slot.grade}" class="arkGrid-grade"></p>
+                                    </div>
+                                    <!-- 상세보기 화살표 (우측 하단 고정) -->
+                                    <button class="arkGrid-detail-btn" type="button">
+                                        <span class="arrow" style="font-size:small;">∨ 잼 상세보기</span>
+                                    </button>
 
-                                                    <div class="gem-effect-part"
-                                                         th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_005')}">
-                                                        <span th:text="${part}"></span>
-                                                    </div>
-                                                    <div class="gem-effect-part"
-                                                         th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_006')}">
-                                                        <span th:text="${part}"></span>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <!-- 슬롯 코어 효과 (즉시 노출) -->
+                                    <div class="arkGrid-extras" th:if="${slot.tooltip != null}">
+                                        <div class="core-effect-display">
+                                            <div th:if="${#strings.contains(slot.name, '질서의')}"
+                                                 class="ark-grid-tooltip"
+                                                 th:attr="data-total-points=${slot.point}"
+                                                 th:utext="${slot.tooltip.getNestedElementHtml('Element_006', 'Element_001')}"></div>
+                                            <div th:if="${#strings.contains(slot.name, '혼돈의')}"
+                                                 class="ark-grid-tooltip"
+                                                 th:attr="data-total-points=${slot.point}"
+                                                 th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
+                                <!-- 상세보기 패널 (기본 숨김) -->
+                                <div class="arkGrid-detail-panel" style="display: none;">
+                                    <div class="arkGrid-gems-detail"
+                                         th:if="${slot.gems != null and !slot.gems.empty}">
+                                        <div th:each="gem : ${slot.gems}" class="arkGrid-gem-item">
+                                            <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
+                                                <img th:src="${gem.icon}" th:title="${gem.grade}"
+                                                     class="arkGrid-gem-icon-img"/>
+                                                <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
 
-                    <!-- 4. 아크 패시브 탭 -->
-                    <div id="ark-passive" class="tab-content" style="display: none;">
-                        <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}">
-                            <div class="ark-passive-wrapper" style="display: flex; gap: 20px;">
-                                <!-- 진화 (Evolution) 컬럼 -->
-                                <div class="ark-passive-column" id="evolution">
-                                    <h3>[진화] <p th:each="point : ${characterData.characterArkPassive.points}"
-                                                th:if="${point.name == '진화'}" th:text="${point.description}"
-                                                style="font-size: 0.9em; margin-bottom: 10px;"></p>
-                                    </h3>
-                                    <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
-                                         th:attr="data-tier=${t}">
-                                        <div th:each="effect : ${characterData.characterArkPassive.effects}"
-                                             th:if="${effect.name == '진화' and effect.tier == t}"
-                                             class="ark-passive-effect-item">
-                                            <div class="effect-header">
-                                                <img th:src="${effect.icon}" alt="Evolution Icon"
-                                                     style="width: 32px; height: 32px;"/>
-                                                <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
-                                                    <div class="tooltip-title"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
-                                                    <div class="tooltip-description"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                                <div class="gem-effect-part"
+                                                     th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_005')}">
+                                                    <span th:text="${part}"></span>
                                                 </div>
-                                            </div>
-                                            <div class="effect-info">
-                                                <font color="#F1D594" class="effect-name"
-                                                      th:text="${effect.pureName}"></font>
-                                                <font color="#F1D594" class="effect-level"
-                                                      th:text="${effect.pureLevel}"></font>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 깨달음 (Enlightenment) 컬럼 -->
-                                <div class="ark-passive-column" id="enlightenment">
-                                    <h3>[깨달음] <p th:each="point : ${characterData.characterArkPassive.points}"
-                                                 th:if="${point.name == '진화'}" th:text="${point.description}"
-                                                 style="font-size: 0.9em; margin-bottom: 10px;"></p>
-                                    </h3>
-                                    <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
-                                         th:attr="data-tier=${t}">
-                                        <div th:each="effect : ${characterData.characterArkPassive.effects}"
-                                             th:if="${effect.name == '깨달음' and effect.tier == t}"
-                                             class="ark-passive-effect-item">
-                                            <div class="effect-header">
-                                                <img th:src="${effect.icon}" alt="Enlightenment Icon"
-                                                     style="width: 32px; height: 32px;"/>
-                                                <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
-                                                    <div class="tooltip-title"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
-                                                    <div class="tooltip-description"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                                <div class="gem-effect-part"
+                                                     th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_006')}">
+                                                    <span th:text="${part}"></span>
                                                 </div>
-                                            </div>
-                                            <div class="effect-info">
-                                                <font color="#83E9FF" class="effect-name"
-                                                      th:text="${effect.pureName}"></font>
-                                                <font color="#83E9FF" class="effect-level"
-                                                      th:text="${effect.pureLevel}"></font>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 도약 (Leap) 컬럼 -->
-                                <div class="ark-passive-column" id="leap">
-                                    <h3>[도약] <p th:each="point : ${characterData.characterArkPassive.points}"
-                                                th:if="${point.name == '진화'}" th:text="${point.description}"
-                                                style="font-size: 0.9em; margin-bottom: 10px;"></p>
-                                    </h3>
-                                    <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
-                                         th:attr="data-tier=${t}">
-                                        <div th:each="effect : ${characterData.characterArkPassive.effects}"
-                                             th:if="${effect.name == '도약' and effect.tier == t}"
-                                             class="ark-passive-effect-item">
-                                            <div class="effect-header">
-                                                <img th:src="${effect.icon}" alt="Leap Icon"
-                                                     style="width: 32px; height: 32px;"/>
-                                                <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
-                                                    <div class="tooltip-title"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
-                                                    <div class="tooltip-description"
-                                                         th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
-                                                </div>
-                                            </div>
-                                            <div class="effect-info">
-                                                <font color="#C2EA55" class="effect-name"
-                                                      th:text="${effect.pureName}"></font>
-                                                <font color="#C2EA55" class="effect-level"
-                                                      th:text="${effect.pureLevel}"></font>
                                             </div>
                                         </div>
                                     </div>
@@ -555,30 +492,132 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 5. 원정대 탭 -->
-                    <div id="expedition" class="tab-content" style="display: none;"
-                         th:data-character-name="${characterData.characterProfiles.characterName}">
-                        <div class="section expedition">
-                            <div id="expedition-loading" class="loading-container">
-                                <div class="spinner"></div>
-                                <p>원정대 정보를 불러오는 중입니다...</p>
+                <!-- 4. 아크 패시브 탭 -->
+                <div id="ark-passive" class="tab-content" style="display: none;">
+                    <div class="section arkPassive" th:if="${characterData.characterArkPassive != null}">
+                        <div class="ark-passive-wrapper" style="display: flex; gap: 20px;">
+                            <!-- 진화 (Evolution) 컬럼 -->
+                            <div class="ark-passive-column" id="evolution">
+                                <h3>[진화] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                            th:if="${point.name == '진화'}" th:text="${point.description}"
+                                            style="font-size: 0.9em; margin-bottom: 10px;"></p>
+                                </h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '진화' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Evolution Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#F1D594" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#F1D594" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="expedition-container" class="expedition-container" style="display: none;">
-                                <!-- 비동기로 로드된 데이터가 여기에 삽입됨 -->
+
+                            <!-- 깨달음 (Enlightenment) 컬럼 -->
+                            <div class="ark-passive-column" id="enlightenment">
+                                <h3>[깨달음] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                             th:if="${point.name == '진화'}" th:text="${point.description}"
+                                             style="font-size: 0.9em; margin-bottom: 10px;"></p>
+                                </h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '깨달음' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Enlightenment Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#83E9FF" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#83E9FF" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div id="expedition-error" class="no-data" style="display: none;">
-                                <p>원정대 정보를 불러오는 데 실패했습니다.</p>
+
+                            <!-- 도약 (Leap) 컬럼 -->
+                            <div class="ark-passive-column" id="leap">
+                                <h3>[도약] <p th:each="point : ${characterData.characterArkPassive.points}"
+                                            th:if="${point.name == '진화'}" th:text="${point.description}"
+                                            style="font-size: 0.9em; margin-bottom: 10px;"></p>
+                                </h3>
+                                <div th:each="t : ${#strings.arraySplit('1,2,3,4,5', ',')}" class="ark-tier-section"
+                                     th:attr="data-tier=${t}">
+                                    <div th:each="effect : ${characterData.characterArkPassive.effects}"
+                                         th:if="${effect.name == '도약' and effect.tier == t}"
+                                         class="ark-passive-effect-item">
+                                        <div class="effect-header">
+                                            <img th:src="${effect.icon}" alt="Leap Icon"
+                                                 style="width: 32px; height: 32px;"/>
+                                            <div class="ark-passive-tooltip" th:if="${effect.toolTip != null}">
+                                                <div class="tooltip-title"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_000')}"></div>
+                                                <div class="tooltip-description"
+                                                     th:utext="${effect.getCleanedToolTipHtml('Element_002')}"></div>
+                                            </div>
+                                        </div>
+                                        <div class="effect-info">
+                                            <font color="#C2EA55" class="effect-name"
+                                                  th:text="${effect.pureName}"></font>
+                                            <font color="#C2EA55" class="effect-level"
+                                                  th:text="${effect.pureLevel}"></font>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 원정대 탭 -->
+                <div id="expedition" class="tab-content" style="display: none;"
+                     th:data-character-name="${characterData.characterProfiles != null ? characterData.characterProfiles.characterName : ''}">
+                    <div class="section expedition">
+                        <div id="expedition-loading" class="loading-container">
+                            <div class="spinner"></div>
+                            <p>원정대 정보를 불러오는 중입니다...</p>
+                        </div>
+                        <div id="expedition-container" class="expedition-container" style="display: none;">
+                            <!-- 비동기로 로드된 데이터가 여기에 삽입됨 -->
+                        </div>
+                        <div id="expedition-error" class="no-data" style="display: none;">
+                            <p>원정대 정보를 불러오는 데 실패했습니다.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </th:block>
-    <th:block th:fragment="pageScript">
-        <script type="module" src="/js/character/searchCharacter.js"></script>
-    </th:block>
+    </div>
+</div>
+</th:block>
+<th:block th:fragment="pageScript">
+    <script type="module" src="/js/character/searchCharacter.js"></script>
+</th:block>
 </div>
 </body>
 </html>

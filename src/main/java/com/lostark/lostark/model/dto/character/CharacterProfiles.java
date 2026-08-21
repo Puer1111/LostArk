@@ -77,4 +77,15 @@ public class CharacterProfiles {
         @JsonProperty("Emblems")
         private List<String> emblems;
     }
+
+    @JsonProperty("CharacterName")
+    public String getCharacterName() {
+        return this.characterName;
+    }
+
+    @JsonProperty("CharacterName")
+    public void setCharacterName(String characterName) {
+        this.characterName = characterName;
+    }
+
 }

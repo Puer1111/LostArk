@@ -18,6 +18,7 @@ li{
 
 .left-column {
     flex: 1;
+    align-self: flex-start;
 }
 
 .right-column {
@@ -345,17 +346,27 @@ strong {
 /* ==========================================================================
    Engravings
    ========================================================================== */
+.section.Engravings {
+    box-shadow: none;
+    padding: 0;
+    margin-top: 15px;
+}
 .engraving-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .engraving-item {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 10px 15px;
+    padding: 8px 12px;
     border-radius: 8px;
+}
+
+.engraving-name {
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
 .engraving-item-content {

@@ -20,10 +20,9 @@ import java.util.Map;
 public class RedisConfig {
 
     @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        // Redis 전용 ObjectMapper 설정 (타입 정보 포함)
-        // 외부에서 주입받는 ObjectMapper를 직접 사용하면 타입 정보 누락으로 DTO 캐싱 시 ClassCastException이 발생할 수 있음
-        ObjectMapper mapper = new ObjectMapper();
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory, ObjectMapper rootMapper) {
+        ObjectMapper mapper = rootMapper.copy();
+
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
         mapper.activateDefaultTyping(
                 com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator.instance,

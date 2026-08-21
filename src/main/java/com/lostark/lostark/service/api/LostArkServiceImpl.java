@@ -165,27 +165,7 @@ public class LostArkServiceImpl implements LostArkService {
                     } catch (Exception e) { return 0; }
                 });
 
-                // Java 21 가상 스레드 Executor를 사용하여 캐릭터 프로필 정보를 동시에 비동기 병렬로 조회
-                try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
-                    List<CompletableFuture<Void>> futures = siblingList.stream()
-                            .map(sibling -> CompletableFuture.runAsync(() -> {
-                                try {
-                                    // getSelf()를 통해 프록시를 거쳐 호출함으로써 캐시가 작동하도록 함
-                                    CharacterProfiles profile = getSelf().getCharacterProfile(sibling.getCharacterName());
-                                    if (profile != null) {
-                                        sibling.setCharacterImage(profile.getCharacterImage());
-                                        sibling.setCombatPower(profile.getCombatPower());
-                                    }
-                                } catch (Exception e) {
-                                    log.warn("Failed to fetch profile in parallel for character: {}, error: {}",
-                                            sibling.getCharacterName(), e.getMessage());
-                                }
-                            }, executor))
-                            .collect(Collectors.toList());
-
-                    // 모든 병렬 작업이 완료될 때까지 대기
-                    CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-                }
+                // 이미지와 전투력은 프론트엔드 단에서 지연 로딩하도록 변경하여 API 과부하 방지
             }
             return siblings;
         } catch (Exception e) {
@@ -300,7 +280,6 @@ public class LostArkServiceImpl implements LostArkService {
     @LogExecutionTime
     public SimplifiedCharacterDTO getSimplifiedCharacter(String characterName) {
         log.info("Service.getSimplifiedCharacter.characterName = {}", characterName);
-        
         // Simplified 조회의 경우도 캐싱된 프로필 정보를 우선적으로 사용하도록 개선 가능
         CharacterProfiles profile = getCharacterProfile(characterName);
 

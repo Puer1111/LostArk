@@ -19,9 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 정보 갱신 버튼 초기화
     initRefreshButton();
-
-    // 비동기 원정대 데이터 로드 시작
-    loadExpeditionData();
 });
 
 /**
@@ -107,11 +104,14 @@ async function loadExpeditionData() {
             return;
         }
 
-        // 데이터 렌더링
+        // 데이터 렌더링 (이미지와 전투력은 지연 로드 처리)
         containerDiv.innerHTML = expeditions.map(char => createExpeditionCardHtml(char)).join('');
         
         loadingDiv.style.display = 'none';
         containerDiv.style.display = 'grid';
+
+        // 카드 상세 정보(이미지, 전투력) 지연 로드 시작
+        lazyLoadCardDetails(expeditions);
 
     } catch (error) {
         console.error('Failed to load expedition data:', error);
@@ -149,11 +149,46 @@ function createExpeditionCardHtml(char) {
                 </div>
                 <div class="info-row">
                     <span class="label">전투력</span>
-                    <span class="value">${combatPower}</span>
+                    <span class="value combat-power">${combatPower}</span>
                 </div>
             </div>
         </a>
     `;
+}
+
+/**
+ * 각 캐릭터 카드의 상세 정보(이미지, 전투력)를 서버 및 Open API 과부하 방지를 위해 순차적 지연 로드 수행
+ */
+async function lazyLoadCardDetails(expeditions) {
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+    
+    for (const char of expeditions) {
+        if (!char.characterName) continue;
+        
+        // 80ms 의 의도적인 딜레이를 주어 API Rate Limit (403, 429) 완전 방지
+        await sleep(80);
+        
+        fetch(`/character/api/simplified/${encodeURIComponent(char.characterName)}`)
+            .then(res => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then(data => {
+                const card = document.querySelector(`.expedition-card[data-character-name="${char.characterName}"]`);
+                if (card) {
+                    if (data.characterImage) {
+                        card.style.backgroundImage = `url('${data.characterImage}')`;
+                    }
+                    const powerSpan = card.querySelector('.combat-power');
+                    if (powerSpan && data.combatPower) {
+                        powerSpan.textContent = data.combatPower;
+                    }
+                }
+            })
+            .catch(err => {
+                console.warn(`Failed to lazy load profile image and combat power for: ${char.characterName}`);
+            });
+    }
 }
 
 function initArkGridDetailButtons() {
@@ -203,12 +238,13 @@ function initArkGridDetailButtons() {
 function initTabSystem() {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const tabContents = document.querySelectorAll('.tab-content');
+    let expeditionLoaded = false; // 최초 1회 로드 체크용 플래그
 
     tabButtons.forEach(button => {
         button.addEventListener('click', function (event) {
-            event.preventDefault(); // 기본 동작(폼 제출 등) 차단
-            event.stopPropagation(); // 이벤트 전파 차단 (원정대 카드 클릭 오작동 방지)
-            
+            event.preventDefault();
+            event.stopPropagation();
+
             const target = this.dataset.target;
 
             // 버튼 활성화 스타일 변경
@@ -223,9 +259,22 @@ function initTabSystem() {
                     content.style.display = 'none';
                 }
             });
+
+            // 아바타 탭 클릭 시 좌측 캐릭터 전신 이미지 카드 노출 제어
+            const leftImageCard = document.getElementById('left-character-image-card');
+            if (leftImageCard) {
+                leftImageCard.style.display = (target === 'avatar') ? 'flex' : 'none';
+            }
+
+            // [원정대] 탭 클릭 시 최초 1회만 Lazy Loading 수행
+            if (target === 'expedition' && !expeditionLoaded) {
+                loadExpeditionData();
+                expeditionLoaded = true;
+            }
         });
     });
 }
+
 
 
 function processArkGridTooltips() {

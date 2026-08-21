@@ -44,3 +44,4 @@ settings.gradle
 .gitattributes
 *.md
 gradle/wrapper/**
+resources/static/img/engravings/**

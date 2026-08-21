@@ -3,9 +3,9 @@ package com.lostark.lostark.model.dto.character;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.lostark.lostark.model.dto.character.tooltip.Tooltip;
 import com.lostark.lostark.model.dto.character.tooltip.TooltipDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonProperty; // Added import
-
 
 @Data
 public class CharacterAvatar {
@@ -38,6 +38,7 @@ public class CharacterAvatar {
     /**
      * Tooltip JSON 내용 중 ItemTintGroup 구조에서 염색 정보(부위, baseColor, glossValue, patternColor, iconPath)를 파싱하여 반환합니다.
      */
+    @JsonIgnore
     public java.util.List<DyeInfo> getDyeInfoList() {
         java.util.List<DyeInfo> dyeList = new java.util.ArrayList<>();
         if (tooltip == null || tooltip.getElements() == null) {
