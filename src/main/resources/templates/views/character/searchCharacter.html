@@ -142,29 +142,28 @@
 
                             <!-- Gems Item Container (Statically under equipment) -->
                             <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}"
-                                 style="border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 15px;">
-                                <div class="gems-item-content"
-                                     style="display:flex; flex-direction: column; gap: 15px; margin-bottom: 0;">
+                                 style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; margin-top: 15px;">
+                                <div class="gems-item-content">
+                                    
                                     <!-- 1. 피해 증가 보석 영역 -->
                                     <div class="gem-group gem-group-damage">
-                                        <div style="font-size: 0.85em; font-weight: bold; color: #ff6b6b; margin-bottom: 8px;">
-                                            [피해 증가 보석]
-                                        </div>
-                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                        <div class="gem-group-title gem-title-damage">[피해 증가 보석]</div>
+                                        <div class="gem-group-list">
                                             <th:block th:each="item : ${characterData.characterGems.gems}"
                                                       th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'INCREASE'}">
                                                 <div class="gem-wrapper">
-                                                    <div class="item-img">
-                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    <div class="gem-img-box">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
+                                                             th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
+                                                        <!-- 스킬 이미지 overlay (absolute) -->
+                                                        <th:block th:if="${characterData.characterGems.effects != null and characterData.characterGems.effects.skills != null}">
+                                                            <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
+                                                                      th:if="${skill.gemSlot == item.slot}">
+                                                                <img th:src="${skill.icon}" class="gem-skill-badge" th:title="${skill.name}" alt="Skill Icon"/>
+                                                            </th:block>
+                                                        </th:block>
                                                     </div>
-                                                    <div class="gem-tooltip-details" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
-                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
-                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
-                                                            <ul>
-                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                                    <span class="gem-level-label gem-level-damage" th:text="${item.level} + '겁'"></span>
                                                 </div>
                                             </th:block>
                                         </div>
@@ -172,24 +171,23 @@
 
                                     <!-- 2. 쿨타임 감소 보석 영역 -->
                                     <div class="gem-group gem-group-cooldown">
-                                        <div style="font-size: 0.85em; font-weight: bold; color: #4dabf7; margin-bottom: 8px;">
-                                            [쿨타임 감소 보석]
-                                        </div>
-                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                        <div class="gem-group-title gem-title-cooldown">[쿨타임 감소 보석]</div>
+                                        <div class="gem-group-list">
                                             <th:block th:each="item : ${characterData.characterGems.gems}"
                                                       th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'DECREASE'}">
                                                 <div class="gem-wrapper">
-                                                    <div class="item-img">
-                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    <div class="gem-img-box">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
+                                                             th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
+                                                        <!-- 스킬 이미지 overlay (absolute) -->
+                                                        <th:block th:if="${characterData.characterGems.effects != null and characterData.characterGems.effects.skills != null}">
+                                                            <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
+                                                                      th:if="${skill.gemSlot == item.slot}">
+                                                                <img th:src="${skill.icon}" class="gem-skill-badge" th:title="${skill.name}" alt="Skill Icon"/>
+                                                            </th:block>
+                                                        </th:block>
                                                     </div>
-                                                    <div class="gem-tooltip-details" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
-                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
-                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
-                                                            <ul>
-                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                                    <span class="gem-level-label gem-level-cooldown" th:text="${item.level} + '작'"></span>
                                                 </div>
                                             </th:block>
                                         </div>
@@ -198,24 +196,23 @@
                                     <!-- 3. 기타 보석 영역 -->
                                     <div class="gem-group gem-group-other"
                                          th:if="${#lists.contains(characterData.characterGems.gems.![tooltip != null ? tooltip.getPrimaryEffectType() : 'NONE'], 'NONE')}">
-                                        <div style="font-size: 0.85em; font-weight: bold; color: #adb5bd; margin-bottom: 8px;">
-                                            [기타 보석]
-                                        </div>
-                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                        <div class="gem-group-title gem-title-other">[기타 보석]</div>
+                                        <div class="gem-group-list">
                                             <th:block th:each="item : ${characterData.characterGems.gems}"
                                                       th:if="${item.tooltip == null or (item.tooltip.getPrimaryEffectType() != 'INCREASE' and item.tooltip.getPrimaryEffectType() != 'DECREASE')}">
                                                 <div class="gem-wrapper">
-                                                    <div class="item-img">
-                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    <div class="gem-img-box">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
+                                                             th:classappend="${item.tooltip != null ? item.tooltip.getGemLevelClass(item.level) : 'gem-border-base'}"/>
+                                                        <!-- 스킬 이미지 overlay (absolute) -->
+                                                        <th:block th:if="${characterData.characterGems.effects != null and characterData.characterGems.effects.skills != null}">
+                                                            <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
+                                                                      th:if="${skill.gemSlot == item.slot}">
+                                                                <img th:src="${skill.icon}" class="gem-skill-badge" th:title="${skill.name}" alt="Skill Icon"/>
+                                                            </th:block>
+                                                        </th:block>
                                                     </div>
-                                                    <div class="gem-tooltip-details" th:if="${item.tooltip != null}" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
-                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
-                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
-                                                            <ul>
-                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                                    <span class="gem-level-label gem-level-other" th:text="${item.level} + '렙'"></span>
                                                 </div>
                                             </th:block>
                                         </div>
