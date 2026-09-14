@@ -566,6 +566,27 @@ public class Tooltip {
         }
     }
 
+    /**
+     * 보주 툴팁(Element_004 하위 Element_001)에서 '시즌3 달성 최대 낙원력 : xx' 정보를 추출합니다.
+     */
+    @JsonIgnore
+    public String getOrbParadisePower() {
+        String html = getNestedElementHtml("Element_004", "Element_001");
+        if (html == null || html.isEmpty()) {
+            return "";
+        }
+
+        String text = Jsoup.parse(html).text();
+        Pattern pattern = Pattern.compile("(시즌\\d*\\s*달성\\s*최대\\s*낙원력\\s*:\\s*[\\d,]+)");
+        Matcher matcher = pattern.matcher(text);
+
+        if (matcher.find()) {
+            return matcher.group(1).trim();
+        }
+
+        return text.trim();
+    }
+
 }
 
     

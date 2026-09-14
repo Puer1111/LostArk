@@ -96,7 +96,7 @@
                                 <div class="equipment-left">
                                     <ul class="equipment-list">
                                         <li class="equipment-item" th:each="item : ${characterData.characterEquipment}"
-                                            th:if="${item.type == '무기' or item.type == '투구' or item.type == '어깨' or item.type == '상의' or item.type == '하의' or item.type == '장갑'}">
+                                            th:if="${item.type == '무기' or item.type == '투구' or item.type == '어깨' or item.type == '상의' or item.type == '하의' or item.type == '장갑' or item.type == '완갑'or item.type == '보주'}">
                                             <div class="tooltip-content">
                                                 <div class="equipment-area">
                                                     <div class="item-img">
@@ -107,6 +107,9 @@
                                                         <th:block
                                                                 th:if="${!item.tooltip.getAdvancedHoningLevel().isEmpty()}">
                                                             <span th:text="'+' + ${item.tooltip.getAdvancedHoningLevel()}"></span>
+                                                        </th:block>
+                                                        <th:block th:if="${item.type == '보주'}">
+                                                            <div th:text="${item.tooltip.getOrbParadisePower()}"></div>
                                                         </th:block>
                                                     </div>
                                                 </div>
@@ -141,20 +144,80 @@
                             <div class="gems-item-container" th:if="${characterData.characterGems.gems != null}"
                                  style="border-top: 1px solid #eaeaea; padding-top: 15px; margin-top: 15px;">
                                 <div class="gems-item-content"
-                                     style="display:flex; flex-wrap: wrap; gap: 10px; margin-bottom: 0;">
-                                    <div class="gem-wrapper" th:each="item : ${characterData.characterGems.gems}">
-                                        <div class="item-img">
-                                            <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                     style="display:flex; flex-direction: column; gap: 15px; margin-bottom: 0;">
+                                    <!-- 1. 피해 증가 보석 영역 -->
+                                    <div class="gem-group gem-group-damage">
+                                        <div style="font-size: 0.85em; font-weight: bold; color: #ff6b6b; margin-bottom: 8px;">
+                                            [피해 증가 보석]
                                         </div>
-                                        <div class="gem-tooltip-details" th:if="${item.tooltip != null}"
-                                             th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
-                                            <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
-                                                <strong th:text="${item.tooltip.getCleanedGemName()}"
-                                                        style="color: #A9D0F5;"></strong>
-                                                <ul>
-                                                    <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
-                                                </ul>
-                                            </div>
+                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                            <th:block th:each="item : ${characterData.characterGems.gems}"
+                                                      th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'INCREASE'}">
+                                                <div class="gem-wrapper">
+                                                    <div class="item-img">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    </div>
+                                                    <div class="gem-tooltip-details" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
+                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
+                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
+                                                            <ul>
+                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. 쿨타임 감소 보석 영역 -->
+                                    <div class="gem-group gem-group-cooldown">
+                                        <div style="font-size: 0.85em; font-weight: bold; color: #4dabf7; margin-bottom: 8px;">
+                                            [쿨타임 감소 보석]
+                                        </div>
+                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                            <th:block th:each="item : ${characterData.characterGems.gems}"
+                                                      th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'DECREASE'}">
+                                                <div class="gem-wrapper">
+                                                    <div class="item-img">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    </div>
+                                                    <div class="gem-tooltip-details" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
+                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
+                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
+                                                            <ul>
+                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. 기타 보석 영역 -->
+                                    <div class="gem-group gem-group-other"
+                                         th:if="${#lists.contains(characterData.characterGems.gems.![tooltip != null ? tooltip.getPrimaryEffectType() : 'NONE'], 'NONE')}">
+                                        <div style="font-size: 0.85em; font-weight: bold; color: #adb5bd; margin-bottom: 8px;">
+                                            [기타 보석]
+                                        </div>
+                                        <div style="display:flex; flex-wrap: nowrap; overflow-x: auto; gap: 10px; padding-bottom: 5px;">
+                                            <th:block th:each="item : ${characterData.characterGems.gems}"
+                                                      th:if="${item.tooltip == null or (item.tooltip.getPrimaryEffectType() != 'INCREASE' and item.tooltip.getPrimaryEffectType() != 'DECREASE')}">
+                                                <div class="gem-wrapper">
+                                                    <div class="item-img">
+                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"/>
+                                                    </div>
+                                                    <div class="gem-tooltip-details" th:if="${item.tooltip != null}" th:with="filteredTips=${item.tooltip.getFilteredGemsTooltip()}">
+                                                        <div th:if="${!filteredTips.empty}" class="gem-tooltip-content">
+                                                            <strong th:text="${item.tooltip.getCleanedGemName()}" style="color: #A9D0F5;"></strong>
+                                                            <ul>
+                                                                <li th:each="tip : ${filteredTips}" th:text="${tip}"></li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </th:block>
                                         </div>
                                     </div>
                                 </div>
@@ -195,9 +258,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div style="text-align: right; margin-top: 8px;">
-                                        <span style="font-size: 0.8em; color: #4a90e2; font-weight: bold;">[ 상세보기 > ]</span>
-                                    </div>
+<!--                                    <div style="text-align: right; margin-top: 8px;">-->
+<!--                                        <span style="font-size: 0.8em; color: #4a90e2; font-weight: bold;">[ 상세보기 > ]</span>-->
+<!--                                    </div>-->
                                 </div>
                             </div>
 
