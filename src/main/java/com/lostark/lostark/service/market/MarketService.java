@@ -10,6 +10,9 @@ public interface MarketService {
     // 아이템 시세 시그널(변동률 등) 조회
     Map<String, Object> getPriceSignal(String itemName, Integer currentPrice);
 
+    // 최근 N일간의 시세 변동 추이 조회 (Redis 캐싱)
+    java.util.List<com.lostark.lostark.dto.market.MarketPriceSummaryDto> getRecentPriceHistory(String itemName, int days);
+
     // 정기 시세 데이터 수집 스케줄러를 위한 메소드
     void collectMarketPrices();
 

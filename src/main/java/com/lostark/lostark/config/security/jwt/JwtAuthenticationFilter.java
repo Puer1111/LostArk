@@ -37,7 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String isBlacklisted = stringRedisTemplate.opsForValue().get("blacklist:" + token);
             if (isBlacklisted != null) {
                 log.warn("Access Token is blacklisted: {}", token);
-                filterChain.doFilter(request, response);
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"error\": \"UNAUTHORIZED\", \"message\": \"로그아웃 처리된 토큰입니다. 다시 로그인 해주세요.\"}");
                 return;
             }
         }

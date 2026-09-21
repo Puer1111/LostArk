@@ -32,7 +32,17 @@ public interface MarketPriceHistoryRepository extends JpaRepository<MarketPriceH
            "GROUP BY m.itemName")
     List<Map<String, Object>> getDailyAverages(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-    // 오래된 상세 이력 삭제
+    // 오래된 상세 이력 Chunk 단위 삭제용: 대상 ID 조회 (Limit 적용)
+    @Query("SELECT m.priceHistoryNo FROM MarketPriceHistory m WHERE m.collectedAt < :threshold ORDER BY m.priceHistoryNo ASC")
+    List<Long> findOldIdsByThreshold(@Param("threshold") LocalDateTime threshold, org.springframework.data.domain.Pageable pageable);
+
+    // ID 리스트 기반 삭제
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM MarketPriceHistory m WHERE m.priceHistoryNo IN :ids")
+    int deleteByIds(@Param("ids") List<Long> ids);
+
+    // 오래된 상세 이력 삭제 (기존 단건 삭제)
     @Modifying
     @Transactional
     @Query("DELETE FROM MarketPriceHistory m WHERE m.collectedAt < :threshold")

@@ -425,4 +425,21 @@ public class MarketServiceImpl implements MarketService {
             log.info("Saved {} new daily summary records for {}", summariesToSave.size(), yesterday);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "priceHistoryCache", key = "#itemName + '_' + #days", unless = "#result == null || #result.isEmpty()")
+    public List<com.lostark.lostark.dto.market.MarketPriceSummaryDto> getRecentPriceHistory(String itemName, int days) {
+        LocalDate startDate = LocalDate.now().minusDays(days);
+        List<MarketPriceSummary> summaries = summaryRepository.findByItemNameAndSummaryDateGreaterThanEqualOrderBySummaryDateAsc(itemName, startDate);
+
+        return summaries.stream()
+                .map(s -> com.lostark.lostark.dto.market.MarketPriceSummaryDto.builder()
+                        .itemName(s.getItemName())
+                        .avgPrice(s.getAvgPrice())
+                        .summaryDate(s.getSummaryDate())
+                        .itemCategory(s.getItemCategory())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

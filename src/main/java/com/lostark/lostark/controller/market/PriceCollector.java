@@ -71,9 +71,23 @@ public class PriceCollector {
         log.info("전일 시세 데이터 정산 시작...");
         performSummarize(LocalDate.now().minusDays(1));
 
-        // 3일 이상 된 상세 데이터 삭제 (분석용 여유분 포함)
-        historyRepository.deleteByCollectedAtBefore(LocalDateTime.now().minusDays(3));
-        log.info("전일 데이터 정산 및 상세 이력 정리 완료");
+        // 3일 이상 된 상세 데이터 Chunk 단위(500건씩) 분할 삭제 (DB Lock 방지)
+        LocalDateTime threshold = LocalDateTime.now().minusDays(3);
+        int totalDeleted = 0;
+        int chunkSize = 500;
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, chunkSize);
+
+        while (true) {
+            List<Long> oldIds = historyRepository.findOldIdsByThreshold(threshold, pageable);
+            if (oldIds.isEmpty()) break;
+
+            int deletedCount = historyRepository.deleteByIds(oldIds);
+            totalDeleted += deletedCount;
+
+            if (deletedCount < chunkSize) break;
+        }
+
+        log.info("전일 데이터 정산 완료 및 오래된 상세 이력 총 {}건 분할 정리 완료", totalDeleted);
     }
 
     private void performSummarize(LocalDate targetDate) {

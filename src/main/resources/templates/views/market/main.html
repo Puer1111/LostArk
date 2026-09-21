@@ -38,9 +38,33 @@
                 <p>로스트아크 거래소 정보 및 시세 분석 영역입니다.</p>
             </div>
         </div>
+
+        <!-- 아이템 7일 시세 추이 오버레이 모달 -->
+        <div id="price-history-modal" class="modal-backdrop" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title-area">
+                        <img id="modal-item-icon" src="" alt="아이템 아이콘" class="modal-item-icon">
+                        <div>
+                            <h2 id="modal-item-name">아이템 이름</h2>
+                            <span id="modal-item-grade" class="modal-item-grade">등급</span>
+                        </div>
+                    </div>
+                    <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <h3 class="chart-title">최근 7일간 평균 시세 추이</h3>
+                    <div class="chart-container">
+                        <canvas id="priceHistoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
     </th:block>
 
     <th:block th:fragment="pageScript">
+        <!-- Chart.js 라이브러리 추가 -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <!-- Custom JS (모듈 방식으로 설정) -->
         <script type="module" th:src="@{/js/market/market.js}"></script>
     </th:block>

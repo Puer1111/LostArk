@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let html = `<div class="market-items-grid">`;
 
-        items.forEach(item => {
+        items.forEach((item, index) => {
             const isGem = currentCategoryValue === 'Gems';
             const price = getPrice(item);
             let priceLabel = isGem ? '즉시 구매가' : '최저가';
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             html += `
-                <div class="market-item-card ${item.Grade}">
+                <div class="market-item-card ${item.Grade}" data-item-name="${item.Name}" data-item-icon="${item.Icon}" data-item-grade="${item.Grade}">
                     <div class="item-icon">
                         <img src="${item.Icon}" alt="${item.Name}">
                     </div>
@@ -204,5 +204,122 @@ document.addEventListener('DOMContentLoaded', () => {
 
         html += `</div>`;
         contentArea.innerHTML = html;
+
+        // 카드가 렌더링된 후 아이템 클릭 이벤트 등록
+        attachCardClickEvents();
+    }
+
+    // 모달 및 Chart.js 관련 요소
+    const modal = document.getElementById('price-history-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalItemIcon = document.getElementById('modal-item-icon');
+    const modalItemName = document.getElementById('modal-item-name');
+    const modalItemGrade = document.getElementById('modal-item-grade');
+    let chartInstance = null;
+
+    // 아이템 카드 클릭 이벤트 바인딩
+    function attachCardClickEvents() {
+        document.querySelectorAll('.market-item-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const itemName = card.getAttribute('data-item-name');
+                const itemIcon = card.getAttribute('data-item-icon');
+                const itemGrade = card.getAttribute('data-item-grade');
+
+                openPriceHistoryModal(itemName, itemIcon, itemGrade);
+            });
+        });
+    }
+
+    // 모달 닫기 이벤트
+    if (modalCloseBtn) {
+        modalCloseBtn.addEventListener('click', closeModal);
+    }
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
+
+    function closeModal() {
+        if (modal) modal.style.display = 'none';
+    }
+
+    // 7일 시세 추이 모달 열기 및 차트 렌더링
+    async function openPriceHistoryModal(itemName, itemIcon, itemGrade) {
+        modalItemName.textContent = itemName;
+        modalItemIcon.src = itemIcon;
+        modalItemGrade.textContent = itemGrade;
+        modal.style.display = 'flex';
+
+        try {
+            const response = await fetch(`/market/api/history/${encodeURIComponent(itemName)}?days=7`);
+            const historyData = await response.json();
+
+            renderChart(historyData);
+        } catch (error) {
+            console.error('시세 추이 조회 실패:', error);
+        }
+    }
+
+    // Chart.js 렌더링 함수
+    function renderChart(historyData) {
+        const ctx = document.getElementById('priceHistoryChart').getContext('2d');
+
+        if (chartInstance) {
+            chartInstance.destroy(); // 기존 차트 파괴 후 재렌더링
+        }
+
+        const labels = historyData.map(d => d.summaryDate);
+        const dataPoints = historyData.map(d => d.avgPrice);
+
+        chartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.length > 0 ? labels : ['데이터 없음'],
+                datasets: [{
+                    label: '일일 평균가 (골드)',
+                    data: dataPoints.length > 0 ? dataPoints : [0],
+                    borderColor: '#4a90e2',
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#4a90e2',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `평균가: ${context.raw.toLocaleString()} 골드`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        beginAtZero: false,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString() + ' G';
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 });

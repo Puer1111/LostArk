@@ -16,6 +16,9 @@ public interface MarketPriceSummaryRepository extends JpaRepository<MarketPriceS
     // 추가: 특정 날짜의 정산 데이터 존재 여부 확인용
     long countBySummaryDate(LocalDate summaryDate);
 
-    // 추가: 특정 날짜의 모든 요약 데이터를 한 번에 가져와 메모리에서 비교하기 위함
+    // 특정 날짜의 모든 요약 데이터를 한 번에 가져와 메모리에서 비교하기 위함
     java.util.List<MarketPriceSummary> findBySummaryDate(LocalDate summaryDate);
+
+    // 최근 N일간의 특정 아이템 요약 시세 데이터 조회 (날짜 오름차순)
+    java.util.List<MarketPriceSummary> findByItemNameAndSummaryDateGreaterThanEqualOrderBySummaryDateAsc(String itemName, LocalDate startDate);
 }

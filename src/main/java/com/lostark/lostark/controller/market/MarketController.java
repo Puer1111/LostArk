@@ -41,4 +41,15 @@ public class MarketController {
     public ResponseEntity<Object> getGems() {
         return ResponseEntity.ok(marketService.getGems());
     }
+
+    /**
+     * 아이템 최근 시세 추이 조회 (오버레이 모달용)
+     */
+    @GetMapping("/api/history/{itemName}")
+    @ResponseBody
+    public ResponseEntity<Object> getPriceHistory(
+            @PathVariable String itemName,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "7") int days) {
+        return ResponseEntity.ok(marketService.getRecentPriceHistory(itemName, days));
+    }
 }

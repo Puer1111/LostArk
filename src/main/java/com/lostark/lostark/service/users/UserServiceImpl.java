@@ -29,16 +29,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // PasswordEncoder 주입
     private final EmailService emailService;
-
+    private final org.springframework.data.redis.core.StringRedisTemplate redisTemplate;
 
     @Override
     @Transactional
     public void signup(SignupUser user, HttpSession session) {
-        Boolean isEmailVerified = (Boolean) session.getAttribute("isEmailVerified");
-        String verifiedEmail = (String) session.getAttribute("verifiedEmail");
+        String isVerified = redisTemplate.opsForValue().get("email_verified:" + user.getUserEmail());
 
-        if (isEmailVerified == null || !isEmailVerified || !user.getUserEmail().equals(verifiedEmail)) {
-            throw new RuntimeException("이메일 인증이 완료되지 않았습니다.");
+        if (!"true".equals(isVerified)) {
+            throw new RuntimeException("이메일 인증이 완료되지 않았거나 만료되었습니다.");
         }
 
         // 비밀번호 암호화 -> user 에도 적용
@@ -46,11 +45,8 @@ public class UserServiceImpl implements UserService {
         User newUser = user.toEntity(encodedPassword);
         userRepository.save(newUser);
 
-        // 세션에서 인증 정보 제거
-        session.removeAttribute("isEmailVerified");
-        session.removeAttribute("verifiedEmail");
-        session.removeAttribute("verificationCode");
-        session.removeAttribute("verificationCodeExpiry");
+        // Redis에서 이메일 인증 완료 상태 제거
+        redisTemplate.delete("email_verified:" + user.getUserEmail());
     }
 
     @Override
@@ -66,25 +62,20 @@ public class UserServiceImpl implements UserService {
         }
 
         String code = generateVerificationCode();
-        session.setAttribute("verificationCode", code);
-        session.setAttribute("verificationCodeExpiry", LocalDateTime.now().plusMinutes(10));
-        session.setAttribute("verifiedEmail", email);
+        // Redis에 5분(300초) 동안 인증 코드 저장
+        redisTemplate.opsForValue().set("email_code:" + email, code, 5, java.util.concurrent.TimeUnit.MINUTES);
 
         emailService.sendVerificationEmail(email, code);
     }
 
     @Override
     public boolean verifyEmail(String email, String code, HttpSession session) {
-        String sessionCode = (String) session.getAttribute("verificationCode");
-        LocalDateTime expiryTime = (LocalDateTime) session.getAttribute("verificationCodeExpiry");
-        String sessionEmail = (String) session.getAttribute("verifiedEmail");
+        String savedCode = redisTemplate.opsForValue().get("email_code:" + email);
 
-        if (sessionCode == null || expiryTime == null || sessionEmail == null) {
-            return false;
-        }
-
-        if (email.equals(sessionEmail) && code.equals(sessionCode) && expiryTime.isAfter(LocalDateTime.now())) {
-            session.setAttribute("isEmailVerified", true);
+        if (savedCode != null && savedCode.equals(code)) {
+            // 인증 성공 시 인증 코드 삭제 및 인증 완료 상태 15분간 Redis 저장
+            redisTemplate.delete("email_code:" + email);
+            redisTemplate.opsForValue().set("email_verified:" + email, "true", 15, java.util.concurrent.TimeUnit.MINUTES);
             return true;
         }
         return false;

@@ -30,6 +30,12 @@ public class KakaoApiImpl implements KakaoApi {
     @Value("${kakao.api.key}")
     private String clientId;
 
+    @Value("${kakao.redirect-uri:http://127.0.0.1:7777/users/kakao/callback}")
+    private String redirectUri;
+
+    @Value("${kakao.logout-redirect-uri:http://127.0.0.1:7777}")
+    private String logoutRedirectUri;
+
     @Override
     public String getAccessToken(String code) {
         String accessToken = "";
@@ -41,7 +47,7 @@ public class KakaoApiImpl implements KakaoApi {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", clientId);
-        body.add("redirect_uri", "http://127.0.0.1:7777/users/kakao/callback"); // 리다이렉트 URI
+        body.add("redirect_uri", redirectUri); // 리다이렉트 URI (@Value 주입)
         body.add("code", code);
 
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
@@ -96,7 +102,6 @@ public class KakaoApiImpl implements KakaoApi {
     @Override
     public String getAuthorizationCode() {
         String reqURL = "https://kauth.kakao.com/oauth/authorize";
-        String redirectUri = "http://127.0.0.1:7777/users/kakao/callback";
         return reqURL + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=code";
     }
 
@@ -105,7 +110,7 @@ public class KakaoApiImpl implements KakaoApi {
         return UriComponentsBuilder
                 .fromUriString("https://kauth.kakao.com/oauth/logout")
                 .queryParam("client_id", clientId)
-                .queryParam("logout_redirect_uri", "http://127.0.0.1:7777")
+                .queryParam("logout_redirect_uri", logoutRedirectUri)
                 .build().toUriString();
     }
 }

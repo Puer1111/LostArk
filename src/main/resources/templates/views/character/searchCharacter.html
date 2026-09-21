@@ -64,7 +64,121 @@
                             </div>
                         </div>
                     </div>
-                    
+<!--                    &lt;!&ndash; Ark Passive & Ark Grid Simplified Previews Row (Visible inside the Equipment tab) &ndash;&gt;-->
+<!--                    <div class="ark-bottom-row">-->
+<!--                        &lt;!&ndash; Ark Passive Simple Box &ndash;&gt;-->
+<!--                        <div class="section arkPassive-simple" th:if="${characterData.characterArkPassive != null}"-->
+<!--                             style="flex: 1; margin-bottom: 0; cursor: pointer;"-->
+<!--                             onclick="document.querySelector('[data-target=\'ark-passive\']').click();">-->
+<!--                            <h3>[아크 패시브]</h3>-->
+<!--                            <div th:if="${characterData.characterArkPassive.points != null and !characterData.characterArkPassive.points.empty}"-->
+<!--                                 style="display: flex; flex-direction: column; gap: 12px;">-->
+<!--                                <div th:each="point : ${characterData.characterArkPassive.points}"-->
+<!--                                     class="arkPassive-simple-container"-->
+<!--                                     style="display: flex; flex-direction: column; gap: 6px;">-->
+<!--                                    &lt;!&ndash; 대분류 명칭 (진화, 깨달음, 도약) &ndash;&gt;-->
+<!--                                    <div style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 2px;">-->
+<!--                                            <span th:text="'[' + ${point.name} + ']'"-->
+<!--                                                  style="color: #ffd700; font-weight: bold; font-size: 1.1em;"></span>-->
+<!--                                    </div>-->
+<!--                                    &lt;!&ndash; 세로형(column) 리스트 출력 &ndash;&gt;-->
+<!--                                    <div class="arkPassive-simple-effects"-->
+<!--                                         style="display: flex; flex-direction: column; gap: 6px; padding-left: 6px;">-->
+<!--                                        <div th:each="effect : ${characterData.characterArkPassive.effects}"-->
+<!--                                             th:if="${effect.name == point.name}"-->
+<!--                                             style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95em;">-->
+<!--                                                <span style="display: inline-flex; align-items: center; gap: 6px;">-->
+<!--                                                    <img th:if="${effect.icon != null and !effect.icon.isEmpty()}"-->
+<!--                                                         th:src="${effect.icon}"-->
+<!--                                                         alt="Effect Icon"-->
+<!--                                                         style="width: 16px; height: 16px; border-radius: 3px; background: rgba(0,0,0,0.5);"/>-->
+<!--                                                    <span th:text="${effect.pureName}" style=""></span>-->
+<!--                                                </span>-->
+<!--                                            <span th:text="${effect.pureLevel}" style="font-weight: bold;"></span>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                &lt;!&ndash;                                    <div style="text-align: right; margin-top: 8px;">&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                        <span style="font-size: 0.8em; color: #4a90e2; font-weight: bold;">[ 상세보기 > ]</span>&ndash;&gt;-->
+<!--                                &lt;!&ndash;                                    </div>&ndash;&gt;-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+<!--                        &lt;!&ndash; Ark Grid Simple Box &ndash;&gt;-->
+<!--                        <div class="section arkGrid-simple" th:if="${characterData.characterArkGrid != null}"-->
+<!--                             style="flex: 1; margin-bottom: 0; cursor: pointer;">-->
+<!--                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">-->
+<!--                                <h3 style="margin: 0;">[아크 그리드]</h3>-->
+<!--                            </div>-->
+<!--                            <div id="arkGrid-simple-container"-->
+<!--                                 th:if="${characterData.characterArkGrid.slots != null and !characterData.characterArkGrid.slots.empty}">-->
+<!--                                &lt;!&ndash; 세로형(column) 리스트 출력 &ndash;&gt;-->
+<!--                                <div class="arkGrid-simple-list"-->
+<!--                                     style="display: flex; flex-direction: column; gap: 6px; padding-left: 6px;">-->
+<!--                                    <div class="arkGrid-simple-item"-->
+<!--                                         th:each="slot : ${characterData.characterArkGrid.slots}"-->
+<!--                                         style="display: flex; justify-content: space-between; align-items: center; font-size: 0.95em; width: 100%;">-->
+<!--                                            <span style="display: inline-flex; align-items: center; gap: 6px;">-->
+<!--                                                <img th:src="${slot.icon}" alt="슬롯 아이콘" class="arkGrid-img"-->
+<!--                                                     style="width: 16px; height: 16px; border-radius: 3px; background: rgba(0,0,0,0.3); border: 1px solid #555;"/>-->
+<!--                                                <span th:text="${slot.name}"></span>-->
+<!--                                            </span>-->
+<!--                                        <span th:text="${slot.point} + 'P'"-->
+<!--                                              style="color: #ccc; font-weight: bold;"></span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div style="text-align: right; margin-top: 14px;">-->
+<!--                                    <span style="font-size: 0.8em; color: #4a90e2; font-weight: bold;"></span>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div id="arkGrid-gems-simple-container"-->
+<!--                                 th:with="combinedGems=${characterData.characterArkGrid.getAllCombinedGemEffects()}"-->
+<!--                                 style="border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 12px; padding-top: 10px;">-->
+<!--                                <div th:if="${combinedGems != null and !combinedGems.empty}">-->
+<!--                                    <div style="margin-bottom: 6px;">-->
+<!--                                        <span style="color: #ffd700; font-weight: bold; font-size: 0.95em;">[효과]</span>-->
+<!--                                    </div>-->
+<!--                                    <div style="display: flex; flex-direction: column; gap: 4px; padding-left: 6px;">-->
+<!--                                        <div th:each="effectStr : ${combinedGems}"-->
+<!--                                             style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85em;">-->
+<!--                                            &lt;!&ndash; [효과이름] Lv.X 형태로 노출 &ndash;&gt;-->
+<!--                                            <span th:text="${effectStr}"></span>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            &lt;!&ndash; Engravings &ndash;&gt;-->
+<!--                            <div class="section Engravings"-->
+<!--                                 th:if="${characterData.characterEngravings != null and characterData.characterEngravings.arkPassiveEffects != null}">-->
+<!--                                <h3 style="margin:0;">[각인 효과]</h3>-->
+<!--                                <div class="engraving-container">-->
+<!--                                    <div class="engraving-item"-->
+<!--                                         th:each="effect : ${characterData.characterEngravings.arkPassiveEffects}">-->
+<!--                                        <div class="engraving-details" th:if="${effect.grade != null}">-->
+<!--                                            <div>-->
+<!--                                                <div class="engraving-item-content"-->
+<!--                                                     th:data-grade="${effect.grade}"-->
+<!--                                                     th:data-level="${effect.level}"-->
+<!--                                                     style="display: flex; align-items: center; gap: 8px;">-->
+<!--                                                    <img th:src="@{/img/engravings/{name}.webp(name=${effect.name})}"-->
+<!--                                                         th:alt="${effect.name}"-->
+<!--                                                         class="engraving-img-icon"-->
+<!--                                                         onerror="this.style.display='none';"-->
+<!--                                                         style="width: 25px; height: 28px; border-radius: 4px; object-fit: cover; flex-shrink: 0;" />-->
+<!--                                                    <span class="engraving-name" th:text="${effect.name}" style="flex-grow: 1;"></span>-->
+<!--                                                    <div class="engraving-info-group">-->
+<!--                                                        <em class="engraving-icon"-->
+<!--                                                            th:data-engraving-name="${effect.name}"></em>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
                     <!-- 캐릭터 전신 이미지 카드 (아바타 탭 클릭 시에만 표시됨) -->
                     <div id="left-character-image-card" class="character-image-card"
                          th:if="${characterData.characterProfiles != null and characterData.characterProfiles.characterImage != null and
