@@ -54,7 +54,8 @@ public class SecurityConfig {
                                 "/users/logout",// 로그아웃
                                 "/character/party-simulator",// 파티 시뮬레이터 페이지
                                 "/character/api/**", // 캐릭터 간소화 검색 API 허용
-                                "/market/**" // 경매장 관련 페이지
+                                "/market/**", // 경매장 관련 페이지
+                                "/actuator/**" // 모니터링 주소
                         ).permitAll()
 
                         // "/admin/**" 경로는 ADMIN 권한을 가진 사용자만 접근 가능

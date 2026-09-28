@@ -45,3 +45,5 @@ settings.gradle
 *.md
 gradle/wrapper/**
 src/main/resources/static/img
+prometheus.yml
+docker-compose.yml
