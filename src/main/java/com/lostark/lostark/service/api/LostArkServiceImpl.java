@@ -280,7 +280,6 @@ public class LostArkServiceImpl implements LostArkService {
     @LogExecutionTime
     public SimplifiedCharacterDTO getSimplifiedCharacter(String characterName) {
         log.info("Service.getSimplifiedCharacter.characterName = {}", characterName);
-        // Simplified 조회의 경우도 캐싱된 프로필 정보를 우선적으로 사용하도록 개선 가능
         CharacterProfiles profile = getCharacterProfile(characterName);
 
         if (profile == null) {
@@ -294,6 +293,32 @@ public class LostArkServiceImpl implements LostArkService {
                 .combatPower(profile.getCombatPower())
                 .itemLevel(profile.getItemAvgLevel())
                 .build();
+    }
+
+    @Override
+    @LogExecutionTime
+    public List<SimplifiedCharacterDTO> getSimplifiedCharactersBatch(List<String> characterNames) {
+        if (characterNames == null || characterNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        log.info("Service.getSimplifiedCharactersBatch for {} characters", characterNames.size());
+
+        List<CompletableFuture<SimplifiedCharacterDTO>> futures = characterNames.stream()
+                .map(name -> CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return getSimplifiedCharacter(name);
+                    } catch (Exception e) {
+                        log.warn("Failed to fetch simplified character in batch for: {}", name);
+                        return null;
+                    }
+                }))
+                .collect(Collectors.toList());
+
+        return futures.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     @Override

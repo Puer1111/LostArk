@@ -70,6 +70,17 @@ public class CharacterController {
         return ResponseEntity.ok(dto);
     }
 
+    /**
+     * 원정대 캐릭터 일괄(Batch) 정보 조회를 위한 API (JSON 반환)
+     */
+    @org.springframework.web.bind.annotation.PostMapping("/api/expedition/batch")
+    @ResponseBody
+    public ResponseEntity<java.util.List<SimplifiedCharacterDTO>> getSimplifiedCharactersBatch(@org.springframework.web.bind.annotation.RequestBody java.util.List<String> characterNames) {
+        log.info("Controller.getSimplifiedCharactersBatch.count: {}", characterNames != null ? characterNames.size() : 0);
+        java.util.List<SimplifiedCharacterDTO> dtos = apiService.getSimplifiedCharactersBatch(characterNames);
+        return ResponseEntity.ok(dtos);
+    }
+
     @GetMapping("/class")
     public String getClassInfo() {
         return "character/synergyInformation";

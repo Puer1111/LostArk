@@ -110,8 +110,8 @@ async function loadExpeditionData() {
         loadingDiv.style.display = 'none';
         containerDiv.style.display = 'grid';
 
-        // 카드 상세 정보(이미지, 전투력) 지연 로드 시작
-        lazyLoadCardDetails(expeditions);
+        // 카드 상세 정보(이미지, 전투력) 1회성 배치(Batch) 로드 수행
+        batchLoadCardDetails(expeditions);
 
     } catch (error) {
         console.error('Failed to load expedition data:', error);
@@ -157,37 +157,42 @@ function createExpeditionCardHtml(char) {
 }
 
 /**
- * 각 캐릭터 카드의 상세 정보(이미지, 전투력)를 서버 및 Open API 과부하 방지를 위해 순차적 지연 로드 수행
+ * 원정대 캐릭터들의 상세 정보(이미지, 전투력)를 백엔드 1회성 Batch API를 통해 일괄 렌더링
  */
-async function lazyLoadCardDetails(expeditions) {
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-    
-    for (const char of expeditions) {
-        if (!char.characterName) continue;
-        
-        // 80ms 의 의도적인 딜레이를 주어 API Rate Limit (403, 429) 완전 방지
-        await sleep(80);
-        
-        fetch(`/character/api/simplified/${encodeURIComponent(char.characterName)}`)
-            .then(res => {
-                if (!res.ok) throw new Error();
-                return res.json();
-            })
-            .then(data => {
-                const card = document.querySelector(`.expedition-card[data-character-name="${char.characterName}"]`);
-                if (card) {
-                    if (data.characterImage) {
-                        card.style.backgroundImage = `url('${data.characterImage}')`;
-                    }
-                    const powerSpan = card.querySelector('.combat-power');
-                    if (powerSpan && data.combatPower) {
-                        powerSpan.textContent = data.combatPower;
-                    }
+async function batchLoadCardDetails(expeditions) {
+    const characterNames = expeditions
+        .map(char => char.characterName)
+        .filter(name => !!name);
+
+    if (characterNames.length === 0) return;
+
+    try {
+        const response = await fetch('/character/api/expedition/batch', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(characterNames)
+        });
+
+        if (!response.ok) throw new Error('Batch request failed');
+        const results = await response.json();
+
+        results.forEach(data => {
+            if (!data || !data.characterName) return;
+            const card = document.querySelector(`.expedition-card[data-character-name="${data.characterName}"]`);
+            if (card) {
+                if (data.characterImage) {
+                    card.style.backgroundImage = `url('${data.characterImage}')`;
                 }
-            })
-            .catch(err => {
-                console.warn(`Failed to lazy load profile image and combat power for: ${char.characterName}`);
-            });
+                const powerSpan = card.querySelector('.combat-power');
+                if (powerSpan && data.combatPower) {
+                    powerSpan.textContent = data.combatPower;
+                }
+            }
+        });
+    } catch (err) {
+        console.warn('Failed to batch load profile images and combat power:', err);
     }
 }
 

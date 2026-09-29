@@ -75,4 +75,11 @@ public interface LostArkService {
      * @return List<LostArkEventDto>
      */
     List<LostArkEventDto> getNewsEvents();
+
+    /**
+     * 원정대 캐릭터 닉네임 리스트에 대한 간소화 정보 일괄(Batch) 병렬 조회
+     * @param characterNames
+     * @return List<SimplifiedCharacterDTO>
+     */
+    List<SimplifiedCharacterDTO> getSimplifiedCharactersBatch(List<String> characterNames);
 }
