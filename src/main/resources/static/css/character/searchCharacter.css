@@ -288,8 +288,8 @@ strong {
    ========================================================================== */
 .gems-item-content {
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
+    flex-wrap: wrap;
+    justify-content: flex-start;
     width: 100%;
     gap: 15px;
     background: transparent;
@@ -298,8 +298,8 @@ strong {
 }
 
 .gem-group {
-    flex: 1;
-    min-width: 0;
+    flex: 1 1 max-content;
+    min-width: 120px;
     background: #ffffff;
     border: 1px solid #eaeaea;
     border-radius: 8px;
@@ -337,7 +337,7 @@ strong {
 
 .gem-group-list {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 12px;
     align-items: center;
 }
