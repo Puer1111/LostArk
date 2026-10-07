@@ -71,8 +71,8 @@ public class PriceCollector {
         log.info("전일 시세 데이터 정산 시작...");
         performSummarize(LocalDate.now().minusDays(1));
 
-        // 3일 이상 된 상세 데이터 Chunk 단위(500건씩) 분할 삭제 (DB Lock 방지)
-        LocalDateTime threshold = LocalDateTime.now().minusDays(3);
+        // 14일 이상 된 상세 데이터 Chunk 단위(500건씩) 분할 삭제 (DB Lock 방지 - 14일간 보존, 15일차 삭제)
+        LocalDateTime threshold = LocalDateTime.now().minusDays(14);
         int totalDeleted = 0;
         int chunkSize = 500;
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(0, chunkSize);

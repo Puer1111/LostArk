@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.display = 'flex';
 
         try {
-            const response = await fetch(`/market/api/history/${encodeURIComponent(itemName)}?days=7`);
+            const response = await fetch(`/market/api/history/${encodeURIComponent(itemName)}?days=14`);
             const historyData = await response.json();
 
             renderChart(historyData);
@@ -271,6 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const labels = historyData.map(d => d.summaryDate);
         const dataPoints = historyData.map(d => d.avgPrice);
+
+        // 14일 간 최저가 계산
+        const minVal = dataPoints.length > 0 ? Math.min(...dataPoints) : 0;
+        // 1,000G(1k) 단위 내림 처리 (예: 2,300G -> 2,000G 시작)
+        const yMin = Math.floor(minVal / 1000) * 1000;
 
         chartInstance = new Chart(ctx, {
             type: 'line',
@@ -311,8 +316,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     },
                     y: {
-                        beginAtZero: false,
+                        min: yMin, // 14일 최저가를 기준으로 Y축 하단 고정
                         ticks: {
+                            stepSize: 1000, // 1k (1,000G) 단위로 눈금 고정
                             callback: function(value) {
                                 return value.toLocaleString() + ' G';
                             }
