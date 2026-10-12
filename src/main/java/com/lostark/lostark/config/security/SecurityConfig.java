@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -42,6 +43,7 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/img/**",
+                                "/uploads/**",
                                 "/users/signup", // 유저 회원가입
                                 "/users/check-id/{userId}", // 유저 아이디 중복확인
                                 "/email/send-verification", // 이메일 인증 코드 발송
@@ -55,11 +57,9 @@ public class SecurityConfig {
                                 "/character/party-simulator",// 파티 시뮬레이터 페이지
                                 "/character/api/**", // 캐릭터 간소화 검색 API 허용
                                 "/market/**", // 경매장 관련 페이지
-                                "/actuator/**" // 모니터링 주소
+                                "/actuator/**", // 모니터링 주소
+                                "/admin/**" // 관리 페이지 화면 및 조회 허용
                         ).permitAll()
-
-                        // "/admin/**" 경로는 ADMIN 권한을 가진 사용자만 접근 가능
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
                         // 그 외 모든 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()

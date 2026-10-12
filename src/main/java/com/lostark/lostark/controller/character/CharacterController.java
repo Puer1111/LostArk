@@ -91,4 +91,14 @@ public class CharacterController {
         return "character/partySimulator";
     }
 
+    /**
+     * 파티 시뮬레이터용 전체 직업 시너지 조회 공용 API
+     */
+    @GetMapping("/api/synergies")
+    @ResponseBody
+    public ResponseEntity<java.util.List<com.lostark.lostark.model.dto.character.synergy.SynergyJobDto>> getPublicSynergies(
+            @org.springframework.beans.factory.annotation.Autowired com.lostark.lostark.service.character.SynergyAdminService synergyAdminService) {
+        return ResponseEntity.ok(synergyAdminService.getAllSynergies());
+    }
+
 }

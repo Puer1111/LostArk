@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>시너지 데이터 관리 (Admin)</title>
+    <th:block th:fragment="pageCss">
+        <style>
+            .content {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 15px 25px !important;
+            }
+            .admin-wrapper {
+                width: 100%;
+                max-width: 100%;
+                height: calc(100vh - 120px);
+                min-height: 820px;
+                margin: 0;
+                display: flex;
+                gap: 25px;
+                color: #e0e0e0;
+                font-family: 'Spoqa Han Sans Neo', sans-serif;
+                box-sizing: border-box;
+            }
+            .admin-sidebar {
+                width: 240px;
+                height: 100%;
+                background-color: #1e1e24;
+                border-radius: 8px;
+                padding: 20px 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+            }
+            .admin-sidebar h3 {
+                padding: 0 15px 15px;
+                margin: 0 0 10px;
+                border-bottom: 1px solid #333;
+                font-size: 18px;
+                color: #fff;
+            }
+            .admin-sidebar ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .admin-sidebar li a {
+                display: flex;
+                align-items: center;
+                padding: 12px 15px;
+                color: #aaa;
+                text-decoration: none;
+                border-radius: 6px;
+                font-size: 15px;
+                margin-bottom: 5px;
+                transition: all 0.2s;
+            }
+            .admin-sidebar li a:hover, .admin-sidebar li.active a {
+                background-color: #3f51b5;
+                color: #fff;
+                font-weight: 500;
+            }
+            .admin-container {
+                flex: 1;
+                height: 100%;
+                background-color: #1e1e24;
+                color: #e0e0e0;
+                border-radius: 8px;
+                padding: 25px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .admin-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px solid #333;
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+                flex-shrink: 0;
+            }
+            .admin-layout {
+                display: flex;
+                gap: 20px;
+                flex: 1;
+                overflow: hidden;
+            }
+            .job-list-panel {
+                width: 220px;
+                border-right: 1px solid #333;
+                padding-right: 15px;
+                overflow-y: auto;
+            }
+            .job-list-panel ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .job-list-panel li {
+                padding: 10px;
+                cursor: pointer;
+                border-radius: 4px;
+                margin-bottom: 5px;
+                background-color: #2a2a32;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .job-list-panel li:hover, .job-list-panel li.active {
+                background-color: #3f51b5;
+                color: #fff;
+            }
+            .form-panel {
+                flex: 1;
+                overflow-y: auto;
+                padding-right: 8px;
+            }
+            .form-section {
+                background-color: #26262e;
+                padding: 15px;
+                border-radius: 6px;
+                margin-bottom: 20px;
+            }
+            .form-section h3 {
+                margin-top: 0;
+                margin-bottom: 15px;
+                font-size: 16px;
+                color: #64b5f6;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .form-group {
+                margin-bottom: 12px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .form-group label {
+                width: 90px;
+                font-size: 14px;
+                color: #bbb;
+            }
+            .form-group input, .form-group select {
+                padding: 8px 10px;
+                border-radius: 4px;
+                border: 1px solid #444;
+                background-color: #1a1a1f;
+                color: #fff;
+                flex: 1;
+            }
+            .sub-card {
+                background-color: #1e1e24;
+                border: 1px solid #3a3a44;
+                padding: 12px;
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
+            .btn {
+                padding: 8px 14px;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .btn-primary { background-color: #2196f3; color: white; }
+            .btn-success { background-color: #4caf50; color: white; }
+            .btn-danger { background-color: #f44336; color: white; }
+            .btn-secondary { background-color: #607d8b; color: white; }
+            .btn-sm { padding: 4px 8px; font-size: 12px; }
+            .skill-img-preview {
+                width: 32px;
+                height: 32px;
+                border-radius: 4px;
+                background-color: #111;
+                border: 1px solid #444;
+                object-fit: cover;
+                display: block;
+                flex-shrink: 0;
+            }
+            .source-row {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+        </style>
+    </th:block>
+</head>
+<body>
+<div th:replace="~{layout/layout :: layout(
+        css = ~{::pageCss},
+        content = ~{::mainContent},
+        script = ~{::pageScript}
+    )}">
+    <th:block th:fragment="mainContent">
+        <div class="admin-wrapper">
+            <!-- 공통 사이드바 -->
+            <nav class="admin-sidebar">
+                <h3>관리자 메뉴</h3>
+                <ul>
+                    <li><a href="/admin/main">대시보드 홈</a></li>
+                    <li><a href="/admin/users">멤버(유저) 관리</a></li>
+                    <li class="active"><a href="/admin/synergies">직업 & 시너지 관리</a></li>
+                </ul>
+            </nav>
+
+            <div class="admin-container">
+                <div class="admin-header">
+                    <h2>⚔️ 직업 및 시너지 데이터 관리</h2>
+                    <div>
+                        <button id="btn-new-job" class="btn btn-success">+ 신규 직업 추가</button>
+                        <button id="btn-save-job" class="btn btn-primary">저장 (DB 반영)</button>
+                    </div>
+                </div>
+
+                <div class="admin-layout">
+                    <!-- 좌측 등록된 직업 리스트 -->
+                    <div class="job-list-panel">
+                        <h3>직업 목록</h3>
+                        <ul id="job-list-ul">
+                            <!-- JS에서 동적 로드 -->
+                        </ul>
+                    </div>
+
+                <!-- 우측 직업 및 시너지 편집 폼 -->
+                <div class="form-panel">
+                    <!-- 기본 정보 -->
+                    <div class="form-section">
+                        <h3>1. 기본 정보</h3>
+                        <div class="form-group">
+                            <label>직업명</label>
+                            <input type="text" id="input-className" placeholder="예: 기상술사, 건슬링어">
+                        </div>
+                        <div class="form-group">
+                            <label>직업군</label>
+                            <select id="select-classGroup">
+                                <option value="전사">전사</option>
+                                <option value="무도가">무도가</option>
+                                <option value="헌터">헌터</option>
+                                <option value="마법사">마법사</option>
+                                <option value="암살자">암살자</option>
+                                <option value="스페셜리스트">스페셜리스트</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 직업 각인 -->
+                    <div class="form-section">
+                        <h3>
+                            2. 직업 각인 (classEngravings)
+                            <button type="button" id="btn-add-engraving" class="btn btn-secondary btn-sm">+ 각인 추가</button>
+                        </h3>
+                        <div id="engravings-container">
+                            <!-- JS 동적 생성 -->
+                        </div>
+                    </div>
+
+                    <!-- 시너지 및 스킬 (skills) -->
+                    <div class="form-section">
+                        <h3>
+                            3. 시너지 및 발동 스킬 (skills)
+                            <button type="button" id="btn-add-skill" class="btn btn-secondary btn-sm">+ 시너지 추가</button>
+                        </h3>
+                        <div id="skills-container">
+                            <!-- JS 동적 생성 -->
+                        </div>
+                    </div>
+
+                    <!-- JSON 미리보기 -->
+                    <div class="form-section">
+                        <h3>생성될 JSON 구조 미리보기</h3>
+                        <pre id="json-preview" class="json-preview">{}</pre>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block th:fragment="pageScript">
+        <script type="module" src="/js/admin/synergyManage.js"></script>
+    </th:block>
+</div>
+</body>
+</html>
