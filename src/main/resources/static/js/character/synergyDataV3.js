@@ -812,7 +812,7 @@ export const jobData = [
                 "role": "악마화 비사용"
             },
             {
-                "engravingName": "데모닉 임펄스",
+                "engravingName": "멈출 수 없는 충동",
                 "role": "악마화 특화"
             }
         ],

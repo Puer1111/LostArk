@@ -55,8 +55,11 @@ public class SynergyJobDto {
     public static class SynergySourceDto {
         private String skillName;
         private String skillImg;
+        private String skillDescription;
         private String tripodName;
+        private String tripodImg;
         private String tripodRate;
+        private String tripodDescription;
         private String baseRate;
     }
 }
