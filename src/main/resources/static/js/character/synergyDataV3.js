@@ -992,10 +992,6 @@ export const jobData = [
                         "tripodName": "피해 증폭",
                         "tripodRate": "6%"
                     },
-                    {
-                        "skillName": "사신화",
-                        "baseRate": "6%"
-                    }
                 ]
             }
         ]

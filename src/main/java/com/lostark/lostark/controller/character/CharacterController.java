@@ -10,10 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import com.lostark.lostark.model.dto.character.synergy.SynergyJobDto;
+import com.lostark.lostark.service.character.SynergyAdminService;
+
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class CharacterController {
 
     private final LostArkService apiService;
+    private final SynergyAdminService synergyAdminService;
 
     /**
      * 캐릭터 상세 정보 조회
@@ -73,7 +75,7 @@ public class CharacterController {
     /**
      * 원정대 캐릭터 일괄(Batch) 정보 조회를 위한 API (JSON 반환)
      */
-    @org.springframework.web.bind.annotation.PostMapping("/api/expedition/batch")
+    @PostMapping("/api/expedition/batch")
     @ResponseBody
     public ResponseEntity<java.util.List<SimplifiedCharacterDTO>> getSimplifiedCharactersBatch(@org.springframework.web.bind.annotation.RequestBody java.util.List<String> characterNames) {
         log.info("Controller.getSimplifiedCharactersBatch.count: {}", characterNames != null ? characterNames.size() : 0);
@@ -96,8 +98,7 @@ public class CharacterController {
      */
     @GetMapping("/api/synergies")
     @ResponseBody
-    public ResponseEntity<java.util.List<com.lostark.lostark.model.dto.character.synergy.SynergyJobDto>> getPublicSynergies(
-            @org.springframework.beans.factory.annotation.Autowired com.lostark.lostark.service.character.SynergyAdminService synergyAdminService) {
+    public ResponseEntity<List<SynergyJobDto>> getPublicSynergies() {
         return ResponseEntity.ok(synergyAdminService.getAllSynergies());
     }
 

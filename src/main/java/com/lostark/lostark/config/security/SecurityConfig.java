@@ -55,6 +55,7 @@ public class SecurityConfig {
                                 "/users/kakao/login", // 카카오 인가코드 페이지
                                 "/users/logout",// 로그아웃
                                 "/character/party-simulator",// 파티 시뮬레이터 페이지
+                                "/character/class", // 클래스 시너지 정보 페이지
                                 "/character/api/**", // 캐릭터 간소화 검색 API 허용
                                 "/market/**", // 경매장 관련 페이지
                                 "/actuator/**", // 모니터링 주소
@@ -63,6 +64,19 @@ public class SecurityConfig {
 
                         // 그 외 모든 요청은 인증된 사용자만 접근 가능
                         .anyRequest().authenticated()
+                )
+                // 예외 처리: 인증(401)/인가(403) 실패 시 JSON 응답 반환
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"status\": 401, \"error\": \"UNAUTHORIZED\", \"message\": \"로그인이 만료되었거나 로그인이 필요합니다.\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json;charset=UTF-8");
+                            response.getWriter().write("{\"status\": 403, \"error\": \"FORBIDDEN\", \"message\": \"해당 작업을 수행할 관리자(ADMIN) 권한이 없습니다.\"}");
+                        })
                 )
                 // JWT 필터를 UsernamePasswordAuthenticationFilter 전에 추가
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, stringRedisTemplate), UsernamePasswordAuthenticationFilter.class);

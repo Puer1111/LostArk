@@ -1,10 +1,72 @@
 /**
  * 사이드바 클래스 선택 및 드래그 기능 관련 모듈
  */
-import {jobData} from "../character/synergyDataV3.js";
+import {synergyService} from "../character/synergyService.js";
 import {commonFunction} from "../common/commonFunction.js";
 
 export const classFunction = {
+    /**
+     * DB 시너지 데이터를 기반으로 좌측 사이드바 클래스 목록을 동적 렌더링합니다.
+     */
+    renderSidebar: (elements) => {
+        const container = document.getElementById('class-groups-container') || elements.classSelection?.querySelector('.class-list-section');
+        if (!container) return;
+
+        const jobList = synergyService.getJobData();
+        if (!jobList || jobList.length === 0) {
+            container.innerHTML = '<p style="padding: 10px; color: #888; font-size: 0.85rem;">직업 데이터를 불러올 수 없습니다.</p>';
+            return;
+        }
+
+        // 공식 클래스 군 정렬 우선순위
+        const preferredOrder = ['전사', '무도가', '헌터', '마법사', '암살자', '스페셜리스트'];
+        const slugMap = {
+            '전사': 'warrior',
+            '무도가': 'martial-artist',
+            '헌터': 'hunter',
+            '마법사': 'magician',
+            '암살자': 'assassin',
+            '스페셜리스트': 'specialist'
+        };
+
+        // 그룹별 직업 분류
+        const grouped = new Map();
+        preferredOrder.forEach(group => grouped.set(group, []));
+
+        jobList.forEach(job => {
+            const group = job.classGroup || '기타';
+            if (!grouped.has(group)) {
+                grouped.set(group, []);
+            }
+            grouped.get(group).push(job);
+        });
+
+        let html = '';
+        grouped.forEach((jobs, groupName) => {
+            if (jobs.length === 0) return;
+
+            const groupSlug = slugMap[groupName] || `custom-${groupName}`;
+            html += `
+                <div class="class-group">
+                    <h3 data-class="${groupSlug}">${groupName}</h3>
+                    <div id="jobs-${groupSlug}" class="job-list" style="display: none;">
+                        ${jobs.map(job => `
+                            <div class="job-item" draggable="true">${job.className}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        });
+
+        if (container.id === 'class-groups-container') {
+            container.innerHTML = html;
+        } else {
+            const existingGroups = container.querySelectorAll('.class-group');
+            existingGroups.forEach(el => el.remove());
+            container.insertAdjacentHTML('beforeend', html);
+        }
+    },
+
     /**
      * 사이드바와 관련된 이벤트를 초기화합니다.
      */
@@ -15,7 +77,7 @@ export const classFunction = {
         elements.classSelection.addEventListener('click', (e) => {
             const header = e.target.closest('.class-group h3');
             if (header) {
-                const jobList = document.getElementById('jobs-' + header.dataset.class);
+                const jobList = header.nextElementSibling || document.getElementById('jobs-' + header.dataset.class);
                 if (!jobList) return;
 
                 const isCurrentlyOpen = jobList.style.display === 'flex';
@@ -124,7 +186,7 @@ export const classFunction = {
      * 특정 슬롯에 직업/캐릭터 카드를 렌더링합니다.
      */
     renderJobCard: (slot, jobName, searchData = null, activeIndex = 0, raidManager, updateAll, saveToLocalStorage) => {
-        const jobInfo = jobData.find(job => job.className === jobName);
+        const jobInfo = synergyService.findJobByName(jobName);
         if (!jobInfo) return;
 
         // 배경 설정
@@ -155,16 +217,21 @@ export const classFunction = {
 
         html += `<div class="job-name">${jobInfo.className}</div>`;
 
+        const classEngravings = jobInfo.classEngravings || [];
+
         if (searchData) {
+            const currentEngravingName = (classEngravings[activeIndex || 0] && classEngravings[activeIndex || 0].engravingName) 
+                ? classEngravings[activeIndex || 0].engravingName 
+                : '각인 정보 없음';
             html += `
                 <div class="engraving-selector">
-                    <span class="fixed-engraving">${jobInfo.classEngravings[activeIndex || 0].engravingName}</span>
+                    <span class="fixed-engraving">${currentEngravingName}</span>
                 </div>
             `;
         } else {
             html += `
                 <div class="engraving-selector">
-                    ${jobInfo.classEngravings.map((eng, idx) => `
+                    ${classEngravings.map((eng, idx) => `
                         <button class="role-btn ${idx === (activeIndex || 0) ? 'active' : ''}" data-index="${idx}">${eng.engravingName}</button>
                     `).join('')}
                 </div>

@@ -1,5 +1,5 @@
 import {raidConfigs} from '../character/raidConfigs.js';
-import {jobData} from '../character/synergyDataV3.js';
+import {synergyService} from '../character/synergyService.js';
 
 export const raidFunction = {
     // 레이드 선택 옵션 초기화
@@ -64,7 +64,7 @@ export const raidFunction = {
             if (!data || i > config.maxPlayers) return;
             const partyId = i <= 4 ? 1 : 2;
             
-            const jobInfo = jobData.find(j => j.className === data.jobName);
+            const jobInfo = synergyService.findJobByName(data.jobName);
             if (!jobInfo) return;
 
             const skills = jobInfo.skills || [];

@@ -31,7 +31,23 @@ function initEvents() {
     });
 
     document.getElementById('input-className').addEventListener('input', updatePreview);
-    document.getElementById('select-classGroup').addEventListener('change', updatePreview);
+    
+    // 직업군 선택 및 직접 입력 전환 이벤트
+    const selectClassGroup = document.getElementById('select-classGroup');
+    const inputCustomClassGroup = document.getElementById('input-customClassGroup');
+
+    selectClassGroup.addEventListener('change', () => {
+        if (selectClassGroup.value === 'DIRECT') {
+            inputCustomClassGroup.style.display = 'inline-block';
+            inputCustomClassGroup.focus();
+        } else {
+            inputCustomClassGroup.style.display = 'none';
+            inputCustomClassGroup.value = '';
+        }
+        updatePreview();
+    });
+
+    inputCustomClassGroup.addEventListener('input', updatePreview);
 }
 
 // 1. 서버에서 직업 목록 조회
@@ -92,7 +108,21 @@ function resetForm() {
 // 폼 채우기
 function populateForm(data) {
     document.getElementById('input-className').value = data.className || '';
-    document.getElementById('select-classGroup').value = data.classGroup || '전사';
+    
+    const targetGroup = data.classGroup || '전사';
+    const selectElem = document.getElementById('select-classGroup');
+    const customInput = document.getElementById('input-customClassGroup');
+
+    const hasOption = Array.from(selectElem.options).some(opt => opt.value === targetGroup && opt.value !== 'DIRECT');
+    if (hasOption) {
+        selectElem.value = targetGroup;
+        customInput.style.display = 'none';
+        customInput.value = '';
+    } else {
+        selectElem.value = 'DIRECT';
+        customInput.style.display = 'inline-block';
+        customInput.value = targetGroup;
+    }
 
     // 각인 렌더링
     const engContainer = document.getElementById('engravings-container');
@@ -240,6 +270,17 @@ function addSourceRow(container, src = {}) {
                 body: formData
             });
 
+            if (res.status === 401) {
+                alert('로그인이 만료되었거나 로그인이 필요합니다.\n로그인 페이지로 이동합니다.');
+                window.location.href = '/users/login';
+                return;
+            }
+
+            if (res.status === 403) {
+                alert('업로드 실패: 관리자(ADMIN) 권한이 필요한 작업입니다.');
+                return;
+            }
+
             if (!res.ok) {
                 const errData = await res.json().catch(() => ({ message: '업로드 실패' }));
                 throw new Error(errData.message || '업로드 실패');
@@ -271,7 +312,9 @@ function addSourceRow(container, src = {}) {
 // 폼 데이터를 DTO 형식으로 추출
 function collectFormData() {
     const className = document.getElementById('input-className').value.trim();
-    const classGroup = document.getElementById('select-classGroup').value;
+    const selectVal = document.getElementById('select-classGroup').value;
+    const customVal = document.getElementById('input-customClassGroup') ? document.getElementById('input-customClassGroup').value.trim() : '';
+    const classGroup = (selectVal === 'DIRECT') ? (customVal || '기타') : selectVal;
 
     const classEngravings = [];
     document.querySelectorAll('.engraving-row').forEach(row => {
@@ -341,14 +384,26 @@ async function saveCurrentJob() {
             body: JSON.stringify(data)
         });
 
-        if (res.status === 401 || res.status === 403) {
-            alert('저장 실패: 관리자(ADMIN) 권한이 필요한 작업입니다. 관리자 계정으로 로그인 후 다시 시도해 주세요.');
+        if (res.status === 401) {
+            alert('로그인이 만료되었거나 로그인이 필요합니다.\n로그인 페이지로 이동합니다.');
+            window.location.href = '/users/login';
+            return;
+        }
+
+        if (res.status === 403) {
+            alert('저장 실패: 관리자(ADMIN) 권한이 없는 계정입니다.\n관리자 계정으로 로그인 후 다시 시도해 주세요.');
             return;
         }
 
         if (!res.ok) {
-            const msg = await res.text();
-            throw new Error(msg || '저장 실패');
+            let errorMsg = '저장 실패';
+            try {
+                const errorData = await res.json();
+                errorMsg = errorData.message || errorData.error || errorMsg;
+            } catch {
+                errorMsg = (await res.text()) || errorMsg;
+            }
+            throw new Error(errorMsg);
         }
 
         alert(`${data.className} 시너지 정보가 성공적으로 저장되었습니다!`);

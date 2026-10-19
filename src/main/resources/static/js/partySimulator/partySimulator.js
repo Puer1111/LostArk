@@ -1,4 +1,5 @@
 import {raidConfigs} from '../character/raidConfigs.js';
+import {synergyService} from '../character/synergyService.js';
 import {classFunction} from './classFunction.js';
 import {raidFunction} from './raidFunction.js';
 
@@ -79,10 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
         partyDetailSections: document.querySelectorAll('.party-detail-section')
     };
 
-    const init = () => {
-        document.querySelectorAll('.job-item').forEach(item => {
-            item.setAttribute('draggable', 'true');
-        });
+    const init = async () => {
+        try {
+            await synergyService.fetchJobData();
+        } catch (e) {
+            console.error('시너지 데이터 로드 실패:', e);
+        }
+
+        // DB 시너지 데이터 기반으로 사이드바 직업 목록 동적 렌더링
+        classFunction.renderSidebar(elements);
 
         raidFunction.initRaidSelects(elements);
         bindEvents();

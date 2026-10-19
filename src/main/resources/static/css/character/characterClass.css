@@ -110,12 +110,14 @@
     transition: 0.2s;
 }
 
-.class-name:hover {
+.class-name:hover,
+.class-name.active {
     background-color: var(--accent);
     border-color: var(--accent);
 }
 
-.class-name:hover span {
+.class-name:hover span,
+.class-name.active span {
     color: #fff;
 }
 

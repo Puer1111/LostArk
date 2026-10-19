@@ -7,6 +7,8 @@ import com.lostark.lostark.model.entity.character.SynergyJob;
 import com.lostark.lostark.model.repository.character.SynergyJobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,7 @@ public class SynergyAdminService {
     /**
      * 전체 직업 시너지 목록 조회 (클라이언트 시뮬레이터 및 어드민 공용)
      */
+    @Cacheable(value = "synergyCache")
     @Transactional(readOnly = true)
     public List<SynergyJobDto> getAllSynergies() {
         List<SynergyJob> entities = synergyJobRepository.findAll();
@@ -64,6 +67,7 @@ public class SynergyAdminService {
     /**
      * 직업 시너지 등록 / 수정 (Upsert)
      */
+    @CacheEvict(value = "synergyCache", allEntries = true)
     @Transactional
     public SynergyJobDto saveOrUpdateSynergy(SynergyJobDto dto) {
         if (dto.getClassName() == null || dto.getClassName().trim().isEmpty()) {
@@ -91,6 +95,7 @@ public class SynergyAdminService {
     /**
      * 직업 시너지 삭제
      */
+    @CacheEvict(value = "synergyCache", allEntries = true)
     @Transactional
     public void deleteSynergy(String className) {
         synergyJobRepository.findByClassName(className).ifPresent(synergyJobRepository::delete);

@@ -46,6 +46,7 @@ public class RedisConfig {
         cacheConfigurations.put("marketCache", defaultConfig.entryTtl(Duration.ofMinutes(1))); // 마켓은 변동이 잦으므로 짧게 유지
         cacheConfigurations.put("gemCache", defaultConfig.entryTtl(Duration.ofMinutes(10)));
         cacheConfigurations.put("auctionCache", defaultConfig.entryTtl(Duration.ofMinutes(1)));
+        cacheConfigurations.put("synergyCache", defaultConfig.entryTtl(Duration.ofHours(24)));
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
