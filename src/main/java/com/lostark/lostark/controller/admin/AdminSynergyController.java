@@ -26,12 +26,22 @@ public class AdminSynergyController {
     }
 
     /**
-     * 전체 시너지 목록 API
+     * 전체 시너지 목록 API (삭제되지 않은 활성 직업)
      */
     @GetMapping("/api/list")
     @ResponseBody
     public ResponseEntity<List<SynergyJobDto>> getSynergyList() {
         return ResponseEntity.ok(synergyAdminService.getAllSynergies());
+    }
+
+    /**
+     * 삭제된 직업(휴지통) 목록 API (ADMIN 권한 필요)
+     */
+    @GetMapping("/api/trash")
+    @ResponseBody
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<SynergyJobDto>> getTrashList() {
+        return ResponseEntity.ok(synergyAdminService.getDeletedSynergies());
     }
 
     /**
@@ -57,13 +67,24 @@ public class AdminSynergyController {
     }
 
     /**
-     * 직업 시너지 삭제 API (ADMIN 권한 필요)
+     * 직업 시너지 논리 삭제(Soft Delete) API (ADMIN 권한 필요)
      */
     @DeleteMapping("/api/{className}")
     @ResponseBody
     @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteSynergy(@PathVariable String className) {
         synergyAdminService.deleteSynergy(className);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 삭제된 직업 시너지 복원(Restore) API (ADMIN 권한 필요)
+     */
+    @PostMapping("/api/{className}/restore")
+    @ResponseBody
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> restoreSynergy(@PathVariable String className) {
+        synergyAdminService.restoreSynergy(className);
         return ResponseEntity.ok().build();
     }
 }

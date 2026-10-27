@@ -5,6 +5,7 @@
 
 let currentJobList = [];
 let activeJobData = null;
+let currentTab = 'active'; // 'active' | 'trash'
 
 document.addEventListener('DOMContentLoaded', () => {
     initEvents();
@@ -13,12 +14,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initEvents() {
     document.getElementById('btn-new-job').addEventListener('click', () => {
+        if (currentTab === 'trash') {
+            currentTab = 'active';
+            updateTabButtons();
+            loadJobList();
+        }
         resetForm();
     });
 
     document.getElementById('btn-save-job').addEventListener('click', () => {
         saveCurrentJob();
     });
+
+    const btnDelete = document.getElementById('btn-delete-job');
+    if (btnDelete) {
+        btnDelete.addEventListener('click', () => {
+            deleteCurrentJob();
+        });
+    }
+
+    const btnRestore = document.getElementById('btn-restore-job');
+    if (btnRestore) {
+        btnRestore.addEventListener('click', () => {
+            restoreCurrentJob();
+        });
+    }
+
+    // 탭 전환 이벤트
+    const tabActive = document.getElementById('tab-active-jobs');
+    const tabTrash = document.getElementById('tab-trash-jobs');
+    if (tabActive && tabTrash) {
+        tabActive.addEventListener('click', () => {
+            if (currentTab !== 'active') {
+                currentTab = 'active';
+                updateTabButtons();
+                resetForm();
+                loadJobList();
+            }
+        });
+        tabTrash.addEventListener('click', () => {
+            if (currentTab !== 'trash') {
+                currentTab = 'trash';
+                updateTabButtons();
+                resetForm();
+                loadJobList();
+            }
+        });
+    }
 
     document.getElementById('btn-add-engraving').addEventListener('click', () => {
         addEngravingRow();
@@ -50,10 +92,29 @@ function initEvents() {
     inputCustomClassGroup.addEventListener('input', updatePreview);
 }
 
-// 1. 서버에서 직업 목록 조회
+function updateTabButtons() {
+    const tabActive = document.getElementById('tab-active-jobs');
+    const tabTrash = document.getElementById('tab-trash-jobs');
+    if (!tabActive || !tabTrash) return;
+
+    if (currentTab === 'active') {
+        tabActive.style.background = '#3f51b5';
+        tabActive.style.color = '#fff';
+        tabTrash.style.background = '#2a2a32';
+        tabTrash.style.color = '#aaa';
+    } else {
+        tabActive.style.background = '#2a2a32';
+        tabActive.style.color = '#aaa';
+        tabTrash.style.background = '#ff9800';
+        tabTrash.style.color = '#fff';
+    }
+}
+
+// 1. 서버에서 직업 목록 조회 (활성 / 휴지통 분기)
 async function loadJobList() {
     try {
-        const res = await fetch('/admin/synergies/api/list');
+        const url = (currentTab === 'trash') ? '/admin/synergies/api/trash' : '/admin/synergies/api/list';
+        const res = await fetch(url);
         if (!res.ok) throw new Error('목록 조회 실패');
         currentJobList = await res.json();
         renderJobList();
@@ -68,13 +129,18 @@ function renderJobList() {
     ul.innerHTML = '';
 
     if (currentJobList.length === 0) {
-        ul.innerHTML = '<li style="cursor: default; color: #888;">등록된 직업 없음</li>';
+        const emptyMsg = (currentTab === 'trash') ? '휴지통이 비어 있습니다.' : '등록된 직업 없음';
+        ul.innerHTML = `<li style="cursor: default; color: #888;">${emptyMsg}</li>`;
         return;
     }
 
     currentJobList.forEach(job => {
         const li = document.createElement('li');
-        li.textContent = `${job.className} (${job.classGroup || '미분류'})`;
+        if (currentTab === 'trash') {
+            li.innerHTML = `<span>${job.className}</span> <span style="font-size: 11px; color: #ffb74d;">[삭제됨]</span>`;
+        } else {
+            li.textContent = `${job.className} (${job.classGroup || '미분류'})`;
+        }
         
         if (activeJobData && activeJobData.className === job.className) {
             li.classList.add('active');
@@ -92,6 +158,26 @@ function selectJob(job) {
     activeJobData = JSON.parse(JSON.stringify(job)); // Deep copy
     renderJobList();
     populateForm(activeJobData);
+
+    const btnSave = document.getElementById('btn-save-job');
+    const btnDelete = document.getElementById('btn-delete-job');
+    const btnRestore = document.getElementById('btn-restore-job');
+
+    if (currentTab === 'trash') {
+        if (btnSave) btnSave.disabled = true;
+        if (btnDelete) btnDelete.style.display = 'none';
+        if (btnRestore) {
+            btnRestore.style.display = 'inline-block';
+            btnRestore.disabled = false;
+        }
+    } else {
+        if (btnSave) btnSave.disabled = false;
+        if (btnDelete) {
+            btnDelete.style.display = 'inline-block';
+            btnDelete.disabled = false;
+        }
+        if (btnRestore) btnRestore.style.display = 'none';
+    }
 }
 
 function resetForm() {
@@ -103,6 +189,19 @@ function resetForm() {
     };
     renderJobList();
     populateForm(activeJobData);
+
+    const btnSave = document.getElementById('btn-save-job');
+    const btnDelete = document.getElementById('btn-delete-job');
+    const btnRestore = document.getElementById('btn-restore-job');
+
+    if (btnSave) btnSave.disabled = false;
+    if (btnDelete) {
+        btnDelete.style.display = 'inline-block';
+        btnDelete.disabled = true;
+    }
+    if (btnRestore) {
+        btnRestore.style.display = 'none';
+    }
 }
 
 // 폼 채우기
@@ -411,5 +510,116 @@ async function saveCurrentJob() {
     } catch (err) {
         console.error(err);
         alert('저장 중 오류 발생: ' + err.message);
+    }
+}
+
+// 직업 삭제 요청 (논리 삭제 / Soft Delete)
+async function deleteCurrentJob() {
+    const classNameInput = document.getElementById('input-className').value.trim();
+    const targetClassName = (activeJobData && activeJobData.className) ? activeJobData.className : classNameInput;
+
+    if (!targetClassName) {
+        alert('삭제할 직업이 선택되지 않았습니다. 목록에서 삭제할 직업을 선택해 주세요.');
+        return;
+    }
+
+    // 목록에 실제 등록된 직업인지 검증
+    const exists = currentJobList.some(job => job.className === targetClassName);
+    if (!exists) {
+        alert(`'${targetClassName}' 직업은 아직 DB에 저장되지 않았거나 목록에 존재하지 않습니다.`);
+        return;
+    }
+
+    const confirmed = confirm(
+        `[안내] 정말 '${targetClassName}' 직업을 삭제(휴지통 이동)하시겠습니까?\n\n` +
+        `※ 삭제 시 파티 시너지 시뮬레이터에서 즉시 제외되며, 필요할 경우 좌측 '휴지통 🗑️' 탭에서 언제든 복원할 수 있습니다.`
+    );
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+        const res = await fetch(`/admin/synergies/api/${encodeURIComponent(targetClassName)}`, {
+            method: 'DELETE'
+        });
+
+        if (res.status === 401) {
+            alert('로그인이 만료되었거나 로그인이 필요합니다.\n로그인 페이지로 이동합니다.');
+            window.location.href = '/users/login';
+            return;
+        }
+
+        if (res.status === 403) {
+            alert('삭제 실패: 관리자(ADMIN) 권한이 없는 계정입니다.\n관리자 계정으로 로그인 후 다시 시도해 주세요.');
+            return;
+        }
+
+        if (!res.ok) {
+            let errorMsg = '삭제 실패';
+            try {
+                const errorData = await res.json();
+                errorMsg = errorData.message || errorData.error || errorMsg;
+            } catch {
+                errorMsg = (await res.text()) || errorMsg;
+            }
+            throw new Error(errorMsg);
+        }
+
+        alert(`'${targetClassName}' 직업이 휴지통으로 이동되었습니다.\n(휴지통 탭에서 언제든 복원 가능)`);
+        resetForm();
+        await loadJobList();
+    } catch (err) {
+        console.error(err);
+        alert('삭제 중 오류 발생: ' + err.message);
+    }
+}
+
+// 삭제된 직업 복원 요청 (Restore)
+async function restoreCurrentJob() {
+    const targetClassName = (activeJobData && activeJobData.className) ? activeJobData.className : '';
+
+    if (!targetClassName) {
+        alert('복원할 직업을 휴지통 목록에서 선택해 주세요.');
+        return;
+    }
+
+    const confirmed = confirm(`'${targetClassName}' 직업을 다시 활성 상태로 복원하시겠습니까?`);
+    if (!confirmed) return;
+
+    try {
+        const res = await fetch(`/admin/synergies/api/${encodeURIComponent(targetClassName)}/restore`, {
+            method: 'POST'
+        });
+
+        if (res.status === 401) {
+            alert('로그인이 만료되었거나 로그인이 필요합니다.\n로그인 페이지로 이동합니다.');
+            window.location.href = '/users/login';
+            return;
+        }
+
+        if (res.status === 403) {
+            alert('복원 실패: 관리자(ADMIN) 권한이 없는 계정입니다.\n관리자 계정으로 로그인 후 다시 시도해 주세요.');
+            return;
+        }
+
+        if (!res.ok) {
+            let errorMsg = '복원 실패';
+            try {
+                const errorData = await res.json();
+                errorMsg = errorData.message || errorData.error || errorMsg;
+            } catch {
+                errorMsg = (await res.text()) || errorMsg;
+            }
+            throw new Error(errorMsg);
+        }
+
+        alert(`'${targetClassName}' 직업이 성공적으로 복원되었습니다!`);
+        currentTab = 'active';
+        updateTabButtons();
+        resetForm();
+        await loadJobList();
+    } catch (err) {
+        console.error(err);
+        alert('복원 중 오류 발생: ' + err.message);
     }
 }

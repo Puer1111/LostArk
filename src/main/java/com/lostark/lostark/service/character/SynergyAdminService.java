@@ -25,19 +25,35 @@ public class SynergyAdminService {
     private final ObjectMapper objectMapper;
 
     /**
-     * 전체 직업 시너지 목록 조회 (클라이언트 시뮬레이터 및 어드민 공용)
+     * 전체 활성 직업 시너지 목록 조회 (클라이언트 시뮬레이터 및 어드민 공용 - Soft Delete 제외)
      */
     @Cacheable(value = "synergyCache")
     @Transactional(readOnly = true)
     public List<SynergyJobDto> getAllSynergies() {
-        List<SynergyJob> entities = synergyJobRepository.findAll();
-        List<SynergyJobDto> list = new ArrayList<>();
+        List<SynergyJob> entities = synergyJobRepository.findAllByIsDeletedFalse();
+        return convertEntitiesToDtos(entities);
+    }
 
+    /**
+     * 삭제된 직업(휴지통) 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<SynergyJobDto> getDeletedSynergies() {
+        List<SynergyJob> entities = synergyJobRepository.findAllByIsDeletedTrue();
+        return convertEntitiesToDtos(entities);
+    }
+
+    private List<SynergyJobDto> convertEntitiesToDtos(List<SynergyJob> entities) {
+        List<SynergyJobDto> list = new ArrayList<>();
         for (SynergyJob entity : entities) {
             try {
                 SynergyJobDto dto = objectMapper.readValue(entity.getDataJson(), SynergyJobDto.class);
                 dto.setClassName(entity.getClassName());
                 dto.setClassGroup(entity.getClassGroup());
+                dto.setIsDeleted(entity.isDeleted());
+                if (entity.getDeletedAt() != null) {
+                    dto.setDeletedAt(entity.getDeletedAt().toString());
+                }
                 list.add(dto);
             } catch (Exception e) {
                 log.error("Failed to parse synergy JSON for class: {}", entity.getClassName(), e);
@@ -56,6 +72,10 @@ public class SynergyAdminService {
                 SynergyJobDto dto = objectMapper.readValue(entity.getDataJson(), SynergyJobDto.class);
                 dto.setClassName(entity.getClassName());
                 dto.setClassGroup(entity.getClassGroup());
+                dto.setIsDeleted(entity.isDeleted());
+                if (entity.getDeletedAt() != null) {
+                    dto.setDeletedAt(entity.getDeletedAt().toString());
+                }
                 return dto;
             } catch (Exception e) {
                 log.error("Failed to parse synergy JSON for class: {}", entity.getClassName(), e);
@@ -66,6 +86,7 @@ public class SynergyAdminService {
 
     /**
      * 직업 시너지 등록 / 수정 (Upsert)
+     * 이전에 삭제(Soft Delete)된 직업인 경우 다시 활성화(restore)
      */
     @CacheEvict(value = "synergyCache", allEntries = true)
     @Transactional
@@ -83,6 +104,7 @@ public class SynergyAdminService {
 
             entity.setClassGroup(dto.getClassGroup());
             entity.setDataJson(json);
+            entity.restore(); // 저장 시 활성화 상태로 복원
 
             synergyJobRepository.save(entity);
             return dto;
@@ -93,11 +115,28 @@ public class SynergyAdminService {
     }
 
     /**
-     * 직업 시너지 삭제
+     * 직업 시너지 논리 삭제 (Soft Delete)
      */
     @CacheEvict(value = "synergyCache", allEntries = true)
     @Transactional
     public void deleteSynergy(String className) {
-        synergyJobRepository.findByClassName(className).ifPresent(synergyJobRepository::delete);
+        synergyJobRepository.findByClassName(className).ifPresent(entity -> {
+            entity.markDeleted();
+            synergyJobRepository.save(entity);
+            log.info("Soft deleted synergy job: {}", className);
+        });
+    }
+
+    /**
+     * 삭제된 직업 시너지 복원 (Restore)
+     */
+    @CacheEvict(value = "synergyCache", allEntries = true)
+    @Transactional
+    public void restoreSynergy(String className) {
+        synergyJobRepository.findByClassName(className).ifPresent(entity -> {
+            entity.restore();
+            synergyJobRepository.save(entity);
+            log.info("Restored synergy job: {}", className);
+        });
     }
 }

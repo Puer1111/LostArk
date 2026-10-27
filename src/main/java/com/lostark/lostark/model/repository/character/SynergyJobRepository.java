@@ -9,5 +9,8 @@ import java.util.Optional;
 @Repository
 public interface SynergyJobRepository extends JpaRepository<SynergyJob, Long> {
     Optional<SynergyJob> findByClassName(String className);
+    Optional<SynergyJob> findByClassNameAndIsDeletedFalse(String className);
+    java.util.List<SynergyJob> findAllByIsDeletedFalse();
+    java.util.List<SynergyJob> findAllByIsDeletedTrue();
     boolean existsByClassName(String className);
 }

@@ -167,8 +167,13 @@
                 cursor: pointer;
                 font-weight: bold;
             }
+            .btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
             .btn-primary { background-color: #2196f3; color: white; }
             .btn-success { background-color: #4caf50; color: white; }
+            .btn-warning { background-color: #ff9800; color: white; }
             .btn-danger { background-color: #f44336; color: white; }
             .btn-secondary { background-color: #607d8b; color: white; }
             .btn-sm { padding: 4px 8px; font-size: 12px; }
@@ -214,13 +219,18 @@
                     <div>
                         <button id="btn-new-job" class="btn btn-success">+ 신규 직업 추가</button>
                         <button id="btn-save-job" class="btn btn-primary">저장 (DB 반영)</button>
+                        <button id="btn-restore-job" class="btn btn-warning" style="display: none;">♻️ 직업 복원</button>
+                        <button id="btn-delete-job" class="btn btn-danger" disabled>직업 삭제 (DB 반영)</button>
                     </div>
                 </div>
 
                 <div class="admin-layout">
                     <!-- 좌측 등록된 직업 리스트 -->
                     <div class="job-list-panel">
-                        <h3>직업 목록</h3>
+                        <div class="tab-header" style="display: flex; gap: 4px; margin-bottom: 12px;">
+                            <button type="button" id="tab-active-jobs" class="tab-btn active" style="flex: 1; padding: 7px 4px; font-size: 13px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; background: #3f51b5; color: white;">활성 직업</button>
+                            <button type="button" id="tab-trash-jobs" class="tab-btn" style="flex: 1; padding: 7px 4px; font-size: 13px; font-weight: bold; border-radius: 4px; border: none; cursor: pointer; background: #2a2a32; color: #aaa;">휴지통 🗑️</button>
+                        </div>
                         <ul id="job-list-ul">
                             <!-- JS에서 동적 로드 -->
                         </ul>

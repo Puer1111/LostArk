@@ -265,12 +265,6 @@ function initTabSystem() {
                 }
             });
 
-            // 아바타 탭 클릭 시 좌측 캐릭터 전신 이미지 카드 노출 제어
-            const leftImageCard = document.getElementById('left-character-image-card');
-            if (leftImageCard) {
-                leftImageCard.style.display = (target === 'avatar') ? 'flex' : 'none';
-            }
-
             // [원정대] 탭 클릭 시 최초 1회만 Lazy Loading 수행
             if (target === 'expedition' && !expeditionLoaded) {
                 loadExpeditionData();
@@ -456,10 +450,30 @@ function applyArkGridGradeColors() {
             const grade = gradeElement.textContent.trim();
             const color = gradeColorMap[grade];
             if (color) {
-                iconImg.style.borderColor = color;
-                iconImg.style.boxShadow = `0 0 8px ${color}66`;
+                // 이미지 내부의 테두리 및 그림자 초기화 (이중 테두리 방지)
+                iconImg.style.border = 'none';
+                iconImg.style.boxShadow = 'none';
+
                 if (wrapper) {
-                    wrapper.style.background = `radial-gradient(circle, ${color}44 0%, transparent 75%)`;
+                    let r = parseInt(color.slice(1, 3), 16);
+                    let g = parseInt(color.slice(3, 5), 16);
+                    let b = parseInt(color.slice(5, 7), 16);
+                    let alpha = 0.15;
+
+                    // 등급별 맞춤 틴트/투명도 조건식
+                    if (grade === '고대') {
+                        // 고대는 밝은 베이지 톤이므로 RGB 채도를 살짝 올리고 투명도를 30%로 조정
+                        r = 235; g = 200; b = 145;
+                        alpha = 0.3;
+                    } else if (grade === '일반') {
+                        alpha = 0.08;
+                    }
+
+                    // arkGrid-icon-wrapper에 테두리, 배경색, 광채 효과 통합 적용
+                    wrapper.style.border = `2px solid ${color}`;
+                    wrapper.style.boxShadow = `0 0 8px ${color}66`;
+                    wrapper.style.background = 'none';
+                    wrapper.style.backgroundColor = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                 }
             }
         }

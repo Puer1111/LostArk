@@ -20,7 +20,7 @@ public class CharacterArkGrid {
 
         private boolean isDealer = true;
 
-        void setDealer(boolean dealer) {
+        public void setDealer(boolean dealer) {
             this.isDealer = dealer;
             if (this.slots != null) {
                 for (Slot slot : this.slots) {
@@ -143,6 +143,23 @@ public class CharacterArkGrid {
             return effectStr;
         }
 
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean isCoreGemEffect(String effectStr) {
+            if (effectStr == null || effectStr.trim().isEmpty()) {
+                return false;
+            }
+            List<String> coreDealer = java.util.Arrays.asList("공격력", "보스 피해", "추가 피해");
+            List<String> coreSupport = java.util.Arrays.asList("낙인력", "아군 공격 강화", "아군 피해 강화");
+            List<String> targetList = this.isDealer ? coreDealer : coreSupport;
+            String name = extractEffectName(effectStr);
+            for (String target : targetList) {
+                if (name.contains(target)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
 
 
 
@@ -168,7 +185,7 @@ public class CharacterArkGrid {
 
         private boolean isDealer = true;
 
-        void setDealer(boolean dealer) {
+        public void setDealer(boolean dealer) {
             this.isDealer = dealer;
         }
 
@@ -180,6 +197,23 @@ public class CharacterArkGrid {
         @com.fasterxml.jackson.annotation.JsonIgnore
         public List<String> getCombinedGemEffects(boolean isDealer) {
             return sortEffects(combineGemEffects(this.gems), isDealer);
+        }
+
+        @com.fasterxml.jackson.annotation.JsonIgnore
+        public boolean isCoreGemEffect(String effectStr) {
+            if (effectStr == null || effectStr.trim().isEmpty()) {
+                return false;
+            }
+            List<String> coreDealer = java.util.Arrays.asList("공격력", "보스 피해", "추가 피해");
+            List<String> coreSupport = java.util.Arrays.asList("낙인력", "아군 공격 강화", "아군 피해 강화");
+            List<String> targetList = this.isDealer ? coreDealer : coreSupport;
+            String name = extractEffectName(effectStr);
+            for (String target : targetList) {
+                if (name.contains(target)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
     @Data

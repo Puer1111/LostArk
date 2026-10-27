@@ -31,6 +31,23 @@ public class SynergyJob {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    public void markDeleted() {
+        this.isDeleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public void restore() {
+        this.isDeleted = false;
+        this.deletedAt = null;
+    }
+
     @PrePersist
     @PreUpdate
     public void onUpdate() {

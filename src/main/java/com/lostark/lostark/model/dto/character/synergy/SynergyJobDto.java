@@ -16,6 +16,8 @@ public class SynergyJobDto {
 
     private String className;
     private String classGroup; // 전사, 무도가, 헌터, 마법사, 암살자, 스페셜리스트
+    private Boolean isDeleted;
+    private String deletedAt;
     
     @Builder.Default
     private List<ClassEngravingDto> classEngravings = new ArrayList<>();

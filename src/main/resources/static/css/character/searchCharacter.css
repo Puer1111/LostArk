@@ -1,275 +1,369 @@
 /* ==========================================================================
-   Common Layout & Components
+   1. CSS Variables & Design Tokens (Flat Dark Theme)
    ========================================================================== */
-li{
-    list-style-type: none;
-}
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 15px;
-    border-radius: 12px;
-}
+:root {
+    /* Backgrounds */
+    --bg-page: #0f1012;
+    --bg-card: #181a1e;
+    --bg-card-inner: #121316;
+    --bg-card-hover: #1f2126;
 
-.layout-wrapper {
-    display: flex;
-    gap: 15px;
-}
+    /* Text */
+    --text-primary: #e6e8eb;
+    --text-secondary: #8a8f98;
 
-.left-column {
-    flex: 1;
-    align-self: flex-start;
-}
+    /* Border */
+    --border: #262930;
 
-.right-column {
-    flex: 2;
-}
+    /* Single Accent Color */
+    --accent: #e5a93c; /* Golden Amber */
 
-h1, h2, h3 {
-    /*color: #e1e1e1;*/
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 12px;
-    font-size: 1.15rem;
-}
-
-/*strong {*/
-/*    color: #ffd700;*/
-/*}*/
-
-.section {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 20px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 10px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-    transition: z-index 0s;
-}
-
-.section:hover {
-    z-index: 100;
-}
-
-.section p {
-    margin: 6px 0;
-    color: #ccc;
-    font-size: 0.92rem;
+    /* Item Grades */
+    --grade-ancient: #e3c7a1;
+    --grade-relic: #fa5d00;
+    --grade-legend: #f99200;
+    --grade-hero: #ce43fc;
+    --grade-rare: #00b5ff;
 }
 
 /* ==========================================================================
-   Refresh Button
+   2. Base Reset & Common Card
    ========================================================================== */
-.refresh-container {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+html {
+    scrollbar-gutter: stable;
 }
 
-.refresh-btn {
-    background: rgba(44, 62, 80, 0.8);
-    color: #ffd700;
-    border: 1px solid rgba(255, 215, 0, 0.4);
-    padding: 8px 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(4px);
-}
-
-.refresh-btn:hover:not(:disabled) {
-    background-color: #ffd700;
-    color: #1a1a1a;
-    border-color: #ffd700;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2);
-}
-
-/* ==========================================================================
-   Tabs
-   ========================================================================== */
-.info-tabs {
-    display: flex;
-    gap: 2px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 8px;
-}
-
-.tab-btn {
-    background: none;
-    border: none;
-    color: #64748b;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: all 0.2s ease;
-    border-radius: 5px 5px 0 0;
-}
-
-.tab-btn:hover:not(.active) {
-    color: #111111;
-    background: rgba(17, 17, 17, 0.03);
-}
-
-.tab-btn.active {
-    color: #111111;
-    background: rgba(17, 17, 17, 0.06);
-    box-shadow: inset 0 -2px 0 #111111;
-}
-
-/* ==========================================================================
-   Profile Section
-   ========================================================================== */
-.section.profiles {
-    position: relative;
-    /*width: 320px;*/
-    padding: 24px;
-    color: #333333;
-    background-color: #ffffff;
-    border-radius: 18px;
-    border: 2px solid #f1d594;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+* {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.profile-top-flex {
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+li {
+    list-style: none;
+}
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 16px;
+    zoom: 1.1;
+}
+
+/* 카드 공통 규칙 */
+.card {
+    background-color: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.card-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
     display: flex;
     align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
+    justify-content: space-between;
 }
 
-.profile-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid #f1d594;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    flex-shrink: 0;
-}
-
-.profile-header-new {
-    margin-bottom: 0;
-}
-
-.profile-name-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.card-subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
     margin-bottom: 6px;
 }
 
-.profile-name-new {
-    font-size: 1.55rem;
-    font-weight: 800;
-    color: #111111;
-    letter-spacing: -0.03em;
-}
-
-.profile-level-badge {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #b28530;
-    background-color: #fdf6e2;
-    border: 1.5px solid #f1d594;
-    padding: 3px 12px;
-    border-radius: 20px;
-    line-height: 1.2;
-}
-
-.profile-class-new {
-    font-size: 0.95rem;
-    color: #666666;
-    font-weight: 500;
-}
-
-.profile-grid-new {
+/* ==========================================================================
+   3. 요약 바 (전체 폭, 4칸 그리드)
+   ========================================================================== */
+.summary-bar {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 12px;
 }
 
-.profile-grid-item {
-    background-color: #f8f9fa;
-    border-radius: 10px;
-    padding: 12px;
-    text-align: center;
+.summary-item {
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
     display: flex;
     flex-direction: column;
     gap: 4px;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.01);
 }
 
-.grid-item-label {
-    font-size: 0.75rem;
-    color: #888888;
-    font-weight: 500;
+.summary-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 400;
 }
 
-.grid-item-value {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #111111;
+.summary-value {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
 }
 
 /* ==========================================================================
-   Equipment & Items
+   4. 본문 2단 레이아웃 (230px sticky + minmax(0, 1fr))
    ========================================================================== */
-.equipment-columns {
-    display: flex;
-    gap: 5px;
+.layout-main {
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
 }
 
-.equipment-left, .equipment-right {
+/* 왼쪽 컬럼 (데스크톱 sticky) */
+.left-column {
+    position: sticky;
+    top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 캐릭터 이미지 영역 (높이 220px, 상체 포커싱) */
+.avatar-box {
+    width: 100%;
+    height: 220px;
+    border-radius: 8px;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 11px;
+    overflow: hidden;
+}
+
+.avatar-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.character-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.character-level {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+/* 정보 갱신 버튼 */
+.refresh-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.refresh-btn {
+    background-color: var(--bg-card-inner);
+    color: var(--accent);
+    border: 0.5px solid var(--accent);
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.refresh-btn:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: #121316;
+}
+
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cooldown-text {
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* 각인 목록 */
+.engravings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.engraving-row {
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 6px;
+}
+
+.engraving-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+}
+
+.engraving-img-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.engraving-name {
+    font-size: 11px;
+    color: var(--text-primary);
     flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.engraving-icon {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/pc/profile/img_engrave_icon.png?3e9f6d074e03983e7d45');
+    background-repeat: no-repeat;
+    background-size: 20px auto;
+    vertical-align: middle;
+    border-radius: 3px;
+}
+
+/* ==========================================================================
+   5. 오른쪽 탭 바 & 컨텐츠
+   ========================================================================== */
+.tabs-nav {
+    display: flex;
+    gap: 4px;
+    border-bottom: 0.5px solid var(--border);
+    margin-bottom: 12px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.tab-btn:hover {
+    background-color: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+
+.tab-btn.active {
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--accent);
+}
+
+.tab-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   6. [장비 탭] - 좌우 2컬럼 배치 & 너비/높이 최적화
+   ========================================================================== */
+.equipment-columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+}
+
+.equipment-left,
+.equipment-right {
+    min-width: 0; /* flex/grid 오버플로 방지 */
+}
+
+.equipment-list,
+.accessory-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .equipment-area {
-    /*width: 100%;*/
-    min-height: 54px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 8px 12px;
-    /*background-color: #ffffff;*/
-    /*border: 1px solid #eaeaea;*/
+    gap: 8px;
+    padding: 5px 8px;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
     border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-    margin-bottom: 5px;
+    min-height: 42px;
+    transition: background-color 0.15s ease;
+}
+
+.equipment-area:hover {
+    background-color: var(--bg-card-hover);
 }
 
 .item-img {
     flex-shrink: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 
 .item-img img {
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    background-color: #1a1c23;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 0 2px rgba(255, 255, 255, 0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: #121316;
+    display: block;
 }
 
-/* 왼쪽 장비(방어구/무기 등) 아이콘에만 전용 테두리 및 배경 프레임 이미지 적용 */
 .equipment-left .item-img img {
-    border: 2px solid #2b303b;
+    border: 1px solid var(--border);
     background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/common/game/bg_equipment_petBorder.png');
     background-repeat: no-repeat;
     background-position: center;
@@ -279,135 +373,187 @@ h1, h2, h3 {
 .item-description {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 1px;
+    overflow: hidden;
+    flex: 1;
 }
 
-.item-description span {
-    font-size: 0.85rem;
-    color: #2c3e50;
+.item-name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-honing {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.item-orb,
+.item-gauntlet {
+    font-size: 10px;
+    color: var(--grade-ancient);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 악세서리 오른쪽 텍스트 최적화 (가로폭 축소 대응) */
+.accessory-description {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    flex: 1;
+    font-size: 11px;
+    line-height: 1.25;
+}
+
+.acc-part-main {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acc-part-main font {
+    font-size: 11.5px !important;
+}
+
+.acc-part-sub {
+    font-size: 10.5px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acc-part-engraving {
+    font-size: 10px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   7. [보석] - 스타일 유지 + 칸 축소 + 피해 / 쿨감 분리
+   ========================================================================== */
+.gems-split-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+}
+
+.gem-group-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gem-group-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 3px 6px;
+    border-radius: 4px;
     white-space: nowrap;
 }
 
-.item-quality {
-    border: 1px solid black;
-    padding: 2px;
-    border-radius: 3px;
-    width: 35px;
-    text-align: center;
-    margin-right: 10px;
+.badge-damage {
+    background-color: rgba(250, 93, 0, 0.15);
+    color: #ff6b6b;
+    border: 0.5px solid rgba(250, 93, 0, 0.3);
 }
 
+.badge-cooldown {
+    background-color: rgba(0, 181, 255, 0.15);
+    color: #4dabf7;
+    border: 0.5px solid rgba(0, 181, 255, 0.3);
+}
 
+.badge-other {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    border: 0.5px solid var(--border);
+}
 
-/* ==========================================================================
-   Gems
-   ========================================================================== */
-.gems-item-content {
+.gem-list {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    width: 100%;
-    gap: 15px;
-    background: transparent;
-    padding: 0;
-    margin-bottom: 0;
-}
-
-.gem-group {
-    flex: 1 1 max-content;
-    min-width: 120px;
-    background: #ffffff;
-    border: 1px solid #eaeaea;
-    border-radius: 8px;
-    padding: 10px 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
-}
-
-.gem-group-damage {
-    border-color: #ffc9c9;
-    background: #fff5f5;
-}
-
-.gem-group-cooldown {
-    border-color: #a5d8ff;
-    background: #e7f5ff;
-}
-
-.gem-group-other {
-    border-color: #dee2e6;
-    background: #f8f9fa;
-}
-
-.gem-group-title {
-    font-size: 0.82em;
-    font-weight: 700;
-    margin-bottom: 2px;
-}
-
-.gem-title-damage { color: #e03131; }
-.gem-title-cooldown { color: #1971c2; }
-.gem-title-other { color: #495057; }
-
-.gem-group-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
     align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 
-.gem-wrapper {
+.gem-slot-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
 }
 
-.gem-img-box {
+.gem-icon-wrapper {
     position: relative;
-    display: inline-block;
+    width: 32px;
+    height: 32px;
 }
 
 .gem-img {
-    width: 40px !important;
-    height: 40px !important;
-    border-radius: 6px;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 4px;
     display: block;
+    background-color: #121316;
     box-sizing: border-box;
 }
 
 .gem-skill-badge {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    width: 18px;
-    height: 18px;
+    top: -3px;
+    right: -3px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    border: 1.5px solid #ffd700;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    object-fit: cover;
+    border: 1.5px solid var(--accent);
     background-color: #000;
+    object-fit: cover;
     z-index: 2;
 }
 
 .gem-level-label {
-    font-size: 0.75em;
-    font-weight: bold;
-    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
     line-height: 1;
 }
 
-.gem-level-damage { color: #c92a2a; }
-.gem-level-cooldown { color: #1864ab; }
-.gem-level-other { color: #343a40; }
+.text-damage { color: #ff6b6b; }
+.text-cooldown { color: #4dabf7; }
+.text-other { color: var(--text-secondary); }
 
-/* Gem Level Borders */
+/* 보석 테두리 광채 효과 */
 .gem-border-10 {
     border: 2px solid #FA5D00 !important;
-    box-shadow: 0 0 10px rgba(250, 93, 0, 0.6);
+    box-shadow: 0 0 8px rgba(250, 93, 0, 0.6);
 }
 
 .gem-border-8 {
@@ -416,119 +562,602 @@ h1, h2, h3 {
 }
 
 .gem-border-base {
-    border: 2px solid #E67E22 !important;
+    border: 1.5px solid #E67E22 !important;
     box-shadow: 0 0 4px rgba(230, 126, 34, 0.3);
 }
 
-/* ==========================================================================
-   Engravings
-   ========================================================================== */
-.section.Engravings {
-    box-shadow: none;
-    padding: 0;
-    margin-top: 15px;
+.gem-group-divider {
+    width: 1px;
+    height: 32px;
+    background-color: var(--border);
+    margin: 0 4px;
 }
-.engraving-container {
+
+/* ==========================================================================
+   8. [아크 패시브 & 아크 그리드 심플 카드]
+   ========================================================================== */
+.overview-split-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+/* 아크 패시브 심플 */
+.ark-passive-simple-cols {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.ark-passive-category {
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ark-cat-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 3px;
+    text-align: center;
+}
+
+.ark-effect-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ark-effect-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 11px;
+}
+
+.ark-effect-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.ark-effect-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.ark-effect-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-primary);
+    font-size: 10.5px;
+}
+
+.ark-effect-level {
+    font-weight: 600;
+    color: var(--accent);
+    flex-shrink: 0;
+    font-size: 11px;
+}
+
+/* 아크 그리드 심플 */
+.ark-grid-simple-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.ark-grid-slot-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.ark-grid-slot-left {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ark-grid-slot-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+.ark-grid-slot-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 11px;
+}
+
+.ark-grid-slot-point {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 11px;
+}
+
+.ark-grid-gems-summary {
+    border-top: 0.5px solid var(--border);
+    padding-top: 6px;
+}
+
+.ark-grid-gems-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+}
+
+.ark-grid-gems-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.ark-gem-effect-item {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background-color: var(--bg-card-inner);
+    padding: 3px 6px;
+    border-radius: 4px;
+}
+
+.ark-gem-effect-item.is-core {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.no-data-text {
+    font-size: 11px;
+    color: var(--text-secondary);
+    padding: 4px;
+}
+
+/* 아크 패시브 하단 전투 특성 카드 박스 */
+.ark-passive-stats-container {
+    margin-top: 8px;
+}
+
+.ark-stats-list-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
+    grid-auto-flow: column;
+    gap: 4px 10px;
+}
+
+/* ==========================================================================
+   9. [아바타 탭]
+   ========================================================================== */
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.avatar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.avatar-img-wrapper {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    background-color: #121316;
+    border: 0.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.avatar-img-wrapper img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.avatar-inner-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e03131;
+    color: white;
+    font-size: 8px;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.avatar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.avatar-type {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+}
+
+.avatar-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avatar-grade-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 11px;
+}
+
+.avatar-grade {
+    font-weight: 600;
+}
+
+.avatar-set-badge {
+    color: var(--grade-rare);
+    font-size: 10.5px;
+}
+
+.avatar-dyes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.dye-item {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 1px 4px;
+    border-radius: 3px;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    border: 0.5px solid var(--border);
+}
+
+.pattern-img {
+    width: 10px;
+    height: 10px;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   10. [스킬 탭]
+   ========================================================================== */
+.skill-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.skill-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+}
+
+.skill-main-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.skill-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.skill-name-area {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.skill-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.skill-attributes {
+    display: flex;
+    gap: 4px;
+}
+
+.skill-attr-tag {
+    font-size: 9.5px;
+    background: rgba(229, 169, 60, 0.15);
+    color: var(--accent);
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 0.5px solid rgba(229, 169, 60, 0.3);
+    white-space: nowrap;
+}
+
+.skill-level-text {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.skill-extras {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.skill-gems {
+    display: flex;
+    gap: 6px;
+}
+
+.gem-mini-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.gem-mini-img {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    display: block;
+}
+
+.gem-mini-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.gem-mini-name {
+    font-size: 9px;
+    color: var(--grade-rare);
+    white-space: nowrap;
+    max-width: 44px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.skill-rune {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 40px;
+}
+
+.rune-icon-img {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border);
+}
+
+.rune-border-영웅 { border-color: var(--grade-hero); }
+.rune-border-전설 { border-color: var(--grade-legend); }
+.rune-border-유물 { border-color: var(--grade-relic); }
+
+.rune-name {
+    font-size: 9.5px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    text-align: center;
+}
+
+.tripod-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.tripod-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: block;
+}
+
+.tripod-slot-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--accent);
+    font-size: 8px;
+    font-weight: bold;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* ==========================================================================
+   11. [아크 그리드 상세 탭]
+   ========================================================================== */
+.arkGrid-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.engraving-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 8px 6px;
+.arkGrid-slot-box {
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
     border-radius: 8px;
+    overflow: hidden;
 }
 
-.engraving-name {
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.engraving-item-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.engraving-info-group {
+.arkGrid-item {
     display: flex;
     align-items: center;
+    padding: 10px 12px;
+    gap: 12px;
+    position: relative;
 }
 
-.engraving-icon {
-    display: inline-block;
-    width: 28px;
-    height: 28px;
-    background-image: url('https://cdn-lostark.game.onstove.com/2018/obt/assets/images/pc/profile/img_engrave_icon.png?3e9f6d074e03983e7d45');
-    background-repeat: no-repeat;
-    vertical-align: middle;
+.arkGrid-icon-wrapper img {
+    width: 36px;
+    height: 36px;
     border-radius: 4px;
 }
 
-.engraving-level {
-    font-size: 0.9em;
-    font-weight: bold;
-    /*color: #FFD700;*/
-    margin-left: 5px;
-}
-
-/* ==========================================================================
-   Skills & Runes
-   ========================================================================== */
-.skill-rune {
+.arkGrid-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 2px;
+}
+
+.arkGrid-grade {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.arkGrid-detail-btn {
+    position: absolute;
+    bottom: 6px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.core-effect-display {
+    font-size: 11px;
+    color: var(--text-primary);
+    margin-left: 10px;
+}
+
+.arkGrid-detail-panel {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 12px;
+    border-top: 0.5px solid var(--border);
+}
+
+.arkGrid-gems-detail {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.arkGrid-gem-info {
+    background-color: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
     gap: 4px;
-    min-width: 50px;
+    font-size: 10.5px;
 }
 
-.rune-icon-img {
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    display: block;
-    border: 2px solid #777;
+.arkGrid-gem-icon-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 3px;
 }
 
-.avatar-dyes > div span {
-    color: #ffffff !important;
-}
-.tripod-wrapper > img {
-    background-color : rgba(0, 0, 0, 0.5);
+.gem-effect-part {
+    color: var(--text-secondary);
+    font-size: 10.5px;
 }
 
 /* ==========================================================================
-   Ark Passive
+   12. [아크 패시브 상세 탭]
    ========================================================================== */
-.section.arkPassive {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 20px;
+.ark-passive-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
 }
 
 .ark-passive-column {
-    flex: 1;
+    background-color: var(--bg-card-inner);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 8px;
 }
 
-.ark-passive-column h3 {
+.ark-col-header h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
     text-align: center;
-    border-bottom: 2px solid #444;
-    padding-bottom: 10px;
-    margin-bottom: 5px;
-    /*color: #ffd700;*/
+}
+
+.ark-col-header p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 2px;
 }
 
 .ark-tier-section {
-    height: 80px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-    padding: 10px 5px;
+    min-height: 64px;
+    border-bottom: 0.5px dashed var(--border);
+    padding: 8px 4px;
     position: relative;
     display: flex;
     align-items: center;
@@ -543,21 +1172,43 @@ h1, h2, h3 {
     content: attr(data-tier) " Tier";
     position: absolute;
     top: 2px;
-    left: 0;
-    font-size: 0.65em;
-    color: #888;
-    text-transform: uppercase;
+    left: 2px;
+    font-size: 9px;
+    color: var(--text-secondary);
 }
 
 .ark-passive-effect-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
-    margin: 10px 5px 0 5px;
+    gap: 3px;
     text-align: center;
 }
 
+.effect-header img {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 0.5px solid var(--border);
+}
+
+.effect-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.effect-name {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.effect-level {
+    font-size: 10px;
+}
+
+/* 아크패시브 툴팁 */
 .ark-passive-effect-item:hover .ark-passive-tooltip {
     display: block;
 }
@@ -565,251 +1216,37 @@ h1, h2, h3 {
 .ark-passive-tooltip {
     display: none;
     position: absolute;
-    top: 40px;
+    top: 36px;
     left: 50%;
     transform: translateX(-50%);
-    width: 300px;
-    background-color: #1e1e1e;
-    border: 1px solid #444;
-    padding: 15px;
-    border-radius: 8px;
+    width: 260px;
+    background-color: var(--bg-card);
+    border: 0.5px solid var(--border);
+    padding: 10px;
+    border-radius: 6px;
     z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    color: #efefef;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    color: var(--text-primary);
     text-align: left;
 }
 
-.ark-passive-tooltip .tooltip-title {
-    font-size: 1rem;
-    font-weight: bold;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 5px;
-    color: #ffd700;
-}
-
-.ark-passive-tooltip .tooltip-description {
-    font-size: 0.85rem;
-    line-height: 1.5;
-}
-
-.effect-header {
-    position: relative;
-}
-
-.effect-header img {
-    width: 32px !important;
-    height: 32px !important;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #555;
-    padding: 2px;
-}
-
-.effect-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.effect-name {
-    font-size: 0.59rem;
+.tooltip-title {
+    font-size: 11px;
     font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 4px;
+    border-bottom: 0.5px solid var(--border);
+    padding-bottom: 3px;
 }
 
-.effect-level {
-    font-size: 0.65rem;
-    opacity: 0.9;
-}
-
-.effect-description {
-    font-size: 0.75em;
-    color: #efefef;
-    line-height: 1.2;
-}
-
-/* Ark Passive Simple */
-.arkPassive-simple-container {
-    position: relative;
-}
-
-
-.arkPassive-simple-header {
-    width: 95px;
-    display: flex;
-    flex-wrap: nowrap;
-    margin-right: 15px;
-}
-
-.arkPassive-simple-header h3 {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
+.tooltip-description {
+    font-size: 10.5px;
+    color: var(--text-secondary);
+    line-height: 1.4;
 }
 
 /* ==========================================================================
-   Ark Grid
-   ========================================================================== */
-.arkGrid-simple-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.arkGrid-simple-item {
-    display: flex;
-    /*flex-direction: column;*/
-    align-items: center;
-    gap: 4px;
-    width: 50px;
-    z-index: 1;
-}
-
-.arkGrid-simple-item .arkGrid-img {
-    width: 50px;
-    height: 50px;
-}
-
-.arkGrid-description {
-    width: 100%;
-    text-align: center;
-    color: white;
-    font-size: 0.65rem;
-    word-break: keep-all;
-}
-
-
-.arkGrid-description .tooltip-content {
-    /*color: #efefef;*/
-
-    background: none;
-    border: none;
-    box-shadow: none;
-    backdrop-filter: none;
-    padding: 0;
-    margin-top: 5px;
-}
-
-.arkGrid-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.arkGrid-item {
-    display: flex;
-    align-items: center;
-    background: transparent;
-    padding: 12px 10px;
-    border-top: 2px solid #e9ecef;
-    gap: 15px;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.arkGrid-slot-box {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.arkGrid-detail-panel {
-    background: rgba(0, 0, 0, 0.4);
-    padding: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-top: none;
-    margin-top: -2px;
-}
-
-.arkGrid-gems-detail {
-    display: flex;
-    gap: 10px;
-}
-
-.arkGrid-gem-item {
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    padding-bottom: 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    justify-content: center;
-    max-height: 375px;
-    flex: 1;
-    max-width: calc((100% - 20px) / 3);
-    min-width: 0;
-    box-sizing: border-box;
-}
-
-.arkGrid-gem-info {
-    flex: 1;
-    color: #efefef;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px;
-}
-
-.arkGrid-gem-icon img {
-    width: 35px;
-    height: 35px;
-    border-radius: 4px;
-    background: rgba(0, 0, 0, 0.5);
-    border: 1px solid #444;
-}
-
-.arkGrid-gem-icon-img {
-    width: 30px;
-    height: 30px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    border: 1px solid #555;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.arkGrid-icon-wrapper {
-    position: relative;
-    padding: 3px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s ease;
-}
-
-.arkGrid-icon-wrapper img {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    border: 2px solid #444;
-    display: block;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.core-effect-display {
-    font-size: 0.72rem;
-    color: #efefef;
-    padding: 8px 12px;
-    width: 400px;
-}
-
-.arkGrid-detail-btn {
-    position: absolute;
-    bottom: 5px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: #888;
-    cursor: pointer;
-    padding: 0 5px;
-    font-size: 1.1rem;
-    line-height: 1;
-    transition: color 0.2s, transform 0.2s;
-    z-index: 5;
-}
-
-/* ==========================================================================
-   Expedition
+   13. [원정대 탭]
    ========================================================================== */
 .expedition-container {
     display: grid;
@@ -828,26 +1265,23 @@ h1, h2, h3 {
     background-repeat: no-repeat;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 0.5px solid var(--border);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .expedition-card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.6);
-    border-color: rgba(255, 215, 0, 0.5);
-    z-index: 10;
+    transform: translateY(-2px);
+    border-color: var(--accent);
 }
 
 .expedition-card::after {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.55);
     z-index: 1;
 }
 
@@ -855,166 +1289,85 @@ h1, h2, h3 {
 .expedition-card .card-body {
     position: relative;
     z-index: 2;
-    padding: 4px 8px;
+    padding: 6px 8px;
     color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 1);
-}
-
-.expedition-card .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 0;
 }
 
 .expedition-card .server-name {
-    font-size: 0.55rem;
-    color: #ffd700;
-    opacity: 0.9;
+    font-size: 10px;
+    color: var(--accent);
 }
 
 .expedition-card .character-name {
-    font-size: 0.8rem;
-    margin: 0;
-    color: #fff;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100px;
-}
-
-.expedition-card .card-body {
-    padding-top: 0;
-    margin-bottom: 2px;
 }
 
 .expedition-card .info-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 3px;
-    font-size: 0.75rem;
-    line-height: 1.3;
+    font-size: 11px;
+    margin-bottom: 2px;
 }
 
-.expedition-card .label {
-    color: #ccc;
-}
-
-.expedition-card .value {
-    font-weight: 500;
-    color: #efefef;
-}
-
-/* ==========================================================================
-   Tooltips & Misc
-   ========================================================================== */
-.tooltip-content {
-    font-size: 0.85rem;
-    margin-top: 6px;
-    /*background: rgba(0, 0, 0, 0.7);*/
-    background-color: #f5f6fa;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    z-index: 10;
-    max-width: 310px;
-}
-
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #222;
-    min-width: 200px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #444;
-    color: #efefef;
-    font-size: 0.85em;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-top: 5px;
-}
-
+.loading-container,
 .no-data {
     text-align: center;
-    padding: 50px;
-    color: #888;
-}
-
-.loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 0;
-    color: #888;
+    padding: 30px;
+    color: var(--text-secondary);
 }
 
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(255, 255, 255, 0.1);
-    border-left-color: #ffd700;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border);
+    border-top: 2px solid var(--accent);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 10px;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 /* ==========================================================================
-   Media Queries
+   14. 등급 색상
    ========================================================================== */
-@media (max-width: 1024px) {
-    .expedition-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
+.text-ancient { color: var(--grade-ancient); }
+.text-relic { color: var(--grade-relic); }
+.text-legend { color: var(--grade-legend); }
+.text-hero { color: var(--grade-hero); }
+.text-rare { color: var(--grade-rare); }
 
+/* ==========================================================================
+   15. 반응형 미디어 쿼리 (768px 이하)
+   ========================================================================== */
 @media (max-width: 768px) {
+    .summary-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .layout-main {
+        grid-template-columns: 1fr;
+    }
+
+    .left-column {
+        position: static;
+    }
+
+    .equipment-columns,
+    .overview-split-grid,
+    .ark-passive-wrapper,
+    .avatar-grid {
+        grid-template-columns: 1fr;
+    }
+
     .expedition-container {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-
-@media (max-width: 480px) {
-    .expedition-container {
-        grid-template-columns: 1fr;
-        justify-items: center;
-    }
-
-    .expedition-card {
-        max-width: 320px;
-    }
-}
-
-/* ==========================================================================
-   Ark Passive & Grid Bottom Row Layout
-   ========================================================================== */
-.ark-bottom-row {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.ark-bottom-row .section.arkPassive,
-.ark-bottom-row .section.arkGrid {
-    flex: 1;
-    margin-bottom: 0;
-    min-width: 0;
-}
-
