@@ -145,7 +145,7 @@
                 font-size: 14px;
                 color: #bbb;
             }
-            .form-group input, .form-group select {
+            .form-group input, .form-group select, .source-row input {
                 padding: 8px 10px;
                 border-radius: 4px;
                 border: 1px solid #444;
@@ -187,10 +187,52 @@
                 display: block;
                 flex-shrink: 0;
             }
+            .source-box {
+                background-color: #1a1a22;
+                border: 1px solid #363642;
+                border-radius: 6px;
+                padding: 10px;
+                margin-bottom: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
             .source-row {
                 display: flex;
                 align-items: center;
                 gap: 8px;
+            }
+            .source-desc-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                padding-top: 6px;
+                border-top: 1px dashed #33333d;
+            }
+            .desc-field {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+            }
+            .desc-field label {
+                font-size: 12px;
+                color: #81c784;
+                font-weight: 500;
+            }
+            .desc-field textarea, .desc-field input {
+                width: 100%;
+                padding: 6px 10px;
+                font-size: 13px;
+                border-radius: 4px;
+                border: 1px solid #444;
+                background-color: #15151a;
+                color: #fff;
+                box-sizing: border-box;
+                font-family: inherit;
+            }
+            .desc-field textarea {
+                resize: vertical;
+                min-height: 48px;
             }
         </style>
     </th:block>

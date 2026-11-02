@@ -230,14 +230,16 @@
                                                   th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'INCREASE'}">
                                             <div class="gem-slot-item">
                                                 <div class="gem-icon-wrapper">
-                                                    <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
-                                                         th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
-                                                    <!-- 스킬 이미지 overlay (absolute) -->
                                                     <th:block th:if="${characterData.characterGems.effects?.skills != null}">
                                                         <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
                                                                   th:if="${skill.gemSlot == item.slot}">
-                                                            <img th:src="${skill.icon}" class="gem-skill-badge"
-                                                                 th:title="${skill.name}" alt="Skill Icon"/>
+                                                            <!-- 스킬 이미지 (메인) -->
+                                                            <img th:src="${skill.icon}" class="gem-img"
+                                                                 th:title="${skill.name}" alt="Skill Icon"
+                                                                 th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
+                                                            <!-- 보석 이미지 (overlay) -->
+                                                            <img alt="Gem Icon" th:src="${item.icon}" class="gem-skill-badge"
+                                                                 th:title="${item.name}"/>
                                                         </th:block>
                                                     </th:block>
                                                 </div>
@@ -259,14 +261,16 @@
                                                   th:if="${item.tooltip != null and item.tooltip.getPrimaryEffectType() == 'DECREASE'}">
                                             <div class="gem-slot-item">
                                                 <div class="gem-icon-wrapper">
-                                                    <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
-                                                         th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
-                                                    <!-- 스킬 이미지 overlay (absolute) -->
                                                     <th:block th:if="${characterData.characterGems.effects?.skills != null}">
                                                         <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
                                                                   th:if="${skill.gemSlot == item.slot}">
-                                                            <img th:src="${skill.icon}" class="gem-skill-badge"
-                                                                 th:title="${skill.name}" alt="Skill Icon"/>
+                                                            <!-- 스킬 이미지 (메인) -->
+                                                            <img th:src="${skill.icon}" class="gem-img"
+                                                                 th:title="${skill.name}" alt="Skill Icon"
+                                                                 th:classappend="${item.tooltip.getGemLevelClass(item.level)}"/>
+                                                            <!-- 보석 이미지 (overlay) -->
+                                                            <img alt="Gem Icon" th:src="${item.icon}" class="gem-skill-badge"
+                                                                 th:title="${item.name}"/>
                                                         </th:block>
                                                     </th:block>
                                                 </div>
@@ -287,13 +291,16 @@
                                                       th:if="${item.tooltip == null or (item.tooltip.getPrimaryEffectType() != 'INCREASE' and item.tooltip.getPrimaryEffectType() != 'DECREASE')}">
                                                 <div class="gem-slot-item">
                                                     <div class="gem-icon-wrapper">
-                                                        <img alt="Gem Icon" th:src="${item.icon}" class="gem-img"
-                                                             th:classappend="${item.tooltip != null ? item.tooltip.getGemLevelClass(item.level) : 'gem-border-base'}"/>
                                                         <th:block th:if="${characterData.characterGems.effects?.skills != null}">
                                                             <th:block th:each="skill : ${characterData.characterGems.effects.skills}"
                                                                       th:if="${skill.gemSlot == item.slot}">
-                                                                <img th:src="${skill.icon}" class="gem-skill-badge"
-                                                                     th:title="${skill.name}" alt="Skill Icon"/>
+                                                                <!-- 스킬 이미지 (메인) -->
+                                                                <img th:src="${skill.icon}" class="gem-img"
+                                                                     th:title="${skill.name}" alt="Skill Icon"
+                                                                     th:classappend="${item.tooltip != null ? item.tooltip.getGemLevelClass(item.level) : 'gem-border-base'}"/>
+                                                                <!-- 보석 이미지 (overlay) -->
+                                                                <img alt="Gem Icon" th:src="${item.icon}" class="gem-skill-badge"
+                                                                     th:title="${item.name}"/>
                                                             </th:block>
                                                         </th:block>
                                                     </div>
@@ -460,7 +467,7 @@
                         <div class="card" th:if="${characterData?.characterCombatSkill != null}">
                             <div class="card-header">전투 스킬</div>
                             <ul class="skill-list">
-                                <li th:each="skill : ${characterData.characterCombatSkill}" th:if="${skill.level > 1}"
+                                <li th:each="skill : ${characterData.characterCombatSkill}" th:if="${skill.rune != null}"
                                     class="skill-item">
                                     <!-- 스킬 기본 정보 -->
                                     <img th:src="${skill.icon}" alt="Skill Icon" class="skill-main-icon"/>
@@ -509,7 +516,7 @@
                                         </div>
 
                                         <!-- 트라이포드 -->
-                                        <div class="skill-tripods" style="display: flex; gap: 6px;">
+                                        <div class="skill-tripods">
                                             <th:block th:each="tripod : ${skill.tripods}" th:if="${tripod.isSelected}">
                                                 <div class="tripod-wrapper">
                                                     <img th:src="${tripod.icon}" th:title="${tripod.name}" class="tripod-img"/>
@@ -532,22 +539,24 @@
                             <div class="arkGrid-list">
                                 <div class="arkGrid-slot-box" th:each="slot : ${characterData.characterArkGrid.slots}">
                                     <div class="arkGrid-item">
-                                        <div class="arkGrid-icon-wrapper">
-                                            <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"/>
-                                        </div>
-                                        <div class="arkGrid-info">
-                                            <div class="arkGrid-name-area">
-                                                <strong th:text="${slot.name}"></strong>
+                                        <!-- 슬롯 기본 정보 (아이콘 + 이름/등급) -->
+                                        <div class="arkGrid-slot-main">
+                                            <div class="arkGrid-icon-wrapper">
+                                                <img th:src="${slot.icon}" th:alt="${slot.name}" class="arkGrid-img"/>
                                             </div>
-                                            <p th:text="${slot.grade}" class="arkGrid-grade"></p>
+                                            <div class="arkGrid-info">
+                                                <div class="arkGrid-name-area">
+                                                    <strong th:text="${slot.name}"></strong>
+                                                    <p th:text="${slot.grade}" class="arkGrid-grade"></p>
+                                                    <p th:text="'활성 포인트 : ' + (${slot.point} ?: 0)" class="arkGrid-point"></p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button class="arkGrid-detail-btn" type="button">
-                                            <span class="arrow" style="font-size:small;">∨ 잼 상세보기</span>
-                                        </button>
 
-                                        <!-- 슬롯 코어 효과 -->
-                                        <div class="arkGrid-extras" th:if="${slot.tooltip != null}">
-                                            <div class="core-effect-display">
+                                        <!-- 슬롯 코어 효과 주석 처리 및 젬 정보 인라인 배치 -->
+                                        <div class="arkGrid-extras">
+                                            <!-- 기존 코어 효과 주석 처리
+                                            <div class="core-effect-display" th:if="${slot.tooltip != null}">
                                                 <div th:if="${#strings.contains(slot.name, '질서의')}"
                                                      class="ark-grid-tooltip"
                                                      th:attr="data-total-points=${slot.point}"
@@ -557,26 +566,25 @@
                                                      th:attr="data-total-points=${slot.point}"
                                                      th:utext="${slot.tooltip.getNestedElementHtml('Element_005', 'Element_001')}"></div>
                                             </div>
-                                        </div>
-                                    </div>
+                                            -->
 
-                                    <!-- 상세보기 패널 -->
-                                    <div class="arkGrid-detail-panel" style="display: none;">
-                                        <div class="arkGrid-gems-detail"
-                                             th:if="${slot.gems != null and !slot.gems.empty}">
-                                            <div th:each="gem : ${slot.gems}" class="arkGrid-gem-item">
-                                                <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
-                                                    <img th:src="${gem.icon}" th:title="${gem.grade}"
-                                                         class="arkGrid-gem-icon-img"/>
-                                                    <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
+                                            <!-- 젬 정보 기본 노출 영역 -->
+                                            <div class="arkGrid-gems-detail"
+                                                 th:if="${slot.gems != null and !slot.gems.empty}">
+                                                <div th:each="gem : ${slot.gems}" class="arkGrid-gem-item">
+                                                    <div class="arkGrid-gem-info" th:if="${gem.tooltip != null}">
+                                                        <img th:src="${gem.icon}" th:title="${gem.grade}"
+                                                             class="arkGrid-gem-icon-img"/>
+                                                        <div th:utext="${gem.tooltip.getElementHtml('Element_000')}"></div>
 
-                                                    <div class="gem-effect-part"
-                                                         th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_005')}">
-                                                        <span th:text="${part}"></span>
-                                                    </div>
-                                                    <div class="gem-effect-part"
-                                                         th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_006')}">
-                                                        <span th:text="${part}"></span>
+                                                        <div class="gem-effect-part"
+                                                             th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_005')}">
+                                                            <span th:text="${part}"></span>
+                                                        </div>
+                                                        <div class="gem-effect-part"
+                                                             th:each="part : ${gem.tooltip.getSimplifiedArkGridGemList('Element_006')}">
+                                                            <span th:text="${part}"></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

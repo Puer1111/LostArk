@@ -381,7 +381,7 @@
 
 /* 우측 상세 패널 */
 .synergy-details-area {
-    width: 320px;
+    width: 340px;
     flex-shrink: 0;
     background-color: var(--bg-card);
     border-radius: var(--radius);

@@ -310,21 +310,35 @@ function addSkillCard(skillData = null) {
 // 발동 스킬 출처 행 추가
 function addSourceRow(container, src = {}) {
     const div = document.createElement('div');
-    div.className = 'form-group source-row';
-    div.style.marginBottom = '8px';
+    div.className = 'source-box';
+    div.style.marginBottom = '10px';
 
     const skillImg = src.skillImg || '';
+    const skillDescription = src.skillDescription || '';
+    const tripodDescription = src.tripodDescription || '';
 
     div.innerHTML = `
-        <img class="skill-img-preview" src="${skillImg || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>NoImg</text></svg>'}" alt="스킬">
-        <input type="text" class="src-skill" placeholder="스킬명" value="${src.skillName || ''}" style="flex: 1.5;">
-        <input type="text" class="src-img" placeholder="스킬 이미지 URL (CDN or /uploads/...)" value="${skillImg}" style="flex: 2;">
-        <input type="file" class="src-file" accept="image/*" style="display: none;">
-        <button type="button" class="btn btn-secondary btn-sm btn-upload-img" title="PC에서 이미지 파일 업로드">파일선택</button>
-        <input type="text" class="src-tripod" placeholder="트라이포드명(선택)" value="${src.tripodName || ''}" style="flex: 1.2;">
-        <input type="text" class="src-tripodRate" placeholder="트포 수치 (예: 10%)" value="${src.tripodRate || ''}" style="flex: 0.8;">
-        <input type="text" class="src-baseRate" placeholder="기본 수치 (예: 12%)" value="${src.baseRate || ''}" style="flex: 0.8;">
-        <button type="button" class="btn btn-danger btn-sm btn-del-src">X</button>
+        <div class="form-group source-row" style="margin-bottom: 0;">
+            <img class="skill-img-preview" src="${skillImg || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>NoImg</text></svg>'}" alt="스킬">
+            <input type="text" class="src-skill" placeholder="스킬명" value="${src.skillName || ''}" style="flex: 1.5;">
+            <input type="text" class="src-img" placeholder="스킬 이미지 URL (CDN or /uploads/...)" value="${skillImg}" style="flex: 2;">
+            <input type="file" class="src-file" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm btn-upload-img" title="PC에서 이미지 파일 업로드">파일선택</button>
+            <input type="text" class="src-tripod" placeholder="트라이포드명(선택)" value="${src.tripodName || ''}" style="flex: 1.2;">
+            <input type="text" class="src-tripodRate" placeholder="트포 수치 (예: 10%)" value="${src.tripodRate || ''}" style="flex: 0.8;">
+            <input type="text" class="src-baseRate" placeholder="기본 수치 (예: 12%)" value="${src.baseRate || ''}" style="flex: 0.8;">
+            <button type="button" class="btn btn-danger btn-sm btn-del-src">X</button>
+        </div>
+        <div class="source-desc-row">
+            <div class="desc-field">
+                <label>💬 스킬 설명 (skillDescription)</label>
+                <textarea class="src-skill-desc" rows="2" placeholder="스킬 상세 설명 입력 (선택)">${skillDescription}</textarea>
+            </div>
+            <div class="desc-field">
+                <label>⚡ 트라이포드 설명 (tripodDescription)</label>
+                <textarea class="src-tripod-desc" rows="2" placeholder="트라이포드 효과 설명 입력 (선택)">${tripodDescription}</textarea>
+            </div>
+        </div>
     `;
 
     const imgPreview = div.querySelector('.skill-img-preview');
@@ -404,7 +418,7 @@ function addSourceRow(container, src = {}) {
         updatePreview();
     });
 
-    div.querySelectorAll('input').forEach(inp => inp.addEventListener('input', updatePreview));
+    div.querySelectorAll('input, textarea').forEach(inp => inp.addEventListener('input', updatePreview));
     container.appendChild(div);
 }
 
@@ -430,18 +444,22 @@ function collectFormData() {
         const priority = card.querySelector('.skill-priority').value.trim();
 
         const sources = [];
-        card.querySelectorAll('.source-row').forEach(sRow => {
-            const skillName = sRow.querySelector('.src-skill').value.trim();
-            const skillImg = sRow.querySelector('.src-img').value.trim();
-            const tripodName = sRow.querySelector('.src-tripod').value.trim();
-            const tripodRate = sRow.querySelector('.src-tripodRate').value.trim();
-            const baseRate = sRow.querySelector('.src-baseRate').value.trim();
+        card.querySelectorAll('.source-box').forEach(sBox => {
+            const skillName = sBox.querySelector('.src-skill').value.trim();
+            const skillImg = sBox.querySelector('.src-img').value.trim();
+            const tripodName = sBox.querySelector('.src-tripod').value.trim();
+            const tripodRate = sBox.querySelector('.src-tripodRate').value.trim();
+            const baseRate = sBox.querySelector('.src-baseRate').value.trim();
+            const skillDescription = sBox.querySelector('.src-skill-desc') ? sBox.querySelector('.src-skill-desc').value.trim() : '';
+            const tripodDescription = sBox.querySelector('.src-tripod-desc') ? sBox.querySelector('.src-tripod-desc').value.trim() : '';
 
             if (skillName) {
                 const sObj = { skillName };
                 if (skillImg) sObj.skillImg = skillImg;
+                if (skillDescription) sObj.skillDescription = skillDescription;
                 if (tripodName) sObj.tripodName = tripodName;
                 if (tripodRate) sObj.tripodRate = tripodRate;
+                if (tripodDescription) sObj.tripodDescription = tripodDescription;
                 if (baseRate) sObj.baseRate = baseRate;
                 sources.push(sObj);
             }
