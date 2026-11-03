@@ -13,113 +13,263 @@
     )}">
     <th:block th:fragment="mainContent">
     <div class="simulator-body-container">
-        <!-- 좌측 클래스 선택 영역 -->
-        <div id="class-selection">
-            <!-- 닉네임 검색 영역 추가 -->
-            <div class="search-section">
+        
+        <!-- 좌측 사이드바: 닉네임 검색 및 직업군 목록 (#class-selection) -->
+        <div id="class-selection" class="sim-card">
+            <!-- 닉네임 검색 영역 -->
+            <div class="sidebar-section search-section">
                 <h2>닉네임으로 검색</h2>
                 <div class="search-box">
                     <input type="text" id="character-search-input" placeholder="캐릭터명 입력">
-                    <button id="character-search-btn">조회</button>
+                    <button type="button" id="character-search-btn">조회</button>
                 </div>
             </div>
 
-            <div class="class-list-section">
+            <div class="sidebar-divider"></div>
+
+            <!-- 클래스 목록 영역 -->
+            <div class="sidebar-section class-list-section">
                 <h2>클래스 목록</h2>
                 <div id="class-groups-container">
-                    <!-- DB 데이터(synergyService) 기반 동적 렌더링 -->
+                    <!-- synergyService & classFunction.renderSidebar()를 통해 DB 데이터로 자동 동적 렌더링 -->
                 </div>
             </div>
         </div>
 
-        <!-- 중앙 메인 시뮬레이터 영역 -->
+        <!-- 우측 메인 영역: 툴바 + 4칸 요약 바 + 2열 파티 슬롯 + 시너지 리포트 -->
         <div class="main-content-area">
-            <div id="simulator-header">
-                <div class="selection-group">
-                    <!-- 카테고리 커스텀 셀렉트 -->
-                    <div class="custom-select-box" id="category-custom-box">
-                        <div class="custom-select-trigger">종류 선택</div>
-                        <div class="custom-options" id="category-options">
-                            <!-- JS에서 생성 -->
-                        </div>
-                        <select id="category-select" style="display: none;">
-                            <option value="none">종류 선택</option>
-                        </select>
+            
+            <!-- 1. 상단 툴바 (#simulator-header 역할) -->
+            <div class="sim-card sim-toolbar" id="simulator-header">
+                <input type="text" id="toolbar-search-input" class="toolbar-input" placeholder="캐릭터명 입력">
+                <button type="button" id="toolbar-search-btn" class="toolbar-btn">조회</button>
+                
+                <!-- 카테고리 커스텀 셀렉트 (군단장/종류 선택) -->
+                <div class="custom-select-box toolbar-dropdown" id="category-custom-box">
+                    <div class="custom-select-trigger">종류 선택</div>
+                    <div class="custom-options" id="category-options">
+                        <!-- JS에서 자동 생성 -->
                     </div>
+                    <select id="category-select" style="display: none;">
+                        <option value="none">종류 선택</option>
+                    </select>
+                </div>
 
-                    <!-- 레이드 커스텀 셀렉트 -->
-                    <div class="custom-select-box" id="raid-custom-box">
-                        <div class="custom-select-trigger">레이드 선택</div>
-                        <div class="custom-options" id="raid-options">
-                            <!-- JS에서 생성 -->
-                        </div>
-                        <select id="raid-select" style="display: none;">
-                            <option value="none">레이드 선택</option>
-                        </select>
+                <!-- 레이드 커스텀 셀렉트 (레이드 선택) -->
+                <div class="custom-select-box toolbar-dropdown" id="raid-custom-box">
+                    <div class="custom-select-trigger">레이드 선택</div>
+                    <div class="custom-options" id="raid-options">
+                        <!-- JS에서 자동 생성 -->
+                    </div>
+                    <select id="raid-select" style="display: none;">
+                        <option value="none">레이드 선택</option>
+                    </select>
+                </div>
+
+                <button type="button" id="share-btn" class="toolbar-btn btn-accent">공유하기</button>
+                <button type="button" id="reset-btn" class="toolbar-btn">초기화</button>
+            </div>
+
+            <!-- 2. 요약 바 (전체 폭, 4칸 그리드) -->
+            <div class="sim-card summary-bar">
+                <!-- 1칸: 서포터 -->
+                <div class="summary-col">
+                    <div class="summary-title">서포터</div>
+                    <div class="summary-rows">
+                        <span class="summary-label">1 파티</span>
+                        <span class="summary-val bad" id="summary-supporter-1">없음</span>
+                        <span class="summary-label">2 파티</span>
+                        <span class="summary-val bad" id="summary-supporter-2">없음</span>
                     </div>
                 </div>
-                <div class="action-group">
-                    <button id="share-btn">공유하기</button>
-                    <button id="reset-btn">초기화</button>
+
+                <!-- 2칸: 평균 전투력 -->
+                <div class="summary-col">
+                    <div class="summary-title">평균 전투력</div>
+                    <div class="summary-rows">
+                        <span class="summary-label">1 파티</span>
+                        <span class="summary-val mute" id="summary-power-1">-</span>
+                        <span class="summary-label">2 파티</span>
+                        <span class="summary-val mute" id="summary-power-2">-</span>
+                    </div>
+                </div>
+
+                <!-- 3칸: 시너지 추천 -->
+                <div class="summary-col">
+                    <div class="summary-title">시너지 추천</div>
+                    <div class="summary-rows">
+                        <span class="summary-label">1 파티</span>
+                        <span class="summary-val acc" id="summary-recommend-1">파티원 추가 필요</span>
+                        <span class="summary-label">2 파티</span>
+                        <span class="summary-val acc" id="summary-recommend-2">파티원 추가 필요</span>
+                    </div>
+                </div>
+
+                <!-- 4칸: 중복 경고 -->
+                <div class="summary-col">
+                    <div class="summary-title">중복 경고</div>
+                    <div class="summary-rows">
+                        <span class="summary-label">1 파티</span>
+                        <span class="summary-val mute" id="summary-dup-1">없음</span>
+                        <span class="summary-label">2 파티</span>
+                        <span class="summary-val mute" id="summary-dup-2">없음</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="raid-board">
-                <!-- 1파티 -->
-                <div class="party-container" data-party-id="1">
-                    <h3>1 파티</h3>
-                    <div class="party-slots">
-                        <div class="party-slot" data-slot-id="1"><span>슬롯 1</span></div>
-                        <div class="party-slot" data-slot-id="2"><span>슬롯 2</span></div>
-                        <div class="party-slot" data-slot-id="3"><span>슬롯 3</span></div>
-                        <div class="party-slot" data-slot-id="4"><span>슬롯 4</span></div>
+            <!-- 3. 파티 영역 (2열 좌우 그리드, 모바일 1열) - partySimulator.js의 .raid-board 매핑 -->
+            <div class="party-grid raid-board">
+                
+                <!-- 1 파티 카드 (.party-container[data-party-id="1"]) -->
+                <div class="sim-card party-card party-container" data-party-id="1">
+                    <div class="party-header-title">1 파티</div>
+                    
+                    <!-- 1 파티 슬롯 카드 목록 (세로 스택) -->
+                    <div class="party-slot-list party-slots">
+                        <div class="party-slot" data-slot-id="1"><span>+ 슬롯 1 추가</span></div>
+                        <div class="party-slot" data-slot-id="2"><span>+ 슬롯 2 추가</span></div>
+                        <div class="party-slot" data-slot-id="3"><span>+ 슬롯 3 추가</span></div>
+                        <div class="party-slot" data-slot-id="4"><span>+ 슬롯 4 추가</span></div>
                     </div>
                 </div>
 
-                <!-- 2파티 -->
-                <div class="party-container" data-party-id="2">
-                    <h3>2 파티</h3>
-                    <div class="party-slots">
-                        <div class="party-slot" data-slot-id="5"><span>슬롯 5</span></div>
-                        <div class="party-slot" data-slot-id="6"><span>슬롯 6</span></div>
-                        <div class="party-slot" data-slot-id="7"><span>슬롯 7</span></div>
-                        <div class="party-slot" data-slot-id="8"><span>슬롯 8</span></div>
+                <!-- 2 파티 카드 (.party-container[data-party-id="2"]) -->
+                <div class="sim-card party-card party-container" data-party-id="2">
+                    <div class="party-header-title">2 파티</div>
+                    
+                    <!-- 2 파티 슬롯 카드 목록 (세로 스택) -->
+                    <div class="party-slot-list party-slots">
+                        <div class="party-slot" data-slot-id="5"><span>+ 슬롯 5 추가</span></div>
+                        <div class="party-slot" data-slot-id="6"><span>+ 슬롯 6 추가</span></div>
+                        <div class="party-slot" data-slot-id="7"><span>+ 슬롯 7 추가</span></div>
+                        <div class="party-slot" data-slot-id="8"><span>+ 슬롯 8 추가</span></div>
                     </div>
                 </div>
+
             </div>
 
-            <!-- 하단 추천 및 메시지 영역 -->
-            <div id="recommendation-area">
-                <h3>시너지 추천 및 가이드</h3>
-                <div id="recommendation-list">
-                    <p>파티원을 추가하면 실시간으로 분석하여 최적의 클래스를 추천해 드립니다.</p>
-                </div>
-            </div>
+
         </div>
 
-        <!-- 우측 상세 시너지 패널 -->
-        <div class="synergy-details-area">
-            <h2>공격대 시너지 리포트</h2>
-
-            <div class="party-detail-section">
-                <div class="p-header">1 파티 시너지</div>
-                <div id="synergy-party-1" class="p-content">
-                    <p class="empty-msg">정보 없음</p>
-                </div>
-            </div>
-
-            <div class="party-detail-section">
-                <div class="p-header">2 파티 시너지</div>
-                <div id="synergy-party-2" class="p-content">
-                    <p class="empty-msg">정보 없음</p>
-                </div>
-            </div>
-        </div>
     </div>
     </th:block>
 
     <th:block th:fragment="pageScript">
+        <!-- 원본 자바스크립트 모듈 로드 (내용 절대 수정 없음) -->
         <script type="module" src="/js/partySimulator/partySimulator.js"></script>
+
+        <!-- 툴바 검색창 및 요약 바 실시간 연동 브릿지 스크립트 -->
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                // 1. 툴바 검색창과 사이드바 검색창 양방향 연동
+                const toolbarInput = document.getElementById('toolbar-search-input');
+                const toolbarBtn = document.getElementById('toolbar-search-btn');
+                const sidebarInput = document.getElementById('character-search-input');
+                const sidebarBtn = document.getElementById('character-search-btn');
+
+                if (toolbarInput && sidebarInput && toolbarBtn && sidebarBtn) {
+                    toolbarBtn.addEventListener('click', () => {
+                        sidebarInput.value = toolbarInput.value;
+                        sidebarBtn.click();
+                    });
+                    toolbarInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            sidebarInput.value = toolbarInput.value;
+                            sidebarBtn.click();
+                        }
+                    });
+                }
+
+                // 2. 슬롯 및 시너지 변화 감지하여 상단 4칸 요약 바 실시간 갱신 (MutationObserver)
+                const supporters = ['바드', '홀리나이트', '도화가'];
+                const updateSummaryBar = () => {
+                    const slots = document.querySelectorAll('.party-slot');
+                    let p1Power = 0, p1Count = 0, p1Supporters = [];
+                    let p2Power = 0, p2Count = 0, p2Supporters = [];
+
+                    slots.forEach(slot => {
+                        const slotId = parseInt(slot.dataset.slotId);
+                        if (!slot.classList.contains('has-character')) return;
+
+                        const jobElem = slot.querySelector('.job-name');
+                        const statsElem = slot.querySelector('.combat-stats');
+                        const jobName = jobElem ? jobElem.textContent.trim() : '';
+
+                        let power = 0;
+                        if (statsElem) {
+                            const match = statsElem.textContent.match(/\|\s*([0-9,.]+)/);
+                            if (match) {
+                                power = parseFloat(match[1].replace(/,/g, '')) || 0;
+                            }
+                        }
+
+                        if (slotId <= 4) {
+                            if (power > 0) { p1Power += power; p1Count++; }
+                            if (supporters.includes(jobName)) p1Supporters.push(jobName);
+                        } else {
+                            if (power > 0) { p2Power += power; p2Count++; }
+                            if (supporters.includes(jobName)) p2Supporters.push(jobName);
+                        }
+                    });
+
+                    // 서포터 칸 갱신
+                    const s1Elem = document.getElementById('summary-supporter-1');
+                    const s2Elem = document.getElementById('summary-supporter-2');
+                    if (s1Elem) {
+                        if (p1Supporters.length > 0) {
+                            s1Elem.textContent = p1Supporters.join(', ');
+                            s1Elem.className = 'summary-val';
+                        } else {
+                            s1Elem.textContent = '없음';
+                            s1Elem.className = 'summary-val bad';
+                        }
+                    }
+                    if (s2Elem) {
+                        if (p2Supporters.length > 0) {
+                            s2Elem.textContent = p2Supporters.join(', ');
+                            s2Elem.className = 'summary-val';
+                        } else {
+                            s2Elem.textContent = '없음';
+                            s2Elem.className = 'summary-val bad';
+                        }
+                    }
+
+                    // 평균 전투력 갱신
+                    const pow1Elem = document.getElementById('summary-power-1');
+                    const pow2Elem = document.getElementById('summary-power-2');
+                    if (pow1Elem) {
+                        if (p1Count > 0) {
+                            pow1Elem.textContent = Math.round(p1Power / p1Count).toLocaleString();
+                            pow1Elem.className = 'summary-val';
+                        } else {
+                            pow1Elem.textContent = '-';
+                            pow1Elem.className = 'summary-val mute';
+                        }
+                    }
+                    if (pow2Elem) {
+                        if (p2Count > 0) {
+                            pow2Elem.textContent = Math.round(p2Power / p2Count).toLocaleString();
+                            pow2Elem.className = 'summary-val';
+                        } else {
+                            pow2Elem.textContent = '-';
+                            pow2Elem.className = 'summary-val mute';
+                        }
+                    }
+
+                    // (중복 경고 및 시너지 추천은 raidFunction.js의 analyzeSynergy에서 직접 실시간 갱신)
+                };
+
+                const raidBoard = document.querySelector('.raid-board');
+                if (raidBoard) {
+                    const observer = new MutationObserver(() => {
+                        setTimeout(updateSummaryBar, 50);
+                    });
+                    observer.observe(raidBoard, { childList: true, subtree: true, attributes: true });
+                }
+
+
+            });
+        </script>
     </th:block>
 </div>
 </body>

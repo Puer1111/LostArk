@@ -231,7 +231,6 @@ function populateForm(data) {
     // 시너지 렌더링
     const skillContainer = document.getElementById('skills-container');
     skillContainer.innerHTML = '';
-    (data.skills || []).forEach(skill => addSkillCard(skill));
 
     updatePreview();
 }
@@ -314,20 +313,30 @@ function addSourceRow(container, src = {}) {
     div.style.marginBottom = '10px';
 
     const skillImg = src.skillImg || '';
+    const tripodImg = src.tripodImg || '';
     const skillDescription = src.skillDescription || '';
     const tripodDescription = src.tripodDescription || '';
 
     div.innerHTML = `
-        <div class="form-group source-row" style="margin-bottom: 0;">
-            <img class="skill-img-preview" src="${skillImg || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>NoImg</text></svg>'}" alt="스킬">
+        <div class="form-group source-row source-skill-row" style="margin-bottom: 0;">
+            <span class="source-row-badge badge-skill">스킬</span>
+            <img class="skill-img-preview" src="${skillImg || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>Skill</text></svg>'}" alt="스킬">
             <input type="text" class="src-skill" placeholder="스킬명" value="${src.skillName || ''}" style="flex: 1.5;">
             <input type="text" class="src-img" placeholder="스킬 이미지 URL (CDN or /uploads/...)" value="${skillImg}" style="flex: 2;">
             <input type="file" class="src-file" accept="image/*" style="display: none;">
-            <button type="button" class="btn btn-secondary btn-sm btn-upload-img" title="PC에서 이미지 파일 업로드">파일선택</button>
-            <input type="text" class="src-tripod" placeholder="트라이포드명(선택)" value="${src.tripodName || ''}" style="flex: 1.2;">
-            <input type="text" class="src-tripodRate" placeholder="트포 수치 (예: 10%)" value="${src.tripodRate || ''}" style="flex: 0.8;">
+            <button type="button" class="btn btn-secondary btn-sm btn-upload-img" title="PC에서 스킬 이미지 파일 업로드">파일선택</button>
             <input type="text" class="src-baseRate" placeholder="기본 수치 (예: 12%)" value="${src.baseRate || ''}" style="flex: 0.8;">
-            <button type="button" class="btn btn-danger btn-sm btn-del-src">X</button>
+            <button type="button" class="btn btn-danger btn-sm btn-del-src" title="출처 삭제">X</button>
+        </div>
+        <div class="form-group source-row source-tripod-row" style="margin-bottom: 0;">
+            <span class="source-row-badge badge-tripod">트포</span>
+            <img class="tripod-img-preview" src="${tripodImg || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>Tripod</text></svg>'}" alt="트라이포드">
+            <input type="text" class="src-tripod" placeholder="트라이포드명(선택)" value="${src.tripodName || ''}" style="flex: 1.5;">
+            <input type="text" class="src-tripod-img" placeholder="트라이포드 이미지 URL (CDN or /uploads/...)" value="${tripodImg}" style="flex: 2;">
+            <input type="file" class="src-tripod-file" accept="image/*" style="display: none;">
+            <button type="button" class="btn btn-secondary btn-sm btn-upload-tripod-img" title="PC에서 트라이포드 이미지 파일 업로드">파일선택</button>
+            <input type="text" class="src-tripodRate" placeholder="트포 수치 (예: 10%)" value="${src.tripodRate || ''}" style="flex: 0.8;">
+            <div style="width: 28px; flex-shrink: 0;"></div>
         </div>
         <div class="source-desc-row">
             <div class="desc-field">
@@ -341,18 +350,18 @@ function addSourceRow(container, src = {}) {
         </div>
     `;
 
+    // 1. 스킬 이미지 프리뷰 & 업로드 핸들링
     const imgPreview = div.querySelector('.skill-img-preview');
     const imgInput = div.querySelector('.src-img');
     const fileInput = div.querySelector('.src-file');
     const uploadBtn = div.querySelector('.btn-upload-img');
 
-    // 이미지 URL 변경 시 프리뷰 업데이트
     imgInput.addEventListener('input', () => {
         const url = imgInput.value.trim();
         if (url) {
             imgPreview.src = url;
         } else {
-            imgPreview.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>NoImg</text></svg>';
+            imgPreview.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>Skill</text></svg>';
         }
         updatePreview();
     });
@@ -361,12 +370,10 @@ function addSourceRow(container, src = {}) {
         imgPreview.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23500\'/><text x=\'50%\' y=\'50%\' fill=\'%23fff\' font-size=\'9\' text-anchor=\'middle\' dy=\'.3em\'>Error</text></svg>';
     });
 
-    // 파일 선택 버튼 클릭 시 input[type=file] 트리거
     uploadBtn.addEventListener('click', () => {
         fileInput.click();
     });
 
-    // 파일 선택 시 서버로 즉시 업로드
     fileInput.addEventListener('change', async () => {
         const file = fileInput.files[0];
         if (!file) return;
@@ -405,11 +412,81 @@ function addSourceRow(container, src = {}) {
             updatePreview();
         } catch (err) {
             console.error(err);
-            alert('이미지 업로드 실패: ' + err.message);
+            alert('스킬 이미지 업로드 실패: ' + err.message);
         } finally {
             uploadBtn.disabled = false;
             uploadBtn.textContent = '파일선택';
             fileInput.value = '';
+        }
+    });
+
+    // 2. 트라이포드 이미지 프리뷰 & 업로드 핸들링
+    const tripodImgPreview = div.querySelector('.tripod-img-preview');
+    const tripodImgInput = div.querySelector('.src-tripod-img');
+    const tripodFileInput = div.querySelector('.src-tripod-file');
+    const tripodUploadBtn = div.querySelector('.btn-upload-tripod-img');
+
+    tripodImgInput.addEventListener('input', () => {
+        const url = tripodImgInput.value.trim();
+        if (url) {
+            tripodImgPreview.src = url;
+        } else {
+            tripodImgPreview.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23333\'/><text x=\'50%\' y=\'50%\' fill=\'%23777\' font-size=\'10\' text-anchor=\'middle\' dy=\'.3em\'>Tripod</text></svg>';
+        }
+        updatePreview();
+    });
+
+    tripodImgPreview.addEventListener('error', () => {
+        tripodImgPreview.src = 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'32\' height=\'32\'><rect width=\'32\' height=\'32\' fill=\'%23500\'/><text x=\'50%\' y=\'50%\' fill=\'%23fff\' font-size=\'9\' text-anchor=\'middle\' dy=\'.3em\'>Error</text></svg>';
+    });
+
+    tripodUploadBtn.addEventListener('click', () => {
+        tripodFileInput.click();
+    });
+
+    tripodFileInput.addEventListener('change', async () => {
+        const file = tripodFileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        tripodUploadBtn.disabled = true;
+        tripodUploadBtn.textContent = '업로드중...';
+
+        try {
+            const res = await fetch('/admin/upload/skill', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.status === 401) {
+                alert('로그인이 만료되었거나 로그인이 필요합니다.\n로그인 페이지로 이동합니다.');
+                window.location.href = '/users/login';
+                return;
+            }
+
+            if (res.status === 403) {
+                alert('업로드 실패: 관리자(ADMIN) 권한이 필요한 작업입니다.');
+                return;
+            }
+
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({ message: '업로드 실패' }));
+                throw new Error(errData.message || '업로드 실패');
+            }
+
+            const data = await res.json();
+            tripodImgInput.value = data.url;
+            tripodImgPreview.src = data.url;
+            updatePreview();
+        } catch (err) {
+            console.error(err);
+            alert('트라이포드 이미지 업로드 실패: ' + err.message);
+        } finally {
+            tripodUploadBtn.disabled = false;
+            tripodUploadBtn.textContent = '파일선택';
+            tripodFileInput.value = '';
         }
     });
 
@@ -448,6 +525,7 @@ function collectFormData() {
             const skillName = sBox.querySelector('.src-skill').value.trim();
             const skillImg = sBox.querySelector('.src-img').value.trim();
             const tripodName = sBox.querySelector('.src-tripod').value.trim();
+            const tripodImg = sBox.querySelector('.src-tripod-img') ? sBox.querySelector('.src-tripod-img').value.trim() : '';
             const tripodRate = sBox.querySelector('.src-tripodRate').value.trim();
             const baseRate = sBox.querySelector('.src-baseRate').value.trim();
             const skillDescription = sBox.querySelector('.src-skill-desc') ? sBox.querySelector('.src-skill-desc').value.trim() : '';
@@ -458,6 +536,7 @@ function collectFormData() {
                 if (skillImg) sObj.skillImg = skillImg;
                 if (skillDescription) sObj.skillDescription = skillDescription;
                 if (tripodName) sObj.tripodName = tripodName;
+                if (tripodImg) sObj.tripodImg = tripodImg;
                 if (tripodRate) sObj.tripodRate = tripodRate;
                 if (tripodDescription) sObj.tripodDescription = tripodDescription;
                 if (baseRate) sObj.baseRate = baseRate;

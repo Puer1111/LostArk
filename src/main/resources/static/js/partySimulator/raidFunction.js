@@ -1,5 +1,4 @@
 import {raidConfigs} from '../character/raidConfigs.js';
-import {synergyService} from '../character/synergyService.js';
 
 export const raidFunction = {
     // 레이드 선택 옵션 초기화
@@ -52,94 +51,6 @@ export const raidFunction = {
             const id = parseInt(slot.dataset.slotId);
             slot.classList.toggle('selected', id === state.selectedSlotId);
         });
-    },
-
-    // 시너지 분석 및 리포트 출력
-    analyzeSynergy: (elements, raidManager) => {
-        const { state } = raidManager;
-        const partySynergies = [{}, {}, {}]; // [공격대 전체, 1파티, 2파티]
-        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
-
-        state.slots.forEach((data, i) => {
-            if (!data || i > config.maxPlayers) return;
-            const partyId = i <= 4 ? 1 : 2;
-            
-            const jobInfo = synergyService.findJobByName(data.jobName);
-            if (!jobInfo) return;
-
-            const skills = jobInfo.skills || [];
-
-            [partyId, 0].forEach(pIdx => {
-                skills.forEach(skill => {
-                    if (skill.priority === 'main') {
-                        if (!partySynergies[pIdx][skill.name]) partySynergies[pIdx][skill.name] = [];
-                        partySynergies[pIdx][skill.name].push({
-                            jobName: data.jobName,
-                            characterName: data.searchData ? data.searchData.characterName : null
-                        });
-                    }
-                });
-            });
-        });
-
-        raidFunction.renderSynergyReport(elements, partySynergies);
-        raidFunction.renderRecommendations(elements, raidManager, partySynergies[0]);
-    },
-
-    renderSynergyReport: (elements, partySynergies) => {
-        raidFunction.renderSection(document.getElementById('synergy-party-1'), partySynergies[1]);
-        raidFunction.renderSection(document.getElementById('synergy-party-2'), partySynergies[2]);
-    },
-
-    renderSection: (container, synergies) => {
-        if (!container) return;
-        if (!synergies || Object.keys(synergies).length === 0) {
-            container.innerHTML = '<p class="empty-msg">정보 없음</p>';
-            return;
-        }
-        let html = '<div class="synergy-list">';
-        Object.entries(synergies).forEach(([type, items]) => {
-            const isDuplicate = items.length > 1;
-            const providers = items.map(item => {
-                return item.characterName ? `${item.jobName}(${item.characterName})` : item.jobName;
-            }).join(', ');
-            html += `
-                <div class="synergy-item ${isDuplicate ? 'duplicate' : ''}">
-                    <div class="synergy-info">
-                        <span class="s-type">${type}</span>
-                        <span class="s-providers" style="font-size: 0.75rem; color: var(--accent); margin-left: 8px;">[${providers}]</span>
-                    </div>
-                    ${isDuplicate ? `<span class="warn-icon">⚠️ 중복</span>` : ''}
-                </div>
-            `;
-        });
-        html += '</div>';
-        container.innerHTML = html;
-    },
-
-    renderRecommendations: (elements, raidManager, totalSynergies) => {
-        const { state } = raidManager;
-        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
-        const currentCount = state.slots.filter((s, i) => s && i <= config.maxPlayers).length;
-        if (currentCount === 0) {
-            elements.recommendationList.innerHTML = '<p>파티원을 추가하면 최적의 클래스를 추천해 드립니다.</p>';
-            return;
-        }
-        const missingSynergies = [];
-        const importantTypes = ['치명타 저항 감소', '피해 증가', '방어력 감소', '공격력 증가'];
-        importantTypes.forEach(type => {
-            if (!totalSynergies[type]) missingSynergies.push(type);
-        });
-        let html = '<ul>';
-        if (missingSynergies.length > 0) {
-            missingSynergies.forEach(s => {
-                html += `<li><strong>${s}</strong> 시너지가 부족합니다.</li>`;
-            });
-        } else {
-            html += '<li>현재 주요 시너지가 잘 갖춰져 있습니다!</li>';
-        }
-        html += '</ul>';
-        elements.recommendationList.innerHTML = html;
     },
 
     // 카테고리 변경 시 레이드 목록 업데이트

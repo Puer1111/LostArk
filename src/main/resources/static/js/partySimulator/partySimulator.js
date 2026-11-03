@@ -73,11 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
         raidCustomBox: document.getElementById('raid-custom-box'),
         resetBtn: document.getElementById('reset-btn'),
         shareBtn: document.getElementById('share-btn'),
-        recommendationList: document.getElementById('recommendation-list'),
         searchInput: document.getElementById('character-search-input'),
         searchBtn: document.getElementById('character-search-btn'),
-        partyContainers: document.querySelectorAll('.party-container'),
-        partyDetailSections: document.querySelectorAll('.party-detail-section')
+        partyContainers: document.querySelectorAll('.party-container')
     };
 
     const init = async () => {
@@ -193,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateAll = () => {
         updateSlotsUI();
-        raidFunction.analyzeSynergy(elements, raidManager);
+        classFunction.analyzeSynergy(elements, raidManager);
     };
 
     const saveToLocalStorage = () => localStorage.setItem('raidState_v1', JSON.stringify(raidManager.state));

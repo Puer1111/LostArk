@@ -1,3 +1,4 @@
+import {raidConfigs} from '../character/raidConfigs.js';
 /**
  * 사이드바 클래스 선택 및 드래그 기능 관련 모듈
  */
@@ -189,20 +190,34 @@ export const classFunction = {
         const jobInfo = synergyService.findJobByName(jobName);
         if (!jobInfo) return;
 
-        // 배경 설정
-        if (searchData && searchData.characterImage) {
-            slot.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url('${searchData.characterImage}')`;
-        } else {
-            slot.style.backgroundImage = 'none';
-        }
+        // 배경 설정 (우측 썸네일/좌측 썸네일 분리로 none 처리)
+        slot.style.backgroundImage = 'none';
 
-        const mainSynergies = jobInfo.skills ? jobInfo.skills.filter(s => s.priority === 'main') : [];
+        const rawMainSkills = jobInfo.skills ? jobInfo.skills.filter(s => s.priority === 'main') : [];
+        // 띄어쓰기 차이(예: "피해 감소" vs "피해감소")까지 고려한 정규화 중복 제거
+        const seenNorms = new Set();
+        const uniqueMainSynergies = [];
+        rawMainSkills.forEach(skill => {
+            if (!skill || !skill.name) return;
+            const norm = skill.name.replace(/\s+/g, '');
+            if (!seenNorms.has(norm)) {
+                seenNorms.add(norm);
+                uniqueMainSynergies.push(skill.name);
+            }
+        });
 
         slot.classList.add('has-character');
         
         let html = `
             <div class="character-card">
-                <button class="remove-btn" title="제거">×</button>
+                <!-- 좌측 캐릭터 이미지 영역 (검색 데이터가 있을 때만 노출) -->
+                ${(searchData && searchData.characterImage) ? `
+                    <div class="character-image-box">
+                        <img src="${searchData.characterImage}" alt="${searchData.characterName || ''}" class="character-profile-img" onerror="this.parentElement.style.display='none'">
+                    </div>
+                ` : ''}
+
+                <!-- 우측 텍스트 정보 영역 -->
                 <div class="card-bottom-content">
         `;
 
@@ -241,12 +256,15 @@ export const classFunction = {
         html += `
                     <div class="synergy-preview">
                         <div class="effect-tags">
-                            ${mainSynergies.length > 0 
-                                ? mainSynergies.map(skill => `<span class="effect-tag">${skill.name}</span>`).join('')
+                            ${uniqueMainSynergies.length > 0 
+                                ? uniqueMainSynergies.map(name => `<span class="effect-tag">${name}</span>`).join('')
                                 : '<span class="effect-tag none">메인 시너지 없음</span>'}
                         </div>
                     </div>
                 </div>
+
+                <!-- 오른쪽 상단 제거 버튼 -->
+                <button class="remove-btn" title="제거">×</button>
             </div>
         `;
 
@@ -276,5 +294,91 @@ export const classFunction = {
                 });
             });
         }
+    }
+,
+    /**
+     * 슬롯에 배치된 캐릭터들의 시너지를 분석하여 상단 요약 바(시너지 추천/중복 경고)를 실시간 갱신합니다.
+     */
+    analyzeSynergy: (elements, raidManager) => {
+        const { state } = raidManager;
+        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
+        const partySynergies = [{}, {}, {}]; // [0: 미사용, 1: 1파티, 2: 2파티]
+        const partyCounts = [0, 0, 0];
+
+        // 1. 파티별 시너지 수집 (직업 내 공백 정규화 중복 방지)
+        state.slots.forEach((data, i) => {
+            if (!data || i > config.maxPlayers) return;
+            const partyId = i <= 4 ? 1 : 2;
+            partyCounts[partyId]++;
+            
+            const jobInfo = synergyService.findJobByName(data.jobName);
+            if (!jobInfo) return;
+
+            const skills = jobInfo.skills || [];
+            const seenNorm = new Set();
+            skills.forEach(skill => {
+                if (skill.priority === 'main' && skill.name) {
+                    const norm = skill.name.replace(/\s+/g, '');
+                    if (!seenNorm.has(norm)) {
+                        seenNorm.add(norm);
+                        if (!partySynergies[partyId][skill.name]) partySynergies[partyId][skill.name] = [];
+                        partySynergies[partyId][skill.name].push({
+                            jobName: data.jobName,
+                            characterName: data.searchData ? data.searchData.characterName : null
+                        });
+                    }
+                }
+            });
+        });
+
+        // 2. 핵심 4대 딜 시너지 목록 및 약칭/정규화 매핑
+        const importantSynergies = [
+            { fullName: '치명타 저항 감소', shortName: '치적', norm: '치명타저항감소' },
+            { fullName: '피해 증가', shortName: '피증', norm: '피해증가' },
+            { fullName: '방어력 감소', shortName: '방깎', norm: '방어력감소' },
+            { fullName: '공격력 증가', shortName: '공증', norm: '공격력증가' }
+        ];
+
+        // 3. 1파티 및 2파티 요약 바 실시간 갱신
+        [1, 2].forEach(pId => {
+            const recElem = document.getElementById(`summary-recommend-${pId}`);
+            const dupElem = document.getElementById(`summary-dup-${pId}`);
+            const synMap = partySynergies[pId];
+
+            // 3-1. 시너지 추천: 파티에 없는 시너지 계산
+            if (recElem) {
+                if (partyCounts[pId] === 0) {
+                    recElem.textContent = '파티원 추가 필요';
+                    recElem.className = 'summary-val mute';
+                    recElem.removeAttribute('title');
+                } else {
+                    const activeNorms = new Set(Object.keys(synMap).map(k => k.replace(/\s+/g, '')));
+                    const missing = importantSynergies.filter(s => !activeNorms.has(s.norm));
+                    if (missing.length === 0) {
+                        recElem.textContent = '모두 보유';
+                        recElem.className = 'summary-val';
+                        recElem.title = '주요 4대 시너지를 모두 갖추었습니다.';
+                    } else {
+                        const shortList = missing.map(s => s.shortName).join(', ');
+                        const fullList = missing.map(s => s.fullName).join(', ');
+                        recElem.textContent = shortList;
+                        recElem.className = 'summary-val acc';
+                        recElem.title = `부족한 시너지: ${fullList}`;
+                    }
+                }
+            }
+
+            // 3-2. 중복 경고: 파티 내 동일 시너지 중복 보유 여부
+            if (dupElem) {
+                const duplicates = Object.keys(synMap).filter(name => synMap[name].length > 1);
+                if (duplicates.length > 0) {
+                    dupElem.textContent = duplicates.join(', ');
+                    dupElem.className = 'summary-val bad';
+                } else {
+                    dupElem.textContent = '없음';
+                    dupElem.className = 'summary-val mute';
+                }
+            }
+        });
     }
 };
