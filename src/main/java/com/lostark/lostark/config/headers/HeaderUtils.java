@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class HeaderUtils {
 
-    @Value("${LOSTARK_API_KEY}")
+    @Value("${LOSTARK_API_KEY:}")
     private String apiKey;
 
     public HttpHeaders createHeaders() {

@@ -49,3 +49,5 @@ prometheus.yml
 docker-compose.yml
 extra_3_jobs.json
 merged_25_jobs.json
+.gradle-**
+.codex

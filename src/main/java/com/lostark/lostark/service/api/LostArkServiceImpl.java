@@ -375,16 +375,51 @@ public class LostArkServiceImpl implements LostArkService {
                     if (item.getRewardItems() != null) {
                         filteredRewards = item.getRewardItems().stream()
                                 .map(level -> {
+                                    // 날짜 필터 적용
                                     List<LostArkCalendar.RewardItem> items = level.getItems().stream()
-                                            .filter(reward -> reward.getStartTimes() != null && 
-                                                             reward.getStartTimes().stream()
+                                            .filter(reward -> reward.getStartTimes() == null
+                                                          || reward.getStartTimes().isEmpty()
+                                                          || reward.getStartTimes().stream()
                                                                  .anyMatch(t -> t.minusHours(6).toLocalDate().isEqual(gameToday)))
                                             .collect(Collectors.toList());
-                                    return new LostArkCalendar.RewardItemLevel(level.getItemLevel(), items);
+
+                                    // 아이템 이름 정규화 + 중복 제거 (보석 계열, 미술품 계열 등)
+                                    List<LostArkCalendar.RewardItem> deduplicatedItems = items.stream()
+                                            .collect(Collectors.collectingAndThen(
+                                                    Collectors.toMap(
+                                                            reward -> normalizeRewardItemName(reward.getName()),
+                                                            reward -> LostArkCalendar.RewardItem.builder()
+                                                                    .name(normalizeRewardItemName(reward.getName()))
+                                                                    .icon(reward.getIcon())
+                                                                    .grade(reward.getGrade())
+                                                                    .build(),
+                                                            (existing, replacement) -> existing,
+                                                            java.util.LinkedHashMap::new
+                                                    ),
+                                                    map -> new ArrayList<>(map.values())
+                                            ));
+                                    return new LostArkCalendar.RewardItemLevel(level.getItemLevel(), deduplicatedItems);
                                 })
                                 .filter(level -> !level.getItems().isEmpty())
-                                .collect(Collectors.toList());
+                                // 같은 ItemLevel의 RewardItemLevel 중복 제거 (시간대마다 동일 보상이 반복되는 현상 방지)
+                                .collect(Collectors.collectingAndThen(
+                                        Collectors.toMap(
+                                                level -> level.getItemLevel(),
+                                                level -> level,
+                                                (existing, replacement) -> existing,
+                                                java.util.LinkedHashMap::new
+                                        ),
+                                        map -> new ArrayList<>(map.values())
+                                ));
                     }
+                    // 카오스게이트: 가장 높은 ItemLevel의 보상 1개만 표시
+                    if (item.getCategoryName() != null && item.getCategoryName().contains("카오스게이트") && !filteredRewards.isEmpty()) {
+                        filteredRewards = filteredRewards.stream()
+                                .max(Comparator.comparingInt(level -> level.getItemLevel() != null ? level.getItemLevel() : 0))
+                                .map(Collections::singletonList)
+                                .orElse(Collections.emptyList());
+                    }
+
 
                     // 카오스게이트의 경우 지역명이 포함된 이름을 정규화 (예: "일렁이는 악마군단 (베른 북부)" -> "일렁이는 악마군단")
                     String normalizedContentsName = item.getContentsName();
@@ -403,12 +438,19 @@ public class LostArkServiceImpl implements LostArkService {
                             .rewardItems(filteredRewards)
                             .build();
                 })
-                // 중복 제거: 카테고리와 정규화된 이름이 같은 경우 하나만 남김 (LinkedHashMap으로 순서 유지)
+                // 중복 제거:
+                // - 카오스게이트: 카테고리명만으로 중복 제거 (지역이 달라도 보상이 같으므로 1개만 표시)
+                // - 그 외: 카테고리 + 정규화된 이름 조합으로 중복 제거
                 .collect(Collectors.collectingAndThen(
                         Collectors.toMap(
-                                item -> item.getCategoryName() + "|" + item.getContentsName(),
+                                item -> {
+                                    if (item.getCategoryName() != null && item.getCategoryName().contains("카오스게이트")) {
+                                        return item.getCategoryName(); // 카오스게이트는 카테고리명만으로 키 설정 → 1개만 남음
+                                    }
+                                    return item.getCategoryName() + "|" + item.getContentsName();
+                                },
                                 item -> item,
-                                (existing, replacement) -> existing,
+                                (existing, replacement) -> existing, // 기존 값 유지 (첫 번째 item 보존)
                                 LinkedHashMap::new
                         ),
                         map -> new ArrayList<>(map.values())
@@ -447,6 +489,28 @@ public class LostArkServiceImpl implements LostArkService {
             log.error(">>> [API 오류] 캘린더 데이터 조회 중 오류 발생: {}", e.getMessage());
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * 보상 아이템 이름 정규화
+     * - 보석 계열: `N레벨 XX의 보석` -> `보석`
+     * - 미술품 계열: `위대한 미술품 #XX` -> `위대한 미술품`
+     * - 그 외 아이템: 원본 이름 유지
+     */
+    private String normalizeRewardItemName(String name) {
+        if (name == null) return null;
+
+        // 보석 계열: `~의 보석` 패턴 (예: 5레벨 멸화의 보석, 5레벨 홍염의 보석)
+        if (name.matches(".*의 보석.*")) {
+            return "보석";
+        }
+
+        // 미술품 계열: `#숫자` 접미사 제거 (예: 위대한 미술품 #01 -> 위대한 미술품)
+        if (name.matches(".*#\\d+.*")) {
+            return name.replaceAll("\\s*#\\d+.*", "").trim();
+        }
+
+        return name;
     }
 
     public List<LostArkCalendar> fallbackGetCalendar(Throwable t) {

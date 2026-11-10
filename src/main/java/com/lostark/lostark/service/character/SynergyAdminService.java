@@ -1,6 +1,5 @@
 package com.lostark.lostark.service.character;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.model.dto.character.synergy.SynergyJobDto;
 import com.lostark.lostark.model.entity.character.SynergyJob;

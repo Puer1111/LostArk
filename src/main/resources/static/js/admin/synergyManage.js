@@ -1,6 +1,6 @@
 /**
  * 어드민 직업 및 시너지 관리 스크립트
- * synergyDataV3.js 스키마와 1:1 매핑
+ * DB에서 조회한 SynergyJobDto 구조와 매핑
  */
 
 let currentJobList = [];
@@ -231,6 +231,7 @@ function populateForm(data) {
     // 시너지 렌더링
     const skillContainer = document.getElementById('skills-container');
     skillContainer.innerHTML = '';
+    (data.skills || []).forEach(skill => addSkillCard(skill));
 
     updatePreview();
 }
@@ -551,12 +552,18 @@ function collectFormData() {
         }
     });
 
-    return {
+    const data = {
         className,
         classGroup,
         classEngravings,
         skills
     };
+
+    if (activeJobData?.type !== undefined) {
+        data.type = activeJobData.type;
+    }
+
+    return data;
 }
 
 function updatePreview() {
