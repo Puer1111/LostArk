@@ -3,24 +3,31 @@
     --color-supporter: #27ae60;
     
     /* 1. 사이드바 및 헤더 (밝은 컨셉) */
-    --bg-page: #f7f7f8;        /* 시뮬레이터 전체 컨테이너 배경 */
-    --bg-card: #ffffff;        /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
-    --bg-card-hover: #f1f3f5;  /* 직업 아이템 등 마우스 호버/대비용 배경 */
-    --bg-input: #f8f9fa;       /* 검색창, 드롭다운 등 인풋 배경 */
-    --text-main: #333333;      /* 메인 어두운 텍스트 */
-    --text-muted: #666666;     /* 흐린 텍스트 */
-    --border-color: #eaeaea;   /* 연한 구분선 */
-    --accent: #4a90e2;         /* 메인 포인트 블루 */
+    --bg-page: #0f1012;        /* 시뮬레이터 전체 컨테이너 배경 */
+    --bg-card: #181a1e;        /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
+    --bg-card-hover: #1f2126;  /* 직업 아이템 등 마우스 호버/대비용 배경 */
+    --bg-input: #121316;       /* 검색창, 드롭다운 등 인풋 배경 */
+    --text-main: #e6e8eb;      /* 메인 어두운 텍스트 */
+    --text-muted: #8a8f98;     /* 흐린 텍스트 */
+    --border-color: #262930;   /* 연한 구분선 */
+    --accent: #e5a93c;         /* 메인 포인트 블루 */
+    --active-color: #7CCBFF;
+    --active-bg: rgba(124, 203, 255, 0.12);
     
     /* 2. 중앙 보드 및 시너지 카드 */
-    --bg-board: #eef2f6;       
-    --bg-board-slot: #ffffff;  
-    --text-board-light: #2c3e50; 
-    --text-board-muted: #718096; 
-    --border-board: #cbd5e0;   
+    --bg-board: #121316;       
+    --bg-board-slot: #181a1e;  
+    --text-board-light: #e6e8eb; 
+    --text-board-muted: #8a8f98; 
+    --border-board: #262930;   
     
     --radius: 8px;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 효과 */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
 }
 
 .character-class-container {
@@ -68,11 +75,12 @@
 }
 
 .class-sidebar li.active {
-    background-color: var(--accent);
+    background-color: var(--active-bg);
+    box-shadow: inset 3px 0 0 var(--active-color);
 }
 
 .class-sidebar li.active a {
-    color: #fff;
+    color: var(--active-color);
     font-weight: bold;
 }
 
@@ -112,13 +120,16 @@
 
 .class-name:hover,
 .class-name.active {
-    background-color: var(--accent);
-    border-color: var(--accent);
+    background-color: var(--active-bg);
+    border-color: var(--active-color);
 }
 
-.class-name:hover span,
 .class-name.active span {
-    color: #fff;
+    color: var(--active-color);
+}
+
+.class-name:hover span {
+    color: var(--text-main);
 }
 
 .class-name span {
@@ -183,7 +194,13 @@
 }
 
 .synergy-item.active {
-    background-color: var(--bg-card-hover);
+    background-color: var(--active-bg);
+    border-color: var(--active-color);
+    border-left-color: var(--active-color);
+}
+
+.synergy-item.active .synergy-item-header {
+    color: var(--active-color);
 }
 
 .synergy-item-header {

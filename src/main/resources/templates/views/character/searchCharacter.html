@@ -382,7 +382,9 @@
                                          th:each="slot : ${characterData.characterArkGrid.slots}">
                                         <div class="ark-grid-slot-left">
                                             <img th:src="${slot.icon}" alt="슬롯 아이콘" class="ark-grid-slot-icon"/>
-                                            <span class="ark-grid-slot-name" th:text="${slot.name}"></span>
+                                            <span class="ark-grid-slot-name"
+                                                  th:classappend="${slot.grade == '고대'} ? 'grade-ancient' : (${slot.grade == '유물'} ? 'grade-relic' : (${slot.grade == '전설'} ? 'grade-legend' : (${slot.grade == '영웅'} ? 'grade-hero' : '')))"
+                                                  th:text="${slot.name}"></span>
                                         </div>
                                         <span class="ark-grid-slot-point" th:text="${slot.point} + 'P'"></span>
                                     </div>

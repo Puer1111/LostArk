@@ -3,24 +3,24 @@
     --color-supporter: #27ae60;
 
     /* 1. 사이드바 및 헤더 (밝은 컨셉) */
-    --bg-page: #f7f7f8; /* 시뮬레이터 전체 컨테이너 배경 */
-    --bg-card: #ffffff; /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
-    --bg-card-hover: #f1f3f5; /* 직업 아이템 등 마우스 호버/대비용 배경 */
-    --bg-input: #f8f9fa; /* 검색창, 드롭다운 등 인풋 배경 */
-    --text-main: #333333; /* 메인 어두운 텍스트 */
-    --text-muted: #666666; /* 흐린 텍스트 */
-    --border-color: #eaeaea; /* 연한 구분선 */
-    --accent: #4a90e2; /* 메인 포인트 블루 */
+    --bg-page: #0f1012; /* 시뮬레이터 전체 컨테이너 배경 */
+    --bg-card: #181a1e; /* 좌우 사이드바, 헤더, 가이드 영역 배경 */
+    --bg-card-hover: #1f2126; /* 직업 아이템 등 마우스 호버/대비용 배경 */
+    --bg-input: #121316; /* 검색창, 드롭다운 등 인풋 배경 */
+    --text-main: #e6e8eb; /* 메인 어두운 텍스트 */
+    --text-muted: #8a8f98; /* 흐린 텍스트 */
+    --border-color: #262930; /* 연한 구분선 */
+    --accent: #7CCBFF; /* 메인 포인트 블루 */
 
     /* 2. 중앙 보드 및 시너지 카드 */
-    --bg-board: #eef2f6;
-    --bg-board-slot: #ffffff;
-    --text-board-light: #2c3e50;
-    --text-board-muted: #718096;
-    --border-board: #cbd5e0;
+    --bg-board: #121316;
+    --bg-board-slot: #181a1e;
+    --text-board-light: #e6e8eb;
+    --text-board-muted: #8a8f98;
+    --border-board: #262930;
 
     --radius: 8px;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 효과 */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 /* 스크롤바 유무에 따른 화면 흔들림 방지 */
@@ -124,8 +124,8 @@ html {
 }
 
 .filter-btn.active {
-    background-color: var(--accent);
-    color: white;
+    background-color: rgba(124, 203, 255, 0.12);
+    color: var(--accent);
     border-color: var(--accent);
     font-weight: bold;
 }
@@ -434,4 +434,9 @@ html {
     position: relative;
     width: 100%;
     height: 300px;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-main);
 }

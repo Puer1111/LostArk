@@ -8,12 +8,12 @@
     align-items: center;
     height: 70px;
     padding: 0 40px;
-    background-color: #ffffff;
+    background-color: #181a1e;
 }
 
 .logo a {
     text-decoration: none;
-    color: #111111;
+    color: #ffffff;
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -30,16 +30,16 @@
 .search-container {
     display: flex;
     align-items: center;
-    border: 1.5px solid #eaeaea;
+    border: 1.5px solid #262930;
     border-radius: 12px;
-    background-color: #ffffff;
+    background-color: #121316;
     padding: 0 8px 0 16px;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .search-container:focus-within {
-    border-color: #4a90e2;
-    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    border-color: #e5a93c;
+    box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.12);
 }
 
 /* 최근 검색어 리스트 */
@@ -48,12 +48,12 @@
     top: 110%;
     left: 0;
     right: 0;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
+    background-color: #181a1e;
+    border: 1px solid #262930;
     border-radius: 12px;
     z-index: 1000;
     padding: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
 
 /* 이미지에 나온 형태와 동일하게 최근 검색 배치 */
@@ -61,7 +61,7 @@
     content: " 최근 검색";
     display: block;
     font-size: 13px;
-    color: #888888;
+    color: #8a8f98;
     margin-bottom: 12px;
     font-weight: 600;
 }
@@ -76,17 +76,17 @@
 .recent-search-item {
     display: inline-flex;
     align-items: center;
-    background-color: #f1f3f5;
+    background-color: #262930;
     padding: 6px 12px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 13px;
-    color: #495057;
+    color: #ffffff;
     transition: background-color 0.2s;
 }
 
 .recent-search-item:hover {
-    background-color: #e9ecef;
+    background-color: #333740;
 }
 
 .recent-search-text {
@@ -96,7 +96,7 @@
 .delete-search-btn {
     background: transparent;
     border: none;
-    color: #adb5bd;
+    color: #8a8f98;
     cursor: pointer;
     font-size: 12px;
     padding: 0;
@@ -106,7 +106,7 @@
 }
 
 .delete-search-btn:hover {
-    color: #fa5252;
+    color: #ff6b6b;
 }
 
 .search-container input {
@@ -114,20 +114,20 @@
     background: transparent;
     border: none;
     outline: none;
-    color: #111111;
+    color: #ffffff;
     font-size: 15px;
     height: 44px;
     font-weight: 500;
 }
 
 .search-container input::placeholder {
-    color: #999999;
+    color: #8a8f98;
 }
 
 .search-button {
-    background: #f1f3f5;
+    background: #262930;
     border: none;
-    color: #495057;
+    color: #ffffff;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -137,15 +137,15 @@
 }
 
 .search-button:hover {
-    background-color: #e9ecef;
-    color: #111111;
+    background-color: #333740;
+    color: #ffffff;
 }
 .login{
     justify-self: end;
 }
 .login a {
     text-decoration: none;
-    color: #495057;
+    color: #ffffff;
     font-size: 15px;
     font-weight: 600;
     padding: 8px 16px;
@@ -154,20 +154,20 @@
 }
 
 .login a:hover {
-    background-color: #f1f3f5;
-    color: #111111;
+    background-color: #262930;
+    color: #ffffff;
 }
 
 /* Unified Header Area */
 .unified-header-area {
-    background-color: #ffffff;
-    border-bottom: 1px solid #eaeaea;
+    background-color: #181a1e;
+    border-bottom: 1px solid #262930;
 }
 
 /* Main Navigation Bar Styles */
 .nav-bar {
     padding: 0 40px;
-    background-color: #ffffff;
+    background-color: #181a1e;
 }
 
 .nav-bar ul {
@@ -181,7 +181,7 @@
 .nav-bar li a {
     display: block;
     padding: 12px 18px;
-    color: #666666;
+    color: #ffffff;
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
@@ -189,19 +189,19 @@
 }
 
 .nav-bar li a:hover {
-    color: #111111;
+    color: #7CCBFF;
 }
 
 /* Active style for main navigation */
 .nav-bar li.active-nav > a {
-    border-bottom: 2px solid #111111;
-    color: #111111;
+    border-bottom: 2px solid #7CCBFF;
+    color: #7CCBFF;
 }
 
 /* Secondary Navigation Styles */
 .secondary-nav-container {
-    background-color: #f8f9fa;
-    border-top: 1px solid #eaeaea;
+    background-color: #121316;
+    border-top: 1px solid #262930;
 }
 
 .secondary-nav {
@@ -215,7 +215,7 @@
 .secondary-nav a {
     padding: 6px 12px;
     text-decoration: none;
-    color: #666666;
+    color: #ffffff;
     font-weight: 600;
     font-size: 14px;
     border-radius: 6px;
@@ -223,12 +223,12 @@
 }
 
 .secondary-nav a:hover {
-    background-color: #e9ecef;
-    color: #111111;
+    background-color: rgba(124, 203, 255, 0.12);
+    color: #7CCBFF;
 }
 
 /* Active style for secondary navigation link */
 .secondary-nav a.active-sub-nav {
-    color: #4a90e2;
-    background-color: rgba(74, 144, 226, 0.08);
+    color: #7CCBFF;
+    background-color: rgba(124, 203, 255, 0.12);
 }

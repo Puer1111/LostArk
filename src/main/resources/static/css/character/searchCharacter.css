@@ -690,6 +690,11 @@ li {
     font-size: 11px;
 }
 
+.ark-grid-slot-name.grade-ancient { color: rgb(227, 199, 161); }
+.ark-grid-slot-name.grade-relic { color: rgb(250, 93, 0); }
+.ark-grid-slot-name.grade-legend { color: rgb(249, 146, 0); }
+.ark-grid-slot-name.grade-hero { color: #C07FE0; }
+
 .ark-grid-slot-point {
     font-weight: 600;
     color: var(--accent);

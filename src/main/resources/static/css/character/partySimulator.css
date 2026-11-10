@@ -31,6 +31,12 @@
 }
 
 /* 전체 컨테이너: 좌우 2열 분할 레이아웃 (대안 A) */
+body {
+    margin: 0;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+}
+
 .simulator-body-container {
     width: 100%;
     max-width: 1240px;
