@@ -1,4 +1,3 @@
-import {raidConfigs} from '../character/raidConfigs.js';
 /**
  * 사이드바 클래스 선택 및 드래그 기능 관련 모듈
  */
@@ -301,13 +300,13 @@ export const classFunction = {
      */
     analyzeSynergy: (elements, raidManager) => {
         const { state } = raidManager;
-        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
+        const config = raidManager.getSelectedRaidConfig();
         const partySynergies = [{}, {}, {}]; // [0: 미사용, 1: 1파티, 2: 2파티]
         const partyCounts = [0, 0, 0];
 
         // 1. 파티별 시너지 수집 (직업 내 공백 정규화 중복 방지)
         state.slots.forEach((data, i) => {
-            if (!data || i > config.maxPlayers) return;
+            if (!data || i > config.memberCount) return;
             const partyId = i <= 4 ? 1 : 2;
             partyCounts[partyId]++;
             

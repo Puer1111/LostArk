@@ -2,6 +2,7 @@ package com.lostark.lostark.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.config.security.jwt.JwtTokenProvider;
+import com.lostark.lostark.config.security.jwt.AuthCookieService;
 import com.lostark.lostark.controller.users.UserController;
 import com.lostark.lostark.model.dto.users.LoginCheckUser;
 import com.lostark.lostark.model.entity.users.User;
@@ -35,7 +36,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -59,6 +59,9 @@ public class UserControllerTest {
 
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
+
+    @MockitoBean
+    private AuthCookieService authCookieService;
 
     @MockitoBean
     private UserRepository userRepository;
@@ -100,6 +103,7 @@ public class UserControllerTest {
         given(jwtTokenProvider.createAccessToken("testuser", "USER")).willReturn("mockAccessToken");
         given(jwtTokenProvider.createRefreshToken("testuser")).willReturn("mockRefreshToken");
         given(jwtTokenProvider.getRefreshTokenValidityInMilliseconds()).willReturn(604800000L);
+        given(jwtTokenProvider.getAccessTokenValidityInMilliseconds()).willReturn(900000L);
 
         // when
         mockMvc.perform(post("/users/login")
@@ -110,12 +114,11 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value("testuser"))
                 .andExpect(jsonPath("$.role").value("USER"))
-                .andExpect(cookie().exists("accessToken"))
-                .andExpect(cookie().value("accessToken", "mockAccessToken"))
-                .andExpect(cookie().httpOnly("accessToken", true))
-                .andExpect(cookie().exists("refreshToken"))
-                .andExpect(cookie().value("refreshToken", "mockRefreshToken"))
-                .andExpect(cookie().httpOnly("refreshToken", true));
+                .andExpect(cookie().doesNotExist("accessToken"))
+                .andExpect(cookie().doesNotExist("refreshToken"));
+
+        verify(authCookieService).addAccessToken(any(), eq("mockAccessToken"), eq(900L));
+        verify(authCookieService).addRefreshToken(any(), eq("mockRefreshToken"), eq(604800L));
 
         // Redis 저장 로직 검증
         verify(valueOperations).set(
@@ -132,17 +135,17 @@ public class UserControllerTest {
     void logout_Success() throws Exception {
         // given
         Cookie accessCookie = new Cookie("accessToken", "mockAccessToken");
-        given(jwtTokenProvider.validateToken("mockAccessToken")).willReturn(true);
+        given(jwtTokenProvider.validateAccessToken("mockAccessToken")).willReturn(true);
         given(jwtTokenProvider.getUserId("mockAccessToken")).willReturn("testuser");
         given(jwtTokenProvider.getRemainingTime("mockAccessToken")).willReturn(1800000L); // 30분 남음
 
         // when
-        mockMvc.perform(get("/users/logout")
+        mockMvc.perform(post("/users/logout").with(csrf())
                         .cookie(accessCookie))
                 // then
-                .andExpect(status().is3xxRedirection()) // 카카오 로그아웃 URL 리다이렉트 기대
-                .andExpect(cookie().maxAge("accessToken", 0))
-                .andExpect(cookie().maxAge("refreshToken", 0));
+                .andExpect(status().is3xxRedirection());
+
+        verify(authCookieService).clearAuthCookies(any());
 
         // Redis 블랙리스트 등록 및 삭제 검증
         verify(stringRedisTemplate).delete("refreshToken:testuser");

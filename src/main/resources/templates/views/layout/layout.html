@@ -2,6 +2,8 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(css, content, script)">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
     <title>LoaHub</title>
     <link rel="stylesheet" href="/css/layout/layout.css">
     <link rel="stylesheet" href="/css/layout/header.css">
@@ -17,6 +19,7 @@
     <th:block th:replace="${content}"></th:block>
 </main>
 
+<script defer src="/js/security/csrfFetch.js"></script>
 <script defer src="/js/layout/header.js"></script>
 <th:block th:replace="${script}"></th:block>
 </body>

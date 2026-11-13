@@ -2,7 +2,6 @@ package com.lostark.lostark.config.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -21,94 +20,100 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    private static final String TOKEN_TYPE_CLAIM = "token_type";
+    private static final String ACCESS_TOKEN_TYPE = "access";
+    private static final String REFRESH_TOKEN_TYPE = "refresh";
+    private static final long ACCESS_TOKEN_VALIDITY_MILLIS = 1000L * 60 * 15;
+    private static final long REFRESH_TOKEN_VALIDITY_MILLIS = 1000L * 60 * 60 * 24 * 7;
+
     private final UserDetailsService userDetailsService;
 
-    // 실무에서는 application.yml 에 설정하고 @Value 로 가져오는 것을 권장합니다.
-    @Value("${jwt.secret:defaultSecretKeyForLostArkProjectThatIsLongEnoughToBeSecure}")
+    @Value("${jwt.secret}")
     private String secretKey;
-
-    private final long accessTokenValidityInMilliseconds = 1000L * 60 * 30; // 30분
-    private final long refreshTokenValidityInMilliseconds = 1000L * 60 * 60 * 24 * 7; // 7일
 
     private SecretKey key;
 
     @PostConstruct
     protected void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+        if (keyBytes.length < 32) {
+            throw new IllegalStateException("JWT_SECRET must contain at least 32 UTF-8 bytes.");
+        }
+        key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Access Token 생성
     public String createAccessToken(String userId, String role) {
-        Claims claims = Jwts.claims().subject(userId).build();
         Date now = new Date();
-        Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
-
         return Jwts.builder()
-                .claims(claims)
+                .subject(userId)
                 .claim("role", role)
+                .claim(TOKEN_TYPE_CLAIM, ACCESS_TOKEN_TYPE)
                 .issuedAt(now)
-                .expiration(validity)
+                .expiration(new Date(now.getTime() + ACCESS_TOKEN_VALIDITY_MILLIS))
                 .signWith(key)
                 .compact();
     }
 
-    // Refresh Token 생성
     public String createRefreshToken(String userId) {
-        Claims claims = Jwts.claims().subject(userId).build();
         Date now = new Date();
-        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
-
         return Jwts.builder()
-                .claims(claims)
+                .subject(userId)
+                .claim(TOKEN_TYPE_CLAIM, REFRESH_TOKEN_TYPE)
                 .issuedAt(now)
-                .expiration(validity)
+                .expiration(new Date(now.getTime() + REFRESH_TOKEN_VALIDITY_MILLIS))
                 .signWith(key)
                 .compact();
     }
 
-    // JWT 토큰에서 인증 정보 조회
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserId(token));
+    public boolean validateAccessToken(String token) {
+        return hasTokenType(token, ACCESS_TOKEN_TYPE);
+    }
+
+    public boolean validateRefreshToken(String token) {
+        return hasTokenType(token, REFRESH_TOKEN_TYPE);
+    }
+
+    public Authentication getAuthentication(String accessToken) {
+        if (!validateAccessToken(accessToken)) {
+            throw new IllegalArgumentException("A valid access token is required.");
+        }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUserId(accessToken));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    // 토큰에서 회원 정보 추출
     public String getUserId(String token) {
-        return Jwts.parser()
-                .verifyWith(key)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+        return parseClaims(token).getSubject();
     }
 
-    // JWT 토큰의 유효성 + 만료일자 확인
-    public boolean validateToken(String jwtToken) {
-        try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(jwtToken);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // 토큰의 남은 유효 시간 계산 (밀리초 단위, 블랙리스트 TTL용)
     public long getRemainingTime(String token) {
         try {
-            Date expiration = Jwts.parser()
-                    .verifyWith(key)
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .getExpiration();
-            long now = new Date().getTime();
-            return Math.max(0, expiration.getTime() - now);
-        } catch (Exception e) {
+            return Math.max(0, parseClaims(token).getExpiration().getTime() - System.currentTimeMillis());
+        } catch (RuntimeException exception) {
             return 0;
         }
     }
 
+    public long getAccessTokenValidityInMilliseconds() {
+        return ACCESS_TOKEN_VALIDITY_MILLIS;
+    }
+
     public long getRefreshTokenValidityInMilliseconds() {
-        return this.refreshTokenValidityInMilliseconds;
+        return REFRESH_TOKEN_VALIDITY_MILLIS;
+    }
+
+    private boolean hasTokenType(String token, String expectedType) {
+        try {
+            return expectedType.equals(parseClaims(token).get(TOKEN_TYPE_CLAIM, String.class));
+        } catch (RuntimeException exception) {
+            return false;
+        }
+    }
+
+    private Claims parseClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }

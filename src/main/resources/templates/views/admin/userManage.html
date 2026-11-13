@@ -131,6 +131,22 @@
                 background-color: #607d8b;
                 color: white;
             }
+            .bootstrap-panel {
+                display: none;
+                margin-bottom: 16px;
+                padding: 14px;
+                border: 1px solid #ff9800;
+                border-radius: 6px;
+                background: #332719;
+            }
+            .bootstrap-panel input {
+                margin: 0 8px;
+                padding: 7px;
+                color: #fff;
+                background: #1a1a1f;
+                border: 1px solid #555;
+                border-radius: 4px;
+            }
             .btn:hover {
                 opacity: 0.9;
             }
@@ -152,6 +168,7 @@
                     <li><a href="/admin/main">대시보드 홈</a></li>
                     <li class="active"><a href="/admin/users">멤버(유저) 관리</a></li>
                     <li><a href="/admin/synergies">직업 & 시너지 관리</a></li>
+                    <li><a href="/admin/raids">&#47112;&#51060;&#46300; &#44288;&#47532;</a></li>
                 </ul>
             </nav>
 
@@ -163,6 +180,13 @@
                         <span style="color: #888; font-size: 13px;">등록된 전체 회원의 역할을 관리하고 ADMIN 권한을 부여할 수 있습니다.</span>
                     </div>
                     <button id="btn-refresh-users" class="btn" style="background-color: #2196f3; color: white;">새로고침</button>
+                </div>
+
+                <div id="admin-bootstrap-panel" class="bootstrap-panel">
+                    <strong>No administrator account exists.</strong>
+                    <span>Enter the one-time bootstrap token configured by the developer:</span>
+                    <input id="admin-bootstrap-token" type="password" autocomplete="off">
+                    <button id="btn-bootstrap-admin" class="btn btn-make-admin" type="button">Promote my account</button>
                 </div>
 
                 <div class="table-container">
@@ -191,8 +215,42 @@
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 loadUsers();
+                checkAdminBootstrap();
                 document.getElementById('btn-refresh-users').addEventListener('click', loadUsers);
+                document.getElementById('btn-bootstrap-admin').addEventListener('click', bootstrapAdmin);
             });
+
+            async function checkAdminBootstrap() {
+                try {
+                    const res = await fetch('/admin/api/bootstrap/status');
+                    if (!res.ok) return;
+                    const status = await res.json();
+                    document.getElementById('admin-bootstrap-panel').style.display = status.available ? 'block' : 'none';
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            async function bootstrapAdmin() {
+                const token = document.getElementById('admin-bootstrap-token').value;
+                if (!token) {
+                    alert('Enter the bootstrap token.');
+                    return;
+                }
+                try {
+                    const res = await fetch('/admin/api/bootstrap', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token })
+                    });
+                    if (!res.ok) throw new Error(await res.text() || 'Bootstrap failed.');
+                    alert('Your account is now an administrator. Sign in again to refresh your permissions.');
+                    await fetch('/users/logout', { method: 'POST' });
+                    window.location.href = '/';
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
 
             async function loadUsers() {
                 const tbody = document.getElementById('user-table-body');

@@ -1,6 +1,7 @@
 package com.lostark.lostark.controller.users;
 
 import com.lostark.lostark.config.security.jwt.JwtTokenProvider;
+import com.lostark.lostark.config.security.jwt.AuthCookieService;
 import com.lostark.lostark.model.dto.users.LoginCheckUser;
 import com.lostark.lostark.model.dto.users.SignupUser;
 import com.lostark.lostark.model.entity.users.User;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -35,10 +38,16 @@ import java.util.concurrent.TimeUnit;
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private static final DefaultRedisScript<Long> ROTATE_REFRESH_TOKEN_SCRIPT = new DefaultRedisScript<>(
+            "if redis.call('GET', KEYS[1]) == ARGV[1] then "
+                    + "redis.call('SET', KEYS[1], ARGV[2], 'PX', ARGV[3]); return 1 "
+                    + "else return 0 end",
+            Long.class);
     private final UserService userService;
     private final KakaoApi kakaoApi;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
+    private final AuthCookieService authCookieService;
     private final UserRepository userRepository;
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -102,19 +111,8 @@ public class UserController {
             );
 
             // 5. HttpOnly 쿠키 생성 및 설정 (XSS 방지)
-            Cookie accessCookie = new Cookie("accessToken", accessToken);
-            accessCookie.setHttpOnly(true);
-            accessCookie.setSecure(false); // 개발 환경이므로 false, 프로덕션에서는 true 권장
-            accessCookie.setPath("/");
-            accessCookie.setMaxAge(60 * 30); // 30분 유지
-            response.addCookie(accessCookie);
-
-            Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
-            refreshCookie.setHttpOnly(true);
-            refreshCookie.setSecure(false);
-            refreshCookie.setPath("/");
-            refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7일 유지
-            response.addCookie(refreshCookie);
+            authCookieService.addAccessToken(response, accessToken, jwtTokenProvider.getAccessTokenValidityInMilliseconds() / 1000);
+        authCookieService.addRefreshToken(response, refreshToken, jwtTokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
 
             // 6. 응답 생성
             HashMap<String, String> result = new HashMap<>();
@@ -155,74 +153,79 @@ public class UserController {
         );
 
         // HttpOnly 쿠키에 토큰 심기
-        Cookie accessCookie = new Cookie("accessToken", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(false);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 30); // 30분
-        response.addCookie(accessCookie);
-
-        Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(false);
-        refreshCookie.setPath("/");
-        refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
-        response.addCookie(refreshCookie);
+        authCookieService.addAccessToken(response, accessToken, jwtTokenProvider.getAccessTokenValidityInMilliseconds() / 1000);
+        authCookieService.addRefreshToken(response, refreshToken, jwtTokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
 
         return "redirect:/"; // 메인 페이지로 리다이렉트
     }
 
-    @GetMapping("/logout")
-    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 1. JWT 쿠키에서 Access Token 추출 및 Redis 블랙리스트 등록
-        String accessToken = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            accessToken = Arrays.stream(cookies)
-                    .filter(c -> "accessToken".equals(c.getName()))
-                    .map(Cookie::getValue)
-                    .findFirst()
-                    .orElse(null);
+    @PostMapping("/refresh")
+    @ResponseBody
+    public ResponseEntity<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
+        response.setHeader("Cache-Control", "no-store");
+        String refreshToken = getCookieValue(request, "refreshToken");
+        if (refreshToken == null || !jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            authCookieService.clearAuthCookies(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        String userId = jwtTokenProvider.getUserId(refreshToken);
+        String redisKey = "refreshToken:" + userId;
+        if (!refreshToken.equals(stringRedisTemplate.opsForValue().get(redisKey))) {
+            authCookieService.clearAuthCookies(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        User user = userRepository.findByUserId(userId).orElse(null);
+        if (user == null) {
+            stringRedisTemplate.delete(redisKey);
+            authCookieService.clearAuthCookies(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String access = jwtTokenProvider.createAccessToken(userId, user.getUserRole().name());
+        String refresh = jwtTokenProvider.createRefreshToken(userId);
+        Long rotated = stringRedisTemplate.execute(ROTATE_REFRESH_TOKEN_SCRIPT, List.of(redisKey), refreshToken,
+                refresh, String.valueOf(jwtTokenProvider.getRefreshTokenValidityInMilliseconds()));
+        if (!Long.valueOf(1L).equals(rotated)) {
+            authCookieService.clearAuthCookies(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        authCookieService.addAccessToken(response, access, jwtTokenProvider.getAccessTokenValidityInMilliseconds() / 1000);
+        authCookieService.addRefreshToken(response, refresh, jwtTokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
+        return ResponseEntity.noContent().build();
+    }
 
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            String userId = jwtTokenProvider.getUserId(accessToken);
-            // Redis에서 Refresh Token 삭제
-            stringRedisTemplate.delete("refreshToken:" + userId);
-
-            // Access Token 블랙리스트 등록 (남은 유효시간만큼)
+    @PostMapping("/logout")
+    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String accessToken = getCookieValue(request, "accessToken");
+        String refreshToken = getCookieValue(request, "refreshToken");
+        String userId = null;
+        if (accessToken != null && jwtTokenProvider.validateAccessToken(accessToken)) {
+            userId = jwtTokenProvider.getUserId(accessToken);
             long remainingTime = jwtTokenProvider.getRemainingTime(accessToken);
             if (remainingTime > 0) {
-                stringRedisTemplate.opsForValue().set(
-                        "blacklist:" + accessToken,
-                        "logout",
-                        remainingTime,
-                        TimeUnit.MILLISECONDS
-                );
+                stringRedisTemplate.opsForValue().set("blacklist:" + accessToken, "logout",
+                        remainingTime, TimeUnit.MILLISECONDS);
             }
+        } else if (refreshToken != null && jwtTokenProvider.validateRefreshToken(refreshToken)) {
+            userId = jwtTokenProvider.getUserId(refreshToken);
         }
+        if (userId != null) stringRedisTemplate.delete("refreshToken:" + userId);
+        authCookieService.clearAuthCookies(response);
 
-        // 2. JWT 쿠키 삭제
-        Cookie accessCookie = new Cookie("accessToken", null);
-        accessCookie.setPath("/");
-        accessCookie.setHttpOnly(true);
-        accessCookie.setMaxAge(0);
-        response.addCookie(accessCookie);
-
-        Cookie refreshCookie = new Cookie("refreshToken", null);
-        refreshCookie.setPath("/");
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setMaxAge(0);
-        response.addCookie(refreshCookie);
-
-        // 3. 카카오 로그아웃 또는 일반 로그아웃 처리
         try {
-            String kakaoLogoutUrl = kakaoApi.getLogoutUrl();
-            log.info("Redirecting to Kakao Logout URL: {}", kakaoLogoutUrl);
-            response.sendRedirect(kakaoLogoutUrl);
-        } catch (Exception e) {
-            log.warn("Kakao logout failed or not configured, redirecting to home");
-            response.sendRedirect("/");
+            String logoutUrl = kakaoApi.getLogoutUrl();
+            if (logoutUrl != null && !logoutUrl.isBlank()) {
+                response.sendRedirect(logoutUrl);
+                return;
+            }
+        } catch (Exception exception) {
+            log.warn("카카오 로그아웃 URL 생성에 실패했습니다.");
         }
+        response.sendRedirect("/");
+    }
+    private String getCookieValue(HttpServletRequest request, String name) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return null;
+        return Arrays.stream(cookies).filter(cookie -> name.equals(cookie.getName()))
+                .map(Cookie::getValue).findFirst().orElse(null);
     }
 }

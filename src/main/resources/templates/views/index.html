@@ -39,12 +39,23 @@
                                 <!-- 보상 아이템 -->
                                 <div class="reward-container">
                                     <div th:each="rewardLevel : ${item.rewardItems}" class="reward-level">
-                                        <div th:each="reward : ${rewardLevel.items}" class="reward-item" th:title="${reward.name}">
+                                        <div th:each="reward, rewardStat : ${rewardLevel.items}" th:if="${rewardStat.index < 3}" class="reward-item" th:title="${reward.name}">
                                             <div class="reward-icon-wrapper">
                                                 <img th:src="${reward.icon}" th:alt="${reward.name}" th:classappend="${'grade-' + reward.grade}">
                                             </div>
                                             <span class="reward-name" th:text="${reward.name}">아이템 이름</span>
                                         </div>
+                                    <div th:if="${rewardLevel.items != null and #lists.size(rewardLevel.items) > 3}" class="reward-overflow-wrapper">
+                                        <span class="reward-item reward-overflow" th:text="|+${#lists.size(rewardLevel.items) - 3}|"></span>
+                                        <div class="reward-overflow-overlay">
+                                            <div th:each="reward, rewardStat : ${rewardLevel.items}" th:if="${rewardStat.index >= 3}" class="reward-item" th:title="${reward.name}">
+                                                <div class="reward-icon-wrapper">
+                                                    <img th:src="${reward.icon}" th:alt="${reward.name}" th:classappend="${'grade-' + reward.grade}">
+                                                </div>
+                                                <span class="reward-name" th:text="${reward.name}">아이템 이름</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
                             </div>

@@ -1,90 +1,92 @@
-import {raidConfigs} from '../character/raidConfigs.js';
+const selectedRaid = (raidManager) => raidManager.getSelectedRaidConfig();
+
+function appendRaidOption(elements, raid) {
+    const option = document.createElement('option');
+    option.value = String(raid.id);
+    option.textContent = raid.raidName;
+    elements.raidSelect.appendChild(option);
+
+    const customOption = document.createElement('div');
+    customOption.className = 'custom-option';
+    customOption.dataset.value = String(raid.id);
+    customOption.textContent = raid.raidName;
+    elements.raidOptions.appendChild(customOption);
+}
 
 export const raidFunction = {
-    // 레이드 선택 옵션 초기화
-    initRaidSelects: (elements) => {
-        const categories = [...new Set(Object.values(raidConfigs).map(c => c.category))].filter(c => c !== '기본');
-        elements.categoryOptions.innerHTML = '<div class="custom-option" data-value="none">종류 선택</div>';
-        elements.categorySelect.innerHTML = '<option value="none">종류 선택</option>';
+    fetchRaidData: async () => {
+        const response = await fetch('/character/api/raids');
+        if (!response.ok) {
+            throw new Error(`Raid data request failed (${response.status})`);
+        }
+        return response.json();
+    },
 
-        categories.forEach(cat => {
+    initRaidSelects: (elements, raids) => {
+        const categories = [...new Set(raids.map((raid) => raid.raidCategory))];
+        elements.categoryOptions.replaceChildren();
+        elements.categorySelect.length = 1;
+        elements.categoryOptions.appendChild(createPlaceholder(elements.categorySelect.options[0]));
+
+        categories.forEach((category) => {
             const option = document.createElement('option');
-            option.value = cat;
-            option.textContent = cat;
+            option.value = category;
+            option.textContent = category;
             elements.categorySelect.appendChild(option);
 
-            const div = document.createElement('div');
-            div.className = 'custom-option';
-            div.dataset.value = cat;
-            div.textContent = cat;
-            elements.categoryOptions.appendChild(div);
+            const customOption = document.createElement('div');
+            customOption.className = 'custom-option';
+            customOption.dataset.value = category;
+            customOption.textContent = category;
+            elements.categoryOptions.appendChild(customOption);
         });
     },
 
-    // 레이드 종류에 따른 레이아웃 업데이트 (파티 슬롯 노출 여부 등)
+    updateRaidOptionsUI: (category, elements, raids) => {
+        elements.raidSelect.length = 1;
+        elements.raidOptions.replaceChildren();
+        elements.raidOptions.appendChild(createPlaceholder(elements.raidSelect.options[0]));
+        raids.filter((raid) => raid.raidCategory === category)
+                .forEach((raid) => appendRaidOption(elements, raid));
+    },
+
     updateRaidLayout: (elements, raidManager, MAX_SLOTS) => {
-        const { state } = raidManager;
-        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
-        elements.partyContainers.forEach(container => {
-            const partyId = parseInt(container.dataset.partyId);
-            container.style.display = (partyId <= config.partyCount) ? 'block' : 'none';
+        const config = selectedRaid(raidManager);
+        elements.partyContainers.forEach((container) => {
+            const partyId = Number.parseInt(container.dataset.partyId, 10);
+            container.style.display = partyId <= config.partyCount ? 'block' : 'none';
         });
-        elements.partyDetailSections.forEach((section, index) => {
-            const partyId = index + 1;
-            section.style.display = (partyId <= config.partyCount) ? 'block' : 'none';
+        elements.partyDetailSections?.forEach((section, index) => {
+            section.style.display = index + 1 <= config.partyCount ? 'block' : 'none';
         });
-        for (let i = 1; i <= MAX_SLOTS; i++) {
-            if (i > config.maxPlayers) state.slots[i] = null;
+        for (let slotId = 1; slotId <= MAX_SLOTS; slotId++) {
+            if (slotId > config.memberCount) raidManager.state.slots[slotId] = null;
         }
     },
 
-    // 슬롯 선택 핸들링
     handleSlotSelection: (elements, raidManager, slotId) => {
+        const config = selectedRaid(raidManager);
+        if (slotId > config.memberCount) return;
+
         const { state } = raidManager;
-        const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
-        if (slotId > config.maxPlayers) return;
-
-        // 선택 상태 토글 (매니저 내부 상태 업데이트)
-        state.selectedSlotId = (state.selectedSlotId === slotId) ? null : slotId;
-
-        elements.partySlots.forEach(slot => {
-            const id = parseInt(slot.dataset.slotId);
+        state.selectedSlotId = state.selectedSlotId === slotId ? null : slotId;
+        elements.partySlots.forEach((slot) => {
+            const id = Number.parseInt(slot.dataset.slotId, 10);
             slot.classList.toggle('selected', id === state.selectedSlotId);
         });
     },
 
-    // 카테고리 변경 시 레이드 목록 업데이트
-    handleCategoryChange: (e, elements, raidManager, updateAll) => {
-        const category = e.target.value;
-        const { state } = raidManager;
-        elements.raidSelect.innerHTML = '<option value="none">레이드 선택</option>';
-        elements.raidOptions.innerHTML = '<div class="custom-option" data-value="none">레이드 선택</div>';
-        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = '레이드 선택';
-
-        if (category !== 'none') {
-            Object.entries(raidConfigs).forEach(([key, config]) => {
-                if (config.category === category) {
-                    const option = document.createElement('option');
-                    option.value = key;
-                    option.textContent = config.name;
-                    elements.raidSelect.appendChild(option);
-
-                    const div = document.createElement('div');
-                    div.className = 'custom-option';
-                    div.dataset.value = key;
-                    div.textContent = config.name;
-                    elements.raidOptions.appendChild(div);
-                }
-            });
-        }
-        state.selectedRaid = 'none';
+    handleCategoryChange: (event, elements, raidManager, raids, updateAll) => {
+        const category = event.target.value;
+        raidFunction.updateRaidOptionsUI(category, elements, raids);
+        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent =
+                elements.raidSelect.options[0].textContent;
+        raidManager.state.selectedRaid = 'none';
         updateAll();
     },
 
-    // 레이드 선택 변경 시 처리
-    handleRaidChange: (e, raidManager, updateRaidLayout, updateAll) => {
-        const { state } = raidManager;
-        state.selectedRaid = e.target.value;
+    handleRaidChange: (event, raidManager, updateRaidLayout, updateAll) => {
+        raidManager.state.selectedRaid = event.target.value;
         updateRaidLayout();
         updateAll();
     },
@@ -94,3 +96,11 @@ export const raidFunction = {
         elements.raidCustomBox?.classList.remove('open');
     }
 };
+
+function createPlaceholder(option) {
+    const customOption = document.createElement('div');
+    customOption.className = 'custom-option';
+    customOption.dataset.value = option.value;
+    customOption.textContent = option.textContent;
+    return customOption;
+}

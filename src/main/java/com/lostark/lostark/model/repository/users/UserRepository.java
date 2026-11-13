@@ -1,6 +1,7 @@
 package com.lostark.lostark.model.repository.users;
 
 import com.lostark.lostark.model.entity.users.User;
+import com.lostark.lostark.model.entity.users.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,4 +17,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByKakaoId(Long kakaoId);
 
     boolean existsByUserNickName(String nickName);
+
+    boolean existsByUserRole(UserRole userRole);
+
+    long countByUserRole(UserRole userRole);
 }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>&#47112;&#51060;&#46300; &#44288;&#47532;</title>
+    <th:block th:fragment="pageCss">
+        <style>
+            .content { max-width: 100% !important; margin: 0 !important; padding: 15px 25px !important; }
+            .raid-admin { display: flex; gap: 25px; height: calc(100vh - 120px); min-height: 620px; color: #e0e0e0; font-family: 'Spoqa Han Sans Neo', sans-serif; }
+            .admin-sidebar { width: 240px; flex: 0 0 240px; background: #1e1e24; border-radius: 8px; padding: 20px 10px; box-shadow: 0 4px 6px #0004; }
+            .admin-sidebar h3 { padding: 0 15px 15px; margin: 0 0 10px; border-bottom: 1px solid #333; font-size: 18px; color: #fff; }
+            .admin-sidebar ul { list-style: none; padding: 0; margin: 0; }
+            .admin-sidebar a { display: block; padding: 12px 15px; margin-bottom: 5px; border-radius: 6px; color: #aaa; text-decoration: none; }
+            .admin-sidebar a:hover, .admin-sidebar li.active a { background: #3f51b5; color: #fff; }
+            .raid-admin-main { display: flex; flex: 1; min-width: 0; flex-direction: column; padding: 24px; background: #1e1e24; border-radius: 8px; box-shadow: 0 4px 6px #0004; }
+            .raid-admin-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 2px solid #333; }
+            .raid-admin-header h2 { margin: 0; }
+            .raid-admin-actions { display: flex; gap: 8px; }
+            .raid-admin-layout { display: flex; flex: 1; min-height: 0; gap: 20px; }
+            .raid-list-panel { width: 280px; flex: 0 0 280px; overflow-y: auto; padding-right: 12px; border-right: 1px solid #333; }
+            #raid-list { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
+            #raid-list li { padding: 12px; border-radius: 6px; background: #2a2a32; cursor: pointer; }
+            #raid-list li:hover, #raid-list li.active { background: #3f51b5; }
+            .raid-category-label { display: block; margin-top: 5px; color: #aaa; font-size: 12px; }
+            .raid-form { width: min(560px, 100%); padding: 20px; border-radius: 8px; background: #26262e; }
+            .raid-form h3 { margin: 0 0 20px; color: #64b5f6; }
+            .raid-form label { display: grid; grid-template-columns: 130px 1fr; align-items: center; gap: 12px; margin: 14px 0; color: #bbb; }
+            .raid-form input { min-width: 0; padding: 10px; border: 1px solid #444; border-radius: 4px; background: #1a1a1f; color: #fff; }
+            .raid-admin button { padding: 9px 14px; border: 0; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; }
+            .raid-admin button:disabled { opacity: .45; cursor: not-allowed; }
+            #raid-new { background: #4caf50; } #raid-save { background: #2196f3; } #raid-delete { background: #f44336; }
+            #raid-status { min-height: 20px; margin: 10px 0 0; color: #ffca28; }
+            @media (max-width: 850px) { .raid-admin { height: auto; min-height: calc(100vh - 120px); flex-direction: column; } .admin-sidebar { width: auto; flex-basis: auto; } .raid-admin-layout { flex-direction: column; } .raid-list-panel { width: auto; flex-basis: 220px; border-right: 0; border-bottom: 1px solid #333; padding: 0 0 12px; } .raid-admin-header { align-items: flex-start; flex-direction: column; } }
+        </style>
+    </th:block>
+</head>
+<body>
+<div th:replace="~{layout/layout :: layout(css = ~{::pageCss}, content = ~{::mainContent}, script = ~{::pageScript})}">
+    <th:block th:fragment="mainContent">
+        <div class="raid-admin">
+            <nav class="admin-sidebar">
+                <h3>&#44288;&#47532;&#51088; &#47700;&#45684;</h3>
+                <ul>
+                    <li><a href="/admin/main">&#45824;&#49884;&#48372;&#46300; &#54856;</a></li>
+                    <li><a href="/admin/users">&#47716;&#48260;(&#50976;&#51200;) &#44288;&#47532;</a></li>
+                    <li><a href="/admin/synergies">&#51649;&#50629; &amp; &#49884;&#45320;&#51648; &#44288;&#47532;</a></li>
+                    <li class="active"><a href="/admin/raids">&#47112;&#51060;&#46300; &#44288;&#47532;</a></li>
+                </ul>
+            </nav>
+            <main class="raid-admin-main">
+                <header class="raid-admin-header">
+                    <h2>&#47112;&#51060;&#46300; &#45936;&#51060;&#53552; &#44288;&#47532;</h2>
+                    <div class="raid-admin-actions">
+                        <button id="raid-new" type="button">+ &#49352; &#47112;&#51060;&#46300;</button>
+                        <button id="raid-save" type="button">&#51200;&#51109; (DB &#48152;&#50689;)</button>
+                        <button id="raid-delete" type="button" disabled>&#49325;&#51228;</button>
+                    </div>
+                </header>
+                <div class="raid-admin-layout">
+                    <section class="raid-list-panel">
+                        <ul id="raid-list"></ul>
+                    </section>
+                    <section class="raid-form">
+                        <h3 id="raid-form-title">&#47112;&#51060;&#46300; &#49440;&#53469; &#46608;&#45716; &#49352; &#47112;&#51060;&#46300; &#46321;&#47197;</h3>
+                        <input id="raid-id" type="hidden">
+                        <label><span>&#47112;&#51060;&#46300; &#51060;&#47492;</span><input id="raid-name" type="text" maxlength="100"></label>
+                        <label><span>&#47112;&#51060;&#46300; &#51333;&#47448;</span><input id="raid-category" type="text" maxlength="50"></label>
+                        <label><span>&#52572;&#45824; &#51064;&#50896;</span><input id="raid-member-count" type="number" min="1" step="1"></label>
+                        <label><span>&#54028;&#54000; &#49688;</span><input id="raid-party-count" type="number" min="1" step="1"></label>
+                        <p id="raid-status" role="status"></p>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </th:block>
+    <th:block th:fragment="pageScript">
+        <script defer src="/js/admin/raidManage.js"></script>
+    </th:block>
+</div>
+</body>
+</html>

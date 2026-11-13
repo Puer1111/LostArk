@@ -4,7 +4,11 @@ import com.lostark.lostark.model.dto.admin.AdminUserResponseDto;
 import com.lostark.lostark.model.entity.users.UserRole;
 import com.lostark.lostark.service.admin.AdminUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +22,9 @@ import java.util.Map;
 public class AdminMainController {
 
     private final AdminUserService adminUserService;
+
+    @Value("${app.admin.bootstrap-token:}")
+    private String adminBootstrapToken;
 
     /**
      * 관리자 대시보드 메인 페이지 (/admin/main)
@@ -40,6 +47,7 @@ public class AdminMainController {
      */
     @GetMapping("/api/users")
     @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AdminUserResponseDto>> getUserList() {
         return ResponseEntity.ok(adminUserService.getAllUsers());
     }
@@ -49,11 +57,34 @@ public class AdminMainController {
      */
     @PutMapping("/api/users/{userId}/role")
     @ResponseBody
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AdminUserResponseDto> updateUserRole(
             @PathVariable String userId,
             @RequestBody Map<String, String> requestBody) {
         String roleStr = requestBody.get("role");
         UserRole newRole = UserRole.valueOf(roleStr.toUpperCase());
         return ResponseEntity.ok(adminUserService.updateUserRole(userId, newRole));
+    }
+
+    @GetMapping("/api/bootstrap/status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Boolean>> getAdminBootstrapStatus() {
+        return ResponseEntity.ok(Map.of(
+                "available", adminUserService.isFirstAdminBootstrapAvailable(adminBootstrapToken)));
+    }
+
+    @PostMapping("/api/bootstrap")
+    @ResponseBody
+    public ResponseEntity<AdminUserResponseDto> bootstrapFirstAdmin(
+            @RequestBody Map<String, String> requestBody,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return ResponseEntity.status(401).build();
+        }
+
+        AdminUserResponseDto promoted = adminUserService.bootstrapFirstAdmin(
+                authentication.getName(), requestBody.get("token"), adminBootstrapToken);
+        return ResponseEntity.ok(promoted);
     }
 }

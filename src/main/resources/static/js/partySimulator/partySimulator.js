@@ -1,4 +1,3 @@
-import {raidConfigs} from '../character/raidConfigs.js';
 import {synergyService} from '../character/synergyService.js';
 import {classFunction} from './classFunction.js';
 import {raidFunction} from './raidFunction.js';
@@ -14,6 +13,12 @@ class RaidStateContainer {
             selectedRaid: 'none',
             selectedSlotId: null
         };
+        this.raidData = [];
+    }
+
+    getSelectedRaidConfig() {
+        return this.raidData.find((raid) => String(raid.id) === this._state.selectedRaid)
+                || { memberCount: 8, partyCount: 2 };
     }
 
     // 외부에서는 이 getter를 통해 읽기 전용으로 접근하거나 참조 유지
@@ -40,7 +45,9 @@ class RaidStateContainer {
         }
 
         // 2. selectedRaid 검증
-        if (typeof data.selectedRaid === 'string' && raidConfigs[data.selectedRaid]) {
+        if (typeof data.selectedRaid === 'string'
+                && (data.selectedRaid === 'none'
+                    || this.raidData.some((raid) => String(raid.id) === data.selectedRaid))) {
             this._state.selectedRaid = data.selectedRaid;
         }
 
@@ -80,6 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const init = async () => {
         try {
+            raidManager.raidData = await raidFunction.fetchRaidData();
+        } catch (e) {
+            console.error('Failed to load raid data from the database:', e);
+        }
+
+        try {
             await synergyService.fetchJobData();
         } catch (e) {
             console.error('시너지 데이터 로드 실패:', e);
@@ -88,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // DB 시너지 데이터 기반으로 사이드바 직업 목록 동적 렌더링
         classFunction.renderSidebar(elements);
 
-        raidFunction.initRaidSelects(elements);
+        raidFunction.initRaidSelects(elements, raidManager.raidData);
         bindEvents();
         loadFromLocalStorage();
         loadFromUrl();
@@ -143,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 레이드 설정 변경
         elements.categorySelect.addEventListener('change', (e) => {
-            raidFunction.handleCategoryChange(e, elements, raidManager, updateAll);
+            raidFunction.handleCategoryChange(e, elements, raidManager, raidManager.raidData, updateAll);
         });
 
         elements.raidSelect.addEventListener('change', (e) => {
@@ -166,9 +179,9 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.partySlots.forEach(slot => {
             const slotId = parseInt(slot.dataset.slotId);
             const data = state.slots[slotId];
-            const config = raidConfigs[state.selectedRaid] || raidConfigs['none'];
+            const config = raidManager.getSelectedRaidConfig();
 
-            if (slotId > config.maxPlayers) {
+            if (slotId > config.memberCount) {
                 slot.classList.add('disabled');
                 slot.innerHTML = '<div class="slot-disabled">비활성</div>';
                 slot.style.backgroundImage = 'none';
@@ -205,17 +218,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const { state } = raidManager;
                 if (state.selectedRaid !== 'none') {
-                    const config = raidConfigs[state.selectedRaid];
+                    const config = raidManager.getSelectedRaidConfig();
                     if (config) {
                         // UI 수동 갱신 (이벤트 발생시키지 않음)
-                        elements.categorySelect.value = config.category;
-                        elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.category;
+                        elements.categorySelect.value = config.raidCategory;
+                        elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.raidCategory;
                         
                         // 레이드 목록 UI만 갱신
-                        raidFunction.updateRaidOptionsUI(config.category, elements);
+                        raidFunction.updateRaidOptionsUI(config.raidCategory, elements, raidManager.raidData);
                         
                         elements.raidSelect.value = state.selectedRaid;
-                        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.name;
+                        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.raidName;
                     }
                 }
                 raidFunction.updateRaidLayout(elements, raidManager, MAX_SLOTS);
@@ -241,16 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const { state } = raidManager;
                 if (state.selectedRaid !== 'none') {
-                    const config = raidConfigs[state.selectedRaid];
+                    const config = raidManager.getSelectedRaidConfig();
                     if (config) {
                         // UI 수동 갱신
-                        elements.categorySelect.value = config.category;
-                        elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.category;
+                        elements.categorySelect.value = config.raidCategory;
+                        elements.categoryCustomBox.querySelector('.custom-select-trigger').textContent = config.raidCategory;
                         
-                        raidFunction.updateRaidOptionsUI(config.category, elements);
+                        raidFunction.updateRaidOptionsUI(config.raidCategory, elements, raidManager.raidData);
                         
                         elements.raidSelect.value = state.selectedRaid;
-                        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.name;
+                        elements.raidCustomBox.querySelector('.custom-select-trigger').textContent = config.raidName;
                     }
                 }
                 raidFunction.updateRaidLayout(elements, raidManager, MAX_SLOTS);
