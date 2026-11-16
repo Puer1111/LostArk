@@ -1,10 +1,12 @@
 package com.lostark.lostark.controller.character;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lostark.lostark.model.dto.character.SearchCharacterDTO;
 import com.lostark.lostark.model.dto.character.SearchExpeditionDTO;
 import com.lostark.lostark.model.dto.character.SimplifiedCharacterDTO;
 import com.lostark.lostark.service.api.LostArkService;
+import com.lostark.lostark.service.character.CharacterDataPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import com.lostark.lostark.model.dto.character.synergy.SynergyJobDto;
 import com.lostark.lostark.service.character.SynergyAdminService;
 
 import java.util.List;
+import java.util.Arrays;
 
 @Slf4j
 @Controller
@@ -24,6 +27,8 @@ public class CharacterController {
 
     private final LostArkService apiService;
     private final SynergyAdminService synergyAdminService;
+    private final CharacterDataPersistenceService characterDataPersistenceService;
+    private final ObjectMapper objectMapper;
 
     /**
      * 캐릭터 상세 정보 조회
@@ -32,6 +37,24 @@ public class CharacterController {
     public String getCharacter(@PathVariable String characterName, Model model) {
         log.info("Controller.getCharacter.characterName {}", characterName);
         SearchCharacterDTO searchCharacterDTO = apiService.getCharacter(characterName);
+        SearchExpeditionDTO[] siblings = new SearchExpeditionDTO[0];
+        try {
+            SearchExpeditionDTO[] response = apiService.getExpedition(characterName);
+            if (response != null) {
+                siblings = response;
+            }
+        } catch (Exception expeditionException) {
+            log.warn("원정대 정보를 가져오지 못했습니다. 검색 캐릭터 정보만 저장합니다: {}",
+                    characterName, expeditionException);
+        }
+        try {
+            characterDataPersistenceService.saveSearchResult(
+                    searchCharacterDTO,
+                    objectMapper.valueToTree(searchCharacterDTO),
+                    Arrays.asList(siblings));
+        } catch (Exception persistenceException) {
+            log.error("캐릭터 검색 결과를 DB에 저장하지 못했습니다: {}", characterName, persistenceException);
+        }
         model.addAttribute("characterData", searchCharacterDTO);
         return "character/searchCharacter";
     }
