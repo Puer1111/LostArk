@@ -14,8 +14,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
@@ -29,10 +32,10 @@ public class SecurityConfig {
 
     @Bean
     public CookieCsrfTokenRepository csrfTokenRepository(
-            @Value("${app.security.cookie-secure:true}") boolean secureCookies) {
+            @Value("${app.security.csrf-cookie-secure:false}") boolean secureCsrfCookie) {
         CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
         repository.setCookiePath("/");
-        repository.setCookieCustomizer(cookie -> cookie.secure(secureCookies).sameSite("Lax"));
+        repository.setCookieCustomizer(cookie -> cookie.secure(secureCsrfCookie).sameSite("Lax"));
         return repository;
     }
 
@@ -42,7 +45,9 @@ public class SecurityConfig {
             CookieCsrfTokenRepository csrfTokenRepository) throws Exception {
         http
                 .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/users/logout")
                         .csrfTokenRepository(csrfTokenRepository)
+                        .sessionAuthenticationStrategy(new NullAuthenticatedSessionStrategy())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .httpBasic(httpBasic -> httpBasic.disable())
@@ -82,11 +87,16 @@ public class SecurityConfig {
                         .accessDeniedHandler((request, response, exception) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json;charset=UTF-8");
-                            response.getWriter().write("{\"status\":403,\"error\":\"FORBIDDEN\",\"message\":\"Access denied.\"}");
+                            if (exception instanceof CsrfException) {
+                                response.getWriter().write("{\"status\":403,\"error\":\"CSRF_REJECTED\",\"message\":\"CSRF token is missing or invalid.\"}");
+                            } else {
+                                response.getWriter().write("{\"status\":403,\"error\":\"FORBIDDEN\",\"message\":\"Administrator permission is required.\"}");
+                            }
                         }))
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtTokenProvider, stringRedisTemplate),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new CsrfTokenMaterializationFilter(), CsrfFilter.class);
 
         return http.build();
     }

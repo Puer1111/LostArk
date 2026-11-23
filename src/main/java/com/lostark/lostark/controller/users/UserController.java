@@ -195,6 +195,8 @@ public class UserController {
 
     @PostMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
         String accessToken = getCookieValue(request, "accessToken");
         String refreshToken = getCookieValue(request, "refreshToken");
         String userId = null;
@@ -210,17 +212,7 @@ public class UserController {
         }
         if (userId != null) stringRedisTemplate.delete("refreshToken:" + userId);
         authCookieService.clearAuthCookies(response);
-
-        try {
-            String logoutUrl = kakaoApi.getLogoutUrl();
-            if (logoutUrl != null && !logoutUrl.isBlank()) {
-                response.sendRedirect(logoutUrl);
-                return;
-            }
-        } catch (Exception exception) {
-            log.warn("카카오 로그아웃 URL 생성에 실패했습니다.");
-        }
-        response.sendRedirect("/");
+        response.sendRedirect(request.getContextPath() + "/");
     }
     private String getCookieValue(HttpServletRequest request, String name) {
         Cookie[] cookies = request.getCookies();

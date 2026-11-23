@@ -11,5 +11,4 @@ public interface RaidRepository extends JpaRepository<Raid, Long> {
 
     List<Raid> findAllByOrderByRaidCategoryAscRaidNameAsc();
 
-    boolean existsByRaidCategoryAndRaidName(String raidCategory, String raidName);
 }

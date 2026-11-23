@@ -6,12 +6,12 @@
     <th:block th:fragment="pageCss">
         <style>
             .content { max-width: 100% !important; margin: 0 !important; padding: 15px 25px !important; }
-            .raid-admin { display: flex; gap: 25px; height: calc(100vh - 120px); min-height: 620px; color: #e0e0e0; font-family: 'Spoqa Han Sans Neo', sans-serif; }
-            .admin-sidebar { width: 240px; flex: 0 0 240px; background: #1e1e24; border-radius: 8px; padding: 20px 10px; box-shadow: 0 4px 6px #0004; }
+            .raid-admin { display: flex; gap: 25px; height: calc(100vh - 120px); min-height: 820px; color: #e0e0e0; font-family: 'Spoqa Han Sans Neo', sans-serif; box-sizing: border-box; }
+            .admin-sidebar { width: 240px; height: 100%; flex: 0 0 240px; background: #1e1e24; border-radius: 8px; padding: 20px 10px; box-shadow: 0 4px 6px #0004; box-sizing: border-box; display: flex; flex-direction: column; }
             .admin-sidebar h3 { padding: 0 15px 15px; margin: 0 0 10px; border-bottom: 1px solid #333; font-size: 18px; color: #fff; }
             .admin-sidebar ul { list-style: none; padding: 0; margin: 0; }
-            .admin-sidebar a { display: block; padding: 12px 15px; margin-bottom: 5px; border-radius: 6px; color: #aaa; text-decoration: none; }
-            .admin-sidebar a:hover, .admin-sidebar li.active a { background: #3f51b5; color: #fff; }
+            .admin-sidebar li a { display: flex; align-items: center; padding: 12px 15px; margin-bottom: 5px; border-radius: 6px; color: #aaa; text-decoration: none; font-size: 15px; font-weight: 400; line-height: 1.5; transition: all 0.2s; }
+            .admin-sidebar li a:hover, .admin-sidebar li.active a { background: #3f51b5; color: #fff; font-weight: 500; }
             .raid-admin-main { display: flex; flex: 1; min-width: 0; flex-direction: column; padding: 24px; background: #1e1e24; border-radius: 8px; box-shadow: 0 4px 6px #0004; }
             .raid-admin-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 2px solid #333; }
             .raid-admin-header h2 { margin: 0; }
@@ -22,10 +22,22 @@
             #raid-list li { padding: 12px; border-radius: 6px; background: #2a2a32; cursor: pointer; }
             #raid-list li:hover, #raid-list li.active { background: #3f51b5; }
             .raid-category-label { display: block; margin-top: 5px; color: #aaa; font-size: 12px; }
-            .raid-form { width: min(560px, 100%); padding: 20px; border-radius: 8px; background: #26262e; }
+            .raid-form { flex: 1; min-width: 0; overflow-y: auto; padding: 20px; border-radius: 8px; background: #26262e; }
             .raid-form h3 { margin: 0 0 20px; color: #64b5f6; }
             .raid-form label { display: grid; grid-template-columns: 130px 1fr; align-items: center; gap: 12px; margin: 14px 0; color: #bbb; }
             .raid-form input { min-width: 0; padding: 10px; border: 1px solid #444; border-radius: 4px; background: #1a1a1f; color: #fff; }
+            .raid-form select { min-width: 0; padding: 10px; border: 1px solid #444; border-radius: 4px; background: #1a1a1f; color: #fff; }
+            .difficulty-row select { width: 100%; box-sizing: border-box; padding: 9px; border: 1px solid #444; border-radius: 4px; background: #1a1a1f; color: #fff; }
+            .calculated-party-count { color: #fff; }
+            .raid-form .base-fields { max-width: 760px; }
+            .gate-card { margin: 18px 0; padding: 16px; border: 1px solid #41414b; border-radius: 8px; background: #202027; }
+            .gate-card h4 { margin: 0 0 12px; color: #90caf9; }
+            .gate-fields { display: grid; grid-template-columns: minmax(120px, 1fr); gap: 10px; }
+            .difficulty-row { display: grid; grid-template-columns: minmax(120px, .7fr) minmax(180px, 1.3fr) auto; gap: 10px; }
+            .difficulty-list { display: grid; gap: 8px; margin-top: 14px; }
+            .difficulty-row { align-items: center; }
+            .difficulty-row input, .gate-fields input { width: 100%; box-sizing: border-box; padding: 9px; border: 1px solid #444; border-radius: 4px; background: #1a1a1f; color: #fff; }
+            .gate-actions { display: flex; gap: 8px; margin-top: 12px; }
             .raid-admin button { padding: 9px 14px; border: 0; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; }
             .raid-admin button:disabled { opacity: .45; cursor: not-allowed; }
             #raid-new { background: #4caf50; } #raid-save { background: #2196f3; } #raid-delete { background: #f44336; }
@@ -63,10 +75,27 @@
                     <section class="raid-form">
                         <h3 id="raid-form-title">&#47112;&#51060;&#46300; &#49440;&#53469; &#46608;&#45716; &#49352; &#47112;&#51060;&#46300; &#46321;&#47197;</h3>
                         <input id="raid-id" type="hidden">
-                        <label><span>&#47112;&#51060;&#46300; &#51060;&#47492;</span><input id="raid-name" type="text" maxlength="100"></label>
-                        <label><span>&#47112;&#51060;&#46300; &#51333;&#47448;</span><input id="raid-category" type="text" maxlength="50"></label>
-                        <label><span>&#52572;&#45824; &#51064;&#50896;</span><input id="raid-member-count" type="number" min="1" step="1"></label>
-                        <label><span>&#54028;&#54000; &#49688;</span><input id="raid-party-count" type="number" min="1" step="1"></label>
+                        <div class="base-fields">
+                            <label><span>&#47112;&#51060;&#46300; &#51060;&#47492;</span><input id="raid-name" type="text" maxlength="100"></label>
+                            <label>
+                                <span>&#47112;&#51060;&#46300; &#51333;&#47448;</span>
+                                <select id="raid-category">
+                                    <option value="">&#51333;&#47448; &#49440;&#53469;</option>
+                                    <option value="군단장">&#44400;&#45800;&#51109;</option>
+                                    <option value="카제로스">&#52852;&#51228;&#47196;&#49828;</option>
+                                    <option value="그림자">&#44536;&#47548;&#51088;</option>
+                                    <option value="에픽">&#50640;&#54589;</option>
+                                    <option value="어비스 던전">&#50612;&#48708;&#49828;</option>
+                                </select>
+                            </label>
+                            <label><span>&#47112;&#51060;&#46300; &#51064;&#50896;</span><input id="raid-member-count" type="number" min="1" step="1"></label>
+                            <label><span>&#54028;&#54000; &#49688; (4&#47749;&#45817; 1&#54028;&#54000;)</span><output id="raid-party-count" class="calculated-party-count">-</output></label>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+                            <h3 style="margin:18px 0 8px">&#44288;&#47928; &#48143; &#45212;&#51060;&#46020;&#48324; HP</h3>
+                            <button id="gate-add" type="button">+ &#44288;&#47928; &#52628;&#44032;</button>
+                        </div>
+                        <div id="gates-container"></div>
                         <p id="raid-status" role="status"></p>
                     </section>
                 </div>
